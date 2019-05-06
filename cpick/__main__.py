@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from curses import wrapper
 from columns import prtcols
-from .cpick import Picker
+from .picker import Picker
 
 
 def get_args():
