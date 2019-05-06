@@ -8,13 +8,14 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cpick",
-    version="0.0.1",
+    version="0.0.2",
     author="Toby Slight",
     author_email="tslight@pm.me",
     description="Curses List Picker",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/tslight/cpick",
+    install_requires=['columns'],
     packages=setuptools.find_packages(),
     classifiers=(
         "Programming Language :: Python :: 3",

@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from curses import wrapper
+from columns import prtcols
 from .cpick import Picker
 
 
@@ -18,7 +19,7 @@ def main():
     args = get_args()
     picked = wrapper(pick, args.options)
     if picked:
-        print(*picked, sep='\n')
+        prtcols(picked, 6)
 
 
 if __name__ == '__main__':
