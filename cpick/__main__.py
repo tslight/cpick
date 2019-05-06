@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from curses import wrapper
-from cpick import Picker
+from .cpick import Picker
 
 
 def get_args():
@@ -12,13 +12,17 @@ def get_args():
     return parser.parse_args()
 
 
-def pick(screen, options):
+def pick(screen):
     args = get_args()
     picker = Picker(screen, args.options)
     return picker.get_picked()
 
 
-if __name__ == '__main__':
+def main():
     picked = wrapper(pick)
     if picked:
         print(*picked, sep='\n')
+
+
+if __name__ == '__main__':
+    main()
