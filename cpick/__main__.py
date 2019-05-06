@@ -4,9 +4,6 @@ from .cpick import Picker
 
 
 def get_args():
-    """
-    Return a list of valid arguments. If no argument is given, default to $PWD.
-    """
     parser = ArgumentParser(description='Curses list picker.')
     parser.add_argument("options", nargs='+', help="Options for the picker.")
     return parser.parse_args()
