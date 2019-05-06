@@ -9,14 +9,14 @@ def get_args():
     return parser.parse_args()
 
 
-def pick(screen):
-    args = get_args()
-    picker = Picker(screen, args.options)
+def pick(screen, options):
+    picker = Picker(screen, options)
     return picker.get_picked()
 
 
 def main():
-    picked = wrapper(pick)
+    args = get_args()
+    picked = wrapper(pick, args.options)
     if picked:
         print(*picked, sep='\n')
 

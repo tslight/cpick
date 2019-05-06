@@ -33,7 +33,7 @@ class Picker:
     def btm(self):
         self.index = len(self.options) - 1
 
-    def chkidx(self):
+    def wrap(self):
         if self.index < 0:
             self.btm()
         if self.index >= len(self.options):
@@ -65,7 +65,6 @@ class Picker:
 
     def draw(self):
         self.screen.clear()
-
         x, y = 0, 1
         max_rows = self.y - (y + 1)
         curline = self.index + 1
@@ -81,17 +80,30 @@ class Picker:
             option = option + ' ' * (self.x - len(option))
             self.screen.addstr(y, x, option, attr)
             y += 1
-
         self.screen.refresh()
 
     def quit(self):
+        '''
+        Signal to get_picked that it's time to return the state of self.picked.
+        '''
         return True
 
-    def get_picked(self):
-        while True:
-            self.draw()
-            ch = self.screen.getch()
-            action = {
+    def ignore(self):
+        '''
+        Skip unbound key presses in main event method.
+        '''
+        return False
+
+    def get_action(self):
+        '''
+        Uses a dictionary to map characters to methods. Get a character entered
+        and return it's value from the dictionary. If we get a key error from
+        this operation, return a method that returns False instead (equivalent
+        to pass).
+        '''
+        ch = self.screen.getch()
+        try:
+            return {
                 ord('j'): self.dn,
                 ord('k'): self.up,
                 ord('g'): self.top,
@@ -100,10 +112,19 @@ class Picker:
                 ord('b'): self.pgup,
                 ord(' '): self.pick,
                 ord('q'): self.quit,
-            }
-            try:
-                if action[ch]():
-                    return self.picked
-            except KeyError:
-                pass
-            self.chkidx()
+            }[ch]
+        except KeyError:
+            return self.ignore
+
+    def get_picked(self):
+        '''
+        Main event loop that draws the screen, waits for input, and executes an
+        action based on that input. If the method executed returns true, we
+        return our objects' picked attribute.
+        '''
+        while True:
+            self.draw()
+            action = self.get_action()
+            if action():
+                return self.picked
+            self.wrap()
