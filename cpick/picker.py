@@ -1,14 +1,13 @@
-from .color import Color
+import curses
 from .action import Action
+from .screen import Screen
 
 
-class Picker(Color, Action):
+class Picker(Action, Screen):
     def __init__(self, screen, options):
-        Color.__init__(self)
         Action.__init__(self)
-        self.screen = screen
+        Screen.__init__(self, screen)
         self.options = options
-        self.y, self.x = self.screen.getmaxyx()
 
     def get_lines(self):
         '''
@@ -34,11 +33,15 @@ class Picker(Color, Action):
 
     def draw(self):
         '''
-
+        Draw options list to the screen. If options length is greater
+        than the size of the terminal, only draw a slice. Support
+        scrolling through calculating the current lines position
+        relative to the maximum rows available to the screen
         '''
-        self.screen.erase()
-        x, y = 0, 1  # starting screen co-ordinates
-        max_rows = self.y - (y + 1)  # leave space at top and bottom of screen
+        self.win.erase()  # clear causes flickering in some terminals
+        y, x = 0, 0   # starting screen co-ordinates
+        # leave space at top and bottom of screen
+        max_rows = self.win_y - 1
         curline = self.index + 1  # screen lines don't index from 0
         start, stop = 0, max_rows
 
@@ -49,10 +52,12 @@ class Picker(Color, Action):
         lines = list(self.get_lines())[start:stop]
         for line in lines:
             option, attr = line
-            option = option + ' ' * (self.x - len(option))
-            self.screen.addstr(y, x, option, attr)
+            option = option + ' ' * (self.win_x - len(option))
+            self.win.addstr(y, x, option, attr)
             y += 1
-        self.screen.refresh()
+        self.win.refresh()
+        self.mkheader()
+        self.mkfooter()
 
     def get_action(self):
         '''
@@ -61,7 +66,7 @@ class Picker(Color, Action):
         this operation, return a method that returns False instead (equivalent
         to pass).
         '''
-        ch = self.screen.getch()
+        ch = self.win.getch()
         try:
             return {
                 ord('j'): self.dn,
@@ -71,10 +76,12 @@ class Picker(Color, Action):
                 ord('f'): self.pgdn,
                 ord('b'): self.pgup,
                 ord('t'): self.toggle,
-                ord(' '): lambda: self.toggle() or self.dn(),
+                ord('s'): lambda: self.toggle() or self.dn(),
                 ord('u'): lambda: self.up() or self.toggle(),
                 ord('a'): self.toggle_all,
+                ord('?'): self.mkhelp,
                 ord('q'): self.quit,
+                curses.KEY_RESIZE: self.resize,
             }[ch]
         except KeyError:
             return self.ignore
