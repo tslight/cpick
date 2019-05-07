@@ -1,13 +1,15 @@
 import curses
 from .action import Action
-from .screen import Screen
 
 
-class Picker(Action, Screen):
+class Picker(Action):
     def __init__(self, screen, options):
-        Action.__init__(self)
-        Screen.__init__(self, screen)
+        Action.__init__(self, screen)
         self.options = options
+        self.indicator = '-->'
+        self.checkbox = '[ ]'
+        self.checked = '[x]'
+        self.scroll = 2  # when to start scrolling
 
     def get_lines(self):
         '''
@@ -15,19 +17,18 @@ class Picker(Action, Screen):
         indicator prepended to the string or an empty string of the same
         length and a curses color set.
         '''
-        indicator = '-->'
         for index, option in enumerate(self.options):
             if index == self.index and self.options[index] in self.picked:
-                pad = indicator
+                pad = self.indicator
                 color = self.black_yellow()
             elif self.options[index] in self.picked:
-                pad = ' ' * len(indicator)
+                pad = self.checked
                 color = self.yellow_black()
             elif index == self.index:
-                pad = indicator
+                pad = self.indicator
                 color = self.black_blue()
             else:
-                pad = ' ' * len(indicator)
+                pad = self.checkbox
                 color = self.white_black()
             yield ('{} {}'.format(pad, option), color)
 
@@ -36,25 +37,24 @@ class Picker(Action, Screen):
         Draw options list to the screen. If options length is greater
         than the size of the terminal, only draw a slice. Support
         scrolling through calculating the current lines position
-        relative to the maximum rows available to the screen
+        relative to the maximum rows available to the screen.
         '''
         self.win.erase()  # clear causes flickering in some terminals
-        y, x = 0, 0   # starting screen co-ordinates
-        # leave space at top and bottom of screen
-        max_rows = self.win_y - 1
-        curline = self.index + 1  # screen lines don't index from 0
-        start, stop = 0, max_rows
+        self.curline = self.index + 1
+        self.limit = self.win_y - 1
+        self.start, self.stop = 0, self.limit
 
-        if curline - start > max_rows:
-            start = curline - max_rows
-            stop = start + max_rows
+        if self.curline - self.start > self.limit - self.scroll:
+            self.start = self.curline - self.limit + self.scroll
+            self.stop = self.start + self.limit
 
-        lines = list(self.get_lines())[start:stop]
-        for line in lines:
+        lines = list(self.get_lines())[self.start:self.stop]
+
+        for index, line in enumerate(lines):
             option, attr = line
             option = option + ' ' * (self.win_x - len(option))
-            self.win.addstr(y, x, option, attr)
-            y += 1
+            self.win.addstr(index, 0, option, attr)
+
         self.win.refresh()
         self.mkheader()
         self.mkfooter()
@@ -82,7 +82,7 @@ class Picker(Action, Screen):
                 ord(':'): self.toggle_globs,
                 ord('/'): self.find,
                 ord('n'): self.findnext,
-                ord('N'): self.findprev,
+                ord('p'): self.findprev,
                 ord('?'): self.mkhelp,
                 ord('q'): self.quit,
                 curses.KEY_RESIZE: self.resize,

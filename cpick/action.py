@@ -1,8 +1,10 @@
 from fnmatch import fnmatch
+from .screen import Screen
 
 
-class Action:
-    def __init__(self):
+class Action(Screen):
+    def __init__(self, screen):
+        Screen.__init__(self, screen)
         self.index = 0
         self.picked = []
 
@@ -13,10 +15,10 @@ class Action:
         self.index += 1
 
     def pgdn(self):
-        self.index += self.y - 3
+        self.index += self.y
 
     def pgup(self):
-        self.index -= self.y - 3
+        self.index -= self.y
 
     def top(self):
         self.index = 0
