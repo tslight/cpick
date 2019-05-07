@@ -12,7 +12,7 @@ def get_args():
 
 def pick(screen, options):
     picker = Event(screen, options)
-    return picker.get_picked()
+    return picker.pick()
 
 
 def main():

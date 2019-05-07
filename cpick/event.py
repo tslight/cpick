@@ -1,8 +1,16 @@
+'''
+Curses List Picker
+'''
 import curses
 from .action import Action
 
 
 class Event(Action):
+    '''
+    Instantiate mapping of keys to actions, which is used by modules'
+    main getter method that instigates the main event loop.
+    '''
+
     def __init__(self, screen, options):
         Action.__init__(self, screen)
         self.options = options
@@ -47,7 +55,7 @@ class Event(Action):
             **dict.fromkeys(self.keys['quit'], self.quit),
         }
 
-    def get_picked(self):
+    def pick(self):
         '''
         Main event loop that draws the screen, waits for input, and executes an
         action based on that input. If the method executed returns true, we
@@ -55,9 +63,9 @@ class Event(Action):
         '''
         while True:
             self.draw_body()
-            ch = self.win.getch()
+            key = self.win.getch()
             try:
-                if self.actions[ch]():
+                if self.actions[key]():
                     return self.picked
             except KeyError:
                 pass
