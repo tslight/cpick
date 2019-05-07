@@ -1,6 +1,6 @@
 import curses
+from curses.textpad import Textbox
 from .color import Color
-from textwrap import dedent
 
 
 class Screen(Color):
@@ -85,3 +85,19 @@ class Screen(Color):
         self.screen.getch()
         self.screen.erase()
         self.screen.refresh()
+
+    def mktb(self, prompt):
+        length = len(prompt)
+        color = self.magenta_black()
+        self.footer.erase()
+        self.footer.addstr(prompt)
+        self.footer.chgat(0, 0, length, color)
+        curses.curs_set(1)
+        self.footer.refresh()
+        tb = self.footer.subwin(self.y - 1, length)
+        box = Textbox(tb)
+        box.edit()
+        curses.curs_set(0)
+        result = box.gather()
+        self.footer.erase()
+        return result
