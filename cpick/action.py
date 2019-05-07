@@ -86,6 +86,6 @@ class Action(Draw):
 
     def quit(self):
         '''
-        Signal to get_picked that it's time to return the state of self.picked.
+        Signal to pick() that it's time to return the state of self.picked.
         '''
         return True
