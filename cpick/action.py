@@ -7,6 +7,7 @@ class Action(Draw):
         Draw.__init__(self, screen)
         self.index = 0
         self.picked = []
+        self.matches = []
 
     def up(self):
         self.index -= 1
