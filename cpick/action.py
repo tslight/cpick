@@ -1,10 +1,10 @@
 from fnmatch import fnmatch
-from .screen import Screen
+from .draw import Draw
 
 
-class Action(Screen):
+class Action(Draw):
     def __init__(self, screen):
-        Screen.__init__(self, screen)
+        Draw.__init__(self, screen)
         self.index = 0
         self.picked = []
 
@@ -33,7 +33,7 @@ class Action(Screen):
             self.top()
 
     def find(self):
-        globs = self.mktb("Find: ").strip().split()
+        globs = self.draw_textbox("Find: ").strip().split()
         if globs:
             self.matches = []
             line = 0
@@ -73,7 +73,7 @@ class Action(Screen):
             self.picked = self.options
 
     def toggle_globs(self):
-        globs = self.mktb("Pick: ").strip().split()
+        globs = self.draw_textbox("Pick: ").strip().split()
         if globs:
             for option in self.options:
                 for glob in globs:

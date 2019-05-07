@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from curses import wrapper
 from columns import prtcols
-from .picker import Picker
+from .event import Event
 
 
 def get_args():
@@ -11,7 +11,7 @@ def get_args():
 
 
 def pick(screen, options):
-    picker = Picker(screen, options)
+    picker = Event(screen, options)
     return picker.get_picked()
 
 

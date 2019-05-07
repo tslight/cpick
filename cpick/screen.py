@@ -1,11 +1,8 @@
 import curses
-from curses.textpad import Textbox
-from .color import Color
 
 
-class Screen(Color):
+class Screen:
     def __init__(self, screen):
-        Color.__init__(self)
         self.screen = screen
         self.y, self.x = self.screen.getmaxyx()
         self.header = curses.newwin(0, self.x, 0, 0)
@@ -18,6 +15,32 @@ class Screen(Color):
         self.footer.refresh()
         self.header.refresh()
         self.lc, self.pos = (0,)*2
+        self.curses_init()
+
+    def curses_init(self):
+        curses.use_default_colors()  # https://stackoverflow.com/a/44015131
+        curses.init_pair(1, curses.COLOR_WHITE, -1)
+        curses.init_pair(2, curses.COLOR_YELLOW, -1)
+        curses.init_pair(3, curses.COLOR_MAGENTA, -1)
+        curses.init_pair(4, 1, curses.COLOR_BLUE)
+        curses.init_pair(5, 1, curses.COLOR_YELLOW)
+        curses.init_pair(6, 1, curses.COLOR_MAGENTA)
+        curses.curs_set(0)  # hide the cursor
+
+    def white_black(self):
+        return curses.color_pair(1)
+
+    def yellow_black(self):
+        return curses.color_pair(2)
+
+    def magenta_black(self):
+        return curses.color_pair(3)
+
+    def black_blue(self):
+        return curses.color_pair(4)
+
+    def black_yellow(self):
+        return curses.color_pair(5)
 
     def resize(self):
         self.screen.erase()
@@ -33,76 +56,3 @@ class Screen(Color):
         self.header.refresh()
         self.win.refresh()
         self.footer.refresh()
-
-    def mkheader(self):
-        msg = ("PICK ITEMS FROM THIS LIST:")
-        color = self.magenta_black()
-        try:
-            self.header.addstr(0, 0, msg, color)
-            self.header.clrtoeol()  # more frugal than erase. no flicker.
-        except curses.error:
-            pass
-        self.header.refresh()
-
-    def mkfooter(self):
-        msg = ('Press [?] to view keybindings')
-        color = self.magenta_black()
-        try:
-            self.footer.addstr(0, 0, msg, color)
-            self.footer.clrtoeol()  # more frugal than erase. no flicker.
-        except curses.error:
-            pass
-        self.footer.refresh()
-
-    def mkhelp(self):
-        msg = [
-            '[k] : Move up one line.',
-            '[j] : Move down one line.',
-            '[f] : Jump down a page of lines.',
-            '[b] : Jump up a page of lines.',
-            '[g] : Jump to first line.',
-            '[G] : Jump to last line.',
-            '[s] : Select an item and go down a line.',
-            '[u] : Unselect an item and go up a line.',
-            '[/] : Find items via glob pattern matching.',
-            '[n] : Jump to next glob match.',
-            '[p] : Jump to previous glob match.',
-            '[t] : Toggle an items selection.',
-            '[a] : Toggle selection of all items.',
-            '[:] : Toggle selection via glob pattern matching.',
-            '[a] : Toggle selection of all items.',
-            '[?] : View this help page.',
-            '[q] : Quit and display all marked paths.',
-        ]
-        self.lc = len(msg)
-        self.screen.erase()
-        self.pad.erase()
-        self.pad.resize(self.lc + 2, self.x)
-        try:
-            for index, line in enumerate(msg):
-                self.pad.addstr(index + 1, 2, line)
-            self.pad.scrollok(1)
-            self.pad.idlok(1)
-        except curses.error:
-            pass
-        self.screen.refresh()
-        self.pad.refresh(self.pos, 0, 0, 0, self.y - 2, self.x - 2)
-        self.screen.getch()
-        self.screen.erase()
-        self.screen.refresh()
-
-    def mktb(self, prompt):
-        length = len(prompt)
-        color = self.magenta_black()
-        self.footer.erase()
-        self.footer.addstr(prompt)
-        self.footer.chgat(0, 0, length, color)
-        curses.curs_set(1)
-        self.footer.refresh()
-        tb = self.footer.subwin(self.y - 1, length)
-        box = Textbox(tb)
-        box.edit()
-        curses.curs_set(0)
-        result = box.gather()
-        self.footer.erase()
-        return result
