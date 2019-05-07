@@ -8,6 +8,7 @@ class Screen:
         self.header = curses.newwin(0, self.x, 0, 0)
         self.win = curses.newwin(self.y - 3, self.x, 2, 0)
         self.win_y, self.win_x = self.win.getmaxyx()
+        self.win.keypad(True)
         self.footer = curses.newwin(0, self.x, self.y - 1, 0)
         self.screen.refresh()
         self.win.refresh()
