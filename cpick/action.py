@@ -89,9 +89,3 @@ class Action(Draw):
         Signal to get_picked that it's time to return the state of self.picked.
         '''
         return True
-
-    def ignore(self):
-        '''
-        Skip unbound key presses in main event method.
-        '''
-        return False
