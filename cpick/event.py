@@ -12,8 +12,7 @@ class Event(Action):
     '''
 
     def __init__(self, screen, options):
-        Action.__init__(self, screen)
-        self.options = options
+        Action.__init__(self, screen, options)
         self.keys = {
             'dn': [ord('j'), curses.KEY_DOWN, ],
             'up': [ord('k'), curses.KEY_UP, ],
@@ -21,6 +20,7 @@ class Event(Action):
             'btm': [ord('G'), curses.KEY_END, ],
             'pgdn': [ord('f'), curses.KEY_NPAGE, ],
             'pgup': [ord('b'), curses.KEY_PPAGE, ],
+            'recenter': [ord('r'), ord('R'), ],
             'toggle': [ord('t'), ord('T'), ],
             'toggle_dn': [ord('s'), ord(' '), ],
             'toggle_up': [ord('u'), ord('S'), ],
@@ -30,7 +30,7 @@ class Event(Action):
             'findnext': [ord('n'), ord('N'), ],
             'findprev': [ord('p'), ord('P'), ],
             'draw_help': [ord('?'), curses.KEY_F1, ],
-            'quit': [ord('q'), ord('\n'), 27, ],
+            'quit': [ord('q'), ord('\n'), curses.ascii.ESC, ],
         }
 
         self.actions = {  # https://stackoverflow.com/a/45928598
@@ -41,6 +41,7 @@ class Event(Action):
             **dict.fromkeys(self.keys['btm'], self.btm),
             **dict.fromkeys(self.keys['pgdn'], self.pgdn),
             **dict.fromkeys(self.keys['pgup'], self.pgup),
+            **dict.fromkeys(self.keys['recenter'], self.recenter),
             **dict.fromkeys(self.keys['toggle'], self.toggle),
             **dict.fromkeys(self.keys['toggle_dn'],
                             lambda: self.toggle() or self.dn()),
@@ -62,7 +63,7 @@ class Event(Action):
         return our objects' picked attribute.
         '''
         while True:
-            self.draw_body()
+            self.draw()
             key = self.win.getch()
             try:
                 if self.actions[key]():

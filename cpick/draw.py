@@ -4,22 +4,36 @@ from .screen import Screen
 
 
 class Draw(Screen):
-    def __init__(self, screen):
+    def __init__(self, screen, options):
         Screen.__init__(self, screen)
+        self.options = options
         self.indicator = '-->'
         self.checkbox = '[ ]'
         self.checked = '[x]'
         self.scroll = 2  # when to start scrolling
+        self.start = 0
+        self.stop = len(self.options)
+        self.limit = self.win_y - 1
+        self.index = 0
+        self.page = self.stop // self.limit
 
     def draw_header(self):
         msg = ("PICK ITEMS FROM THIS LIST:")
-        color = self.magenta_black()
         try:
-            self.header.addstr(0, 0, msg, color)
+            self.header.addstr(0, 0, msg, self.magenta_black())
             self.header.clrtoeol()  # more frugal than erase. no flicker.
         except curses.error:
             pass
         self.header.refresh()
+
+    def draw_footer(self):
+        msg = ('Press [?] to view keybindings')
+        try:
+            self.footer.addstr(0, 0, msg, self.magenta_black())
+            self.footer.clrtoeol()  # more frugal than erase. no flicker.
+        except curses.error:
+            pass
+        self.footer.refresh()
 
     def draw_lines(self):
         '''
@@ -42,7 +56,7 @@ class Draw(Screen):
                 color = self.white_black()
             yield ('{} {}'.format(pad, option), color)
 
-    def draw_body(self):
+    def draw(self):
         '''
         Draw options list to the screen. If options length is greater
         than the size of the terminal, only draw a slice. Support
@@ -50,15 +64,8 @@ class Draw(Screen):
         relative to the maximum rows available to the screen.
         '''
         self.win.erase()  # clear causes flickering in some terminals
-        self.curline = self.index + 1
-        self.limit = self.win_y - 1
-        self.start, self.stop = 0, self.limit
 
-        if self.curline - self.start > self.limit - self.scroll:
-            self.start = self.curline - self.limit + self.scroll
-            self.stop = self.start + self.limit
-
-        lines = list(self.draw_lines())[self.start:self.stop]
+        lines = list(self.draw_lines())[self.start:self.start + self.limit]
 
         for index, line in enumerate(lines):
             option, attr = line
@@ -69,35 +76,26 @@ class Draw(Screen):
         self.draw_header()
         self.draw_footer()
 
-    def draw_footer(self):
-        msg = ('Press [?] to view keybindings')
-        color = self.magenta_black()
-        try:
-            self.footer.addstr(0, 0, msg, color)
-            self.footer.clrtoeol()  # more frugal than erase. no flicker.
-        except curses.error:
-            pass
-        self.footer.refresh()
-
     def draw_help(self):
         msg = [
-            '[k] : Move up one line.',
-            '[j] : Move down one line.',
-            '[f] : Jump down a page of lines.',
-            '[b] : Jump up a page of lines.',
-            '[g] : Jump to first line.',
-            '[G] : Jump to last line.',
-            '[s] : Select an item and go down a line.',
-            '[u] : Unselect an item and go up a line.',
-            '[/] : Find items via glob pattern matching.',
-            '[n] : Jump to next glob match.',
-            '[p] : Jump to previous glob match.',
-            '[t] : Toggle an items selection.',
-            '[a] : Toggle selection of all items.',
-            '[:] : Toggle selection via glob pattern matching.',
-            '[a] : Toggle selection of all items.',
-            '[?] : View this help page.',
-            '[q] : Quit and display all marked paths.',
+            '[k][UP]       : Move up one line.',
+            '[j][DOWN]     : Move down one line.',
+            '[f][PGDN]     : Jump down a page of lines.',
+            '[b][PGUP]     : Jump up a page of lines.',
+            '[g][HOME]     : Jump to first line.',
+            '[G][END]      : Jump to last line.',
+            '[s][SPC]      : Select an item and go down a line.',
+            '[u][U]        : Unselect an item and go up a line.',
+            '[/]           : Find items via glob pattern matching.',
+            '[n][N]        : Jump to next glob match.',
+            '[p][P]        : Jump to previous glob match.',
+            '[t][T]        : Toggle an items selection.',
+            '[a][A]        : Toggle selection of all items.',
+            '[:][;]        : Toggle selection via glob pattern matching.',
+            '[?][F1]       : View this help page.',
+            '[q][ESC][RET] : Quit and display all marked paths.',
+            '',
+            'Press any key to return.'
         ]
         self.lc = len(msg)
         self.screen.erase()
@@ -117,14 +115,11 @@ class Draw(Screen):
         self.screen.refresh()
 
     def draw_textbox(self, prompt):
-        length = len(prompt)
-        color = self.magenta_black()
         self.footer.erase()
-        self.footer.addstr(prompt)
-        self.footer.chgat(0, 0, length, color)
+        self.footer.addstr(0, 0, prompt, self.magenta_black())
         curses.curs_set(1)
         self.footer.refresh()
-        tb = self.footer.subwin(self.y - 1, length)
+        tb = self.footer.subwin(self.y - 1, len(prompt))
         box = Textbox(tb)
         box.edit()
         curses.curs_set(0)
