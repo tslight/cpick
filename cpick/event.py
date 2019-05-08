@@ -37,6 +37,7 @@ class Event(Action):
 
         self.actions = {  # https://stackoverflow.com/a/45928598
             curses.KEY_RESIZE: self.resize,
+            ord('.'): self.goto,
             **dict.fromkeys(self.keys['dn'], self.dn),
             **dict.fromkeys(self.keys['up'], self.up),
             **dict.fromkeys(self.keys['top'], self.top),
@@ -65,8 +66,8 @@ class Event(Action):
         return our objects' picked attribute.
         '''
         while True:
-            self.draw_body()
             self.draw_header()
+            self.draw_body()
             self.draw_footer()
             key = self.win.getch()
             try:
@@ -74,4 +75,3 @@ class Event(Action):
                     return self.picked
             except KeyError:
                 pass
-            # self.wrap()

@@ -11,14 +11,13 @@ class Draw(Screen):
         self.checkbox = '[ ]'
         self.checked = '[x]'
         self.scroll = 2  # when to start scrolling
-        self.start = 0
-        self.stop = len(self.options)
-        self.limit = self.win_y - self.footer_y
-        self.index = 0
-        self.page = self.stop // self.limit
+        self.start, self.curline = (0,)*2
+        self.total = len(self.options)
+        self.maxlines = self.win_y - self.footer_y
+        self.pages = self.total / self.maxlines  # total pages
 
     def draw_header(self):
-        msg = ("PICK ITEMS FROM THIS LIST:")
+        msg = ('PICK ITEMS FROM THIS LIST:')
         try:
             self.header.addstr(0, 0, msg, self.magenta_black())
             self.header.clrtoeol()  # more frugal than erase. no flicker.
@@ -37,12 +36,13 @@ class Draw(Screen):
 
     def draw_body(self):
         self.win.erase()  # clear causes flickering in some terminals
-        for index, option in enumerate(self.options[self.start:self.start + self.limit]):
-            if index == self.index and option in self.picked:
+        stop = self.start + self.maxlines
+        for index, option in enumerate(self.options[self.start:stop]):
+            if index == self.curline and option in self.picked:
                 pad, color = self.indicator, self.black_yellow()
             elif option in self.picked:
                 pad, color = self.checked, self.yellow_black()
-            elif index == self.index:
+            elif index == self.curline:
                 pad, color = self.indicator, self.black_blue()
             else:
                 pad, color = self.checkbox, self.white_black()
