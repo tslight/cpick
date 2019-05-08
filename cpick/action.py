@@ -66,41 +66,41 @@ class Action(Draw):
         self.curline = self.maxlines - 1
 
     def recenter(self):
-        self.start = self.curline
+        self.curline = self.maxlines / 2
+        self.start = self.maxlines + self.curline
 
-    def find(self):
-        globs = self.draw_textbox("Find: ").strip().split()
-        if globs:
-            self.matches = []
-            line = 0
-            for option in self.options:
-                for glob in globs:
-                    if fnmatch(option, glob):
-                        self.matches.append(line)
-                line += 1
-            if self.matches:
-                self.findnext()
+    def goto_number(self, number):
+        if (self.start <= number <= (self.start + self.maxlines)):
+            self.curline = number
+        elif (number > (self.start + self.maxlines)):
+            self.start = number + self.curline
+        elif (0 < number < self.start):
+            self.start = number - self.curline
 
     def goto(self):
-        linum = self.draw_textbox("Enter a line number: ")
-        self.start = self.curline + int(linum)
-        self.curline = int(linum)
+        number = int(self.draw_textbox("Enter a line number: ")) - 1
+        self.goto_number(number)
+
+    def find(self):
+        self.matches = []
+        globs = self.draw_textbox("Find: ").strip().split()
+        for index, option in enumerate(self.options):
+            for glob in globs:
+                if fnmatch(option, glob):
+                    self.matches.append(index)
+        if self.matches:
+            self.findnext()
 
     def findnext(self):
-        for m in range(len(self.matches)):
-            if self.curline == self.matches[len(self.matches) - 1]:
-                self.curline = self.matches[0]
+        for m in self.matches:
+            if self.curline < m:
+                self.goto_number(m)
                 break
-            elif self.curline < self.matches[m]:
-                self.curline = self.matches[m]
-                break
-        if self.curline >= (self.start + self.maxlines):
-            self.start = self.curline
 
     def findprev(self):
-        for m in range(len(self.matches)):
-            if self.curline <= self.matches[m]:
-                self.curline = self.matches[m-1]
+        for m in self.matches:
+            if self.curline > m:
+                self.goto_number(m)
                 break
 
     def toggle(self):
@@ -117,14 +117,13 @@ class Action(Draw):
 
     def toggle_globs(self):
         globs = self.draw_textbox("Pick: ").strip().split()
-        if globs:
-            for option in self.options:
-                for glob in globs:
-                    if fnmatch(option, glob):
-                        if option in self.picked:
-                            self.picked.remove(option)
-                        else:
-                            self.picked.append(option)
+        for option in self.options:
+            for glob in globs:
+                if fnmatch(option, glob):
+                    if option in self.picked:
+                        self.picked.remove(option)
+                    else:
+                        self.picked.append(option)
 
     def quit(self):
         '''

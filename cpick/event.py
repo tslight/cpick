@@ -23,6 +23,7 @@ class Event(Action):
             'pgdn': [ord('f'), curses.KEY_NPAGE, ],
             'pgup': [ord('b'), curses.KEY_PPAGE, ],
             'recenter': [ord('r'), ord('R'), ],
+            'goto': [ord('#'), curses.KEY_F3, ],
             'toggle': [ord('t'), ord('T'), ],
             'toggle_dn': [ord('s'), ord(' '), ],
             'toggle_up': [ord('u'), ord('S'), ],
@@ -37,7 +38,6 @@ class Event(Action):
 
         self.actions = {  # https://stackoverflow.com/a/45928598
             curses.KEY_RESIZE: self.resize,
-            ord('.'): self.goto,
             **dict.fromkeys(self.keys['dn'], self.dn),
             **dict.fromkeys(self.keys['up'], self.up),
             **dict.fromkeys(self.keys['top'], self.top),
@@ -45,6 +45,7 @@ class Event(Action):
             **dict.fromkeys(self.keys['pgdn'], self.pgdn),
             **dict.fromkeys(self.keys['pgup'], self.pgup),
             **dict.fromkeys(self.keys['recenter'], self.recenter),
+            **dict.fromkeys(self.keys['goto'], self.goto),
             **dict.fromkeys(self.keys['toggle'], self.toggle),
             **dict.fromkeys(self.keys['toggle_dn'],
                             lambda: self.toggle() or self.dn()),
