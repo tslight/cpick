@@ -13,7 +13,7 @@ class Draw(Screen):
         self.scroll = 2  # when to start scrolling
         self.start = 0
         self.stop = len(self.options)
-        self.limit = self.win_y - 1
+        self.limit = self.win_y - self.footer_y
         self.index = 0
         self.page = self.stop // self.limit
 
@@ -35,46 +35,21 @@ class Draw(Screen):
             pass
         self.footer.refresh()
 
-    def draw_lines(self):
-        '''
-        Generator function that yields tuples of each option with an
-        indicator prepended to the string or an empty string of the same
-        length and a curses color set.
-        '''
-        for index, option in enumerate(self.options):
-            if index == self.index and self.options[index] in self.picked:
-                pad = self.indicator
-                color = self.black_yellow()
-            elif self.options[index] in self.picked:
-                pad = self.checked
-                color = self.yellow_black()
-            elif index == self.index:
-                pad = self.indicator
-                color = self.black_blue()
-            else:
-                pad = self.checkbox
-                color = self.white_black()
-            yield ('{} {}'.format(pad, option), color)
-
-    def draw(self):
-        '''
-        Draw options list to the screen. If options length is greater
-        than the size of the terminal, only draw a slice. Support
-        scrolling through calculating the current lines position
-        relative to the maximum rows available to the screen.
-        '''
+    def draw_body(self):
         self.win.erase()  # clear causes flickering in some terminals
-
-        lines = list(self.draw_lines())[self.start:self.start + self.limit]
-
-        for index, line in enumerate(lines):
-            option, attr = line
-            option = option + ' ' * (self.win_x - len(option))
-            self.win.addstr(index, 0, option, attr)
-
+        for index, option in enumerate(self.options[self.start:self.start + self.limit]):
+            if index == self.index and option in self.picked:
+                pad, color = self.indicator, self.black_yellow()
+            elif option in self.picked:
+                pad, color = self.checked, self.yellow_black()
+            elif index == self.index:
+                pad, color = self.indicator, self.black_blue()
+            else:
+                pad, color = self.checkbox, self.white_black()
+            line = pad + ' ' + option
+            line = line + ' ' * (self.win_x - len(line))
+            self.win.addstr(index, 0, line, color)
         self.win.refresh()
-        self.draw_header()
-        self.draw_footer()
 
     def draw_help(self):
         msg = [

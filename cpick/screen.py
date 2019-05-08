@@ -10,6 +10,7 @@ class Screen:
         self.win_y, self.win_x = self.win.getmaxyx()
         self.win.keypad(True)
         self.footer = curses.newwin(0, self.x, self.y - 1, 0)
+        self.footer_y, self.footer_x = self.footer.getmaxyx()
         self.screen.refresh()
         self.win.refresh()
         self.pad = curses.newpad(self.y, self.x)

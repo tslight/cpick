@@ -3,6 +3,8 @@ Curses List Picker
 '''
 import curses
 from .action import Action
+from os import environ
+environ.setdefault('ESCDELAY', '12')  # otherwise it takes an age!
 
 
 class Event(Action):
@@ -63,11 +65,13 @@ class Event(Action):
         return our objects' picked attribute.
         '''
         while True:
-            self.draw()
+            self.draw_body()
+            self.draw_header()
+            self.draw_footer()
             key = self.win.getch()
             try:
                 if self.actions[key]():
                     return self.picked
             except KeyError:
                 pass
-            self.wrap()
+            # self.wrap()

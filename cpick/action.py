@@ -9,24 +9,29 @@ class Action(Draw):
         self.matches = []
 
     def up(self):
-        # current cursor position is 0, but top position is greater than 0
+        '''
+        If start of screen is greater that zero and current line is 0, then
+        scroll screen up. If start of screen is greater than zero or current
+        line is greater than zero, then scroll cursor down.
+        '''
         if self.start > 0 and self.index == 0:
-            self.start -= 1  # scroll
-        # current cursor position or start position is greater than 0
+            self.start -= 1  # scroll screen
         elif self.start > 0 or self.index > 0:
-            self.index -= 1  # no scroll
+            self.index -= 1  # scroll cursor
 
     def dn(self):
-        # next cursor position after scrolling
+        '''
+        If the next line would hit the limit and we're not at the end of the
+        list, scroll the screen. If the next line position is less than the
+        limit and the end of the list is not in sight, scroll the cursor down.
+        '''
         next_line = self.index + 1
-        # next cursor position touch the limit, but not at end of list
         if (next_line == self.limit and
                 self.start + self.limit < self.stop):
-            self.start += 1  # scroll
-        # next cursor position is above max lines, and no hard stop in sight.
+            self.start += 1  # scroll screen
         elif (next_line < self.limit and
               self.start + next_line < self.stop):
-            self.index += 1  # no scroll
+            self.index += 1  # scroll cursor
 
     def pgdn(self):
         # if current page is not a last page, page down is possible
