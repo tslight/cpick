@@ -48,9 +48,10 @@ class Action(Draw):
             self.start = max(0, self.start - self.limit)
 
     def top(self):
-        self.index = 0
+        self.start, self.index = (0,)*2
 
     def btm(self):
+        self.start = self.stop - self.limit + 1
         self.index = len(self.options) - 1
 
     def recenter(self):
