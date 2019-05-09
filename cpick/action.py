@@ -70,16 +70,24 @@ class Action(Draw):
         self.start = self.maxlines + self.curline
 
     def goto_number(self, number):
-        if (self.start <= number <= (self.start + self.maxlines)):
-            self.curline = number
-        elif (number > (self.start + self.maxlines)):
-            self.start = number + self.curline
-        elif (0 < number < self.start):
-            self.start = number - self.curline
+        '''If the number is greater than the top of screen and less than
+        the bottom of the screen, set the current line to the the number
+        - the index of the item at the top of the screen.
 
-    def goto(self):
-        number = int(self.draw_textbox("Enter a line number: ")) - 1
-        self.goto_number(number)
+        If the number is greater than the size of the screen, then we need to shift a page.
+        '''
+        if (number >= (self.start + self.maxlines)):
+            self.start = number - self.curline
+        elif (number <= self.start):
+            self.start = number - self.curline
+        self.curline = number - self.start
+
+    def goto(self, prompt="Enter a line number: "):
+        try:
+            number = int(self.draw_textbox(prompt)) - 1
+            self.goto_number(number)
+        except ValueError:
+            self.goto("Invalid input! Enter a number: ")
 
     def find(self):
         self.matches = []
