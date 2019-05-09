@@ -19,6 +19,20 @@ class Action(Draw):
         elif self.start > 0 or self.curline > 0:
             self.curline -= 1  # scroll cursor
 
+    def top(self):
+        '''
+        Jump to top by resetting start and curline attributes to 0.
+        '''
+        self.start, self.curline = (0,)*2
+
+    def btm(self):
+        '''
+        'Jump to bottom by moving the start to the total - maxlines and current
+        line to maxlines - 1.
+        '''
+        self.start = self.total - self.maxlines
+        self.curline = self.maxlines - 1
+
     def dn(self):
         '''
         If the next line would hit the limit and we're not at the end of the
@@ -40,9 +54,11 @@ class Action(Draw):
         catches cases where self.start + self.maxlines exceeds self.total.
         '''
         page = (self.start + self.curline) / self.maxlines
-        if page < self.pages:
+        if page < self.pages - 1:
             self.start = min(self.total - self.maxlines,
                              self.start + self.maxlines)
+        else:
+            self.btm()
 
     def pgup(self):
         '''
@@ -52,18 +68,10 @@ class Action(Draw):
         self.maxlines returns a negative.
         '''
         page = (self.start + self.curline) / self.maxlines
-        if page > 0:
+        if page > 1:
             self.start = max(0, self.start - self.maxlines)
-
-    def top(self):
-        '''
-        Jump to top by resetting start and curline attributes to 0.
-        '''
-        self.start, self.curline = (0,)*2
-
-    def btm(self):
-        self.start = self.total - self.maxlines
-        self.curline = self.maxlines - 1
+        else:
+            self.top()
 
     def recenter(self):
         pass
@@ -93,7 +101,7 @@ class Action(Draw):
         globs = self.draw_textbox("Find: ").strip().split()
         for index, option in enumerate(self.options):
             for glob in globs:
-                if fnmatch(option, glob):
+                if fnmatch(option, glob) or glob in option:
                     self.matches.append(index)
         if self.matches:
             self.findnext()
@@ -126,7 +134,7 @@ class Action(Draw):
         globs = self.draw_textbox("Pick: ").strip().split()
         for option in self.options:
             for glob in globs:
-                if fnmatch(option, glob):
+                if fnmatch(option, glob) or glob in option:
                     if option in self.picked:
                         self.picked.remove(option)
                     else:
