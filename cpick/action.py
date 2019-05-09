@@ -106,7 +106,7 @@ class Action(Draw):
                 break
 
     def findprev(self):
-        for m in self.matches:
+        for m in reversed(self.matches):
             if self.curline > m:
                 self.goto_number(m)
                 break
