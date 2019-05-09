@@ -66,17 +66,16 @@ class Action(Draw):
         self.curline = self.maxlines - 1
 
     def recenter(self):
-        self.curline = self.maxlines / 2
-        self.start = self.maxlines + self.curline
+        pass
 
     def goto_number(self, number):
-        '''If the number is greater than the top of screen and less than
-        the bottom of the screen, set the current line to the the number
-        - the index of the item at the top of the screen.
-
-        If the number is greater than the size of the screen, then we need to shift a page.
-        '''
-        if (number >= (self.start + self.maxlines)):
+        if (number <= 1):
+            self.top()
+            return
+        elif (number >= self.total - 1):
+            self.btm()
+            return
+        elif (number >= (self.start + self.maxlines)):
             self.start = number - self.curline
         elif (number <= self.start):
             self.start = number - self.curline
@@ -101,13 +100,13 @@ class Action(Draw):
 
     def findnext(self):
         for m in self.matches:
-            if self.curline < m:
+            if self.start + self.curline < m:
                 self.goto_number(m)
                 break
 
     def findprev(self):
         for m in reversed(self.matches):
-            if self.curline > m:
+            if self.start + self.curline > m:
                 self.goto_number(m)
                 break
 
