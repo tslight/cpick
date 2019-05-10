@@ -4,15 +4,15 @@ from .screen import Screen
 
 
 class Draw(Screen):
-    def __init__(self, screen, options):
+    def __init__(self, screen, items):
         Screen.__init__(self, screen)
-        self.options = options
+        self.items = items
         self.indicator = '-->'
         self.checkbox = '[ ]'
         self.checked = '[x]'
         self.scroll = 2  # when to start scrolling
         self.start, self.curline = (0,)*2
-        self.total = len(self.options)
+        self.total = len(self.items)
         self.maxlines = self.win_y - self.footer_y
         self.pages = self.total / self.maxlines  # total pages
 
@@ -37,18 +37,23 @@ class Draw(Screen):
     def draw_body(self):
         self.win.erase()  # clear causes flickering in some terminals
         stop = self.start + self.maxlines
-        for index, option in enumerate(self.options[self.start:stop]):
-            if index == self.curline and index in self.picked:
+        for linum, item in enumerate(self.items[self.start:stop]):
+            index = self.start + linum
+            if linum == self.curline and index in self.picked:
                 pad, color = self.indicator, self.black_yellow()
+            if linum == self.curline and index in self.matches:
+                pad, color = self.indicator, self.black_green()
             elif index in self.picked:
                 pad, color = self.checked, self.yellow_black()
-            elif index == self.curline:
+            elif index in self.matches:
+                pad, color = self.checked, self.green_black()
+            elif linum == self.curline:
                 pad, color = self.indicator, self.black_blue()
             else:
                 pad, color = self.checkbox, self.white_black()
-            line = pad + ' ' + option
+            line = pad + ' ' + item
             line = line + ' ' * (self.win_x - len(line))
-            self.win.addstr(index, 0, line, color)
+            self.win.addstr(linum, 0, line, color)
         self.win.refresh()
 
     def draw_help(self):

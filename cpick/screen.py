@@ -24,9 +24,11 @@ class Screen:
         curses.init_pair(1, curses.COLOR_WHITE, -1)
         curses.init_pair(2, curses.COLOR_YELLOW, -1)
         curses.init_pair(3, curses.COLOR_MAGENTA, -1)
-        curses.init_pair(4, 1, curses.COLOR_BLUE)
-        curses.init_pair(5, 1, curses.COLOR_YELLOW)
-        curses.init_pair(6, 1, curses.COLOR_MAGENTA)
+        curses.init_pair(4, curses.COLOR_GREEN, -1)
+        curses.init_pair(5, 1, curses.COLOR_BLUE)
+        curses.init_pair(6, 1, curses.COLOR_YELLOW)
+        curses.init_pair(7, 1, curses.COLOR_MAGENTA)
+        curses.init_pair(8, 1, curses.COLOR_GREEN)
         curses.curs_set(0)  # hide the cursor
 
     def white_black(self):
@@ -38,11 +40,20 @@ class Screen:
     def magenta_black(self):
         return curses.color_pair(3)
 
-    def black_blue(self):
+    def green_black(self):
         return curses.color_pair(4)
 
-    def black_yellow(self):
+    def black_blue(self):
         return curses.color_pair(5)
+
+    def black_yellow(self):
+        return curses.color_pair(6)
+
+    def black_magenta(self):
+        return curses.color_pair(7)
+
+    def black_green(self):
+        return curses.color_pair(8)
 
     def resize(self):
         self.screen.erase()

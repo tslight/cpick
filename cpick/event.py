@@ -13,8 +13,8 @@ class Event(Action):
     main getter method that instigates the main event loop.
     '''
 
-    def __init__(self, screen, options):
-        Action.__init__(self, screen, options)
+    def __init__(self, screen, items):
+        Action.__init__(self, screen, items)
         self.keys = {
             'dn': [ord('j'), curses.KEY_DOWN, ],
             'up': [ord('k'), curses.KEY_UP, ],
@@ -50,11 +50,11 @@ class Event(Action):
             **dict.fromkeys(self.keys['recenter'], self.recenter),
             **dict.fromkeys(self.keys['goto'], self.goto),
             **dict.fromkeys(self.keys['toggle'],
-                            lambda: self.toggle(self.options[self.curline])),
+                            lambda: self.toggle(self.curline)),
             **dict.fromkeys(self.keys['toggle_dn'],
-                            lambda: self.toggle(self.options[self.curline]) or self.dn()),
+                            lambda: self.toggle(self.curline) or self.dn()),
             **dict.fromkeys(self.keys['toggle_up'],
-                            lambda: self.toggle(self.options[self.curline]) or self.up()),
+                            lambda: self.toggle(self.curline) or self.up()),
             **dict.fromkeys(self.keys['toggle_all'], self.toggle_all),
             **dict.fromkeys(self.keys['toggle_pattern'], self.toggle_pattern),
             **dict.fromkeys(self.keys['toggle_range'], self.toggle_range),
@@ -84,6 +84,6 @@ class Event(Action):
             key = self.win.getch()
             try:
                 if self.actions[key]():
-                    return [self.options[pick] for pick in self.picked]
+                    return [self.items[pick] for pick in self.picked]
             except KeyError:
                 pass

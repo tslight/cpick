@@ -4,8 +4,8 @@ from .draw import Draw
 
 
 class Action(Draw):
-    def __init__(self, screen, options):
-        Draw.__init__(self, screen, options)
+    def __init__(self, screen, items):
+        Draw.__init__(self, screen, items)
         self.picked = []
         self.matches = []
 
@@ -42,7 +42,7 @@ class Action(Draw):
 
     def btm(self):
         '''
-        'Jump to bottom by moving the start to the total - maxlines and current
+        Jump to bottom by moving the start to the total - maxlines and current
         line to maxlines - 1.
         '''
         self.start = self.total - self.maxlines
@@ -122,40 +122,41 @@ class Action(Draw):
     def find(self):
         self.matches = []
         search = self.draw_textbox("Find: ").strip().split()
-        for index, option in enumerate(self.options):
+        for index, item in enumerate(self.items):
             for pattern in search:
                 try:
-                    if match(pattern, option):
+                    if match(pattern, item):
                         self.matches.append(index)
                 except error:
-                    if fnmatch(option, pattern) or pattern in option:
+                    if fnmatch(item, pattern) or pattern in item:
                         self.matches.append(index)
         if self.matches:
             self.goto_next(self.matches)
 
-    def toggle(self, option):
-        if self.options.index(option) in self.picked:
-            self.picked.remove(self.options.index(option))
+    def toggle(self, index):
+        if index in self.picked:
+            self.picked.remove(index)
         else:
-            self.picked.append(self.options.index(option))
+            self.picked.append(index)
 
     def toggle_all(self):
-        if len(self.picked) == len(self.options):
+        if len(self.picked) == len(self.items):
             self.picked = []
         else:
-            self.picked = [i for i, o in enumerate(self.options)]
+            self.picked = [i for i, o in enumerate(self.items)]
 
     def toggle_pattern(self):
         search = self.draw_textbox("Pick: ").strip().split()
-        for option in self.options:
+        for index, item in enumerate(self.items):
             for pattern in search:
                 try:
-                    if match(pattern, option):
-                        self.toggle(option)
+                    if match(pattern, item):
+                        self.toggle(index)
                 except error:
-                    if fnmatch(option, pattern) or pattern in option:
-                        self.toggle(option)
-        self.goto_number(self.options.index(self.picked[0]))
+                    if fnmatch(item, pattern) or pattern in item:
+                        self.toggle(index)
+        if self.picked:
+            self.goto_next(self.picked)
 
     def toggle_range(self):
         ranges = self.draw_textbox("Range: ").strip().split()
@@ -169,9 +170,8 @@ class Action(Draw):
             else:
                 return
             for index in range(int(start), int(stop) + 1):
-                self.toggle(self.options[index - 1])
-        if (self.picked[0] > self.start + self.maxlines or
-                0 < self.picked[0] > self.start):
+                self.toggle(self.items[index - 1])
+        if self.picked:
             self.goto_next(self.picked)
 
     def quit(self):
