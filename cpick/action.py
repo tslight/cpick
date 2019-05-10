@@ -1,4 +1,5 @@
 from fnmatch import fnmatch
+from re import match, error
 from .draw import Draw
 
 
@@ -102,11 +103,15 @@ class Action(Draw):
 
     def find(self):
         self.matches = []
-        globs = self.draw_textbox("Find: ").strip().split()
+        search = self.draw_textbox("Find: ").strip().split()
         for index, option in enumerate(self.options):
-            for glob in globs:
-                if fnmatch(option, glob) or glob in option:
-                    self.matches.append(index)
+            for pattern in search:
+                try:
+                    if match(pattern, option):
+                        self.matches.append(index)
+                except error:
+                    if fnmatch(option, pattern) or pattern in option:
+                        self.matches.append(index)
         if self.matches:
             self.findnext()
 
@@ -126,11 +131,11 @@ class Action(Draw):
         self.btm()
         self.findprev()
 
-    def toggle(self):
-        if self.options[self.curline] in self.picked:
-            self.picked.remove(self.options[self.curline])
+    def toggle(self, option):
+        if option in self.picked:
+            self.picked.remove(option)
         else:
-            self.picked.append(self.options[self.curline])
+            self.picked.append(option)
 
     def toggle_all(self):
         if self.picked == self.options:
@@ -138,15 +143,16 @@ class Action(Draw):
         else:
             self.picked = self.options
 
-    def toggle_globs(self):
-        globs = self.draw_textbox("Pick: ").strip().split()
+    def toggle_pattern(self):
+        search = self.draw_textbox("Pick: ").strip().split()
         for option in self.options:
-            for glob in globs:
-                if fnmatch(option, glob) or glob in option:
-                    if option in self.picked:
-                        self.picked.remove(option)
-                    else:
-                        self.picked.append(option)
+            for pattern in search:
+                try:
+                    if match(pattern, option):
+                        self.toggle(option)
+                except error:
+                    if fnmatch(option, pattern) or pattern in option:
+                        self.toggle(option)
 
     def quit(self):
         '''
