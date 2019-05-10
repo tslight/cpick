@@ -19,20 +19,6 @@ class Action(Draw):
         elif self.start > 0 or self.curline > 0:
             self.curline -= 1  # scroll cursor
 
-    def top(self):
-        '''
-        Jump to top by resetting start and curline attributes to 0.
-        '''
-        self.start, self.curline = (0,)*2
-
-    def btm(self):
-        '''
-        'Jump to bottom by moving the start to the total - maxlines and current
-        line to maxlines - 1.
-        '''
-        self.start = self.total - self.maxlines
-        self.curline = self.maxlines - 1
-
     def dn(self):
         '''
         If the next line would hit the limit and we're not at the end of the
@@ -46,6 +32,20 @@ class Action(Draw):
         elif (next_line < self.maxlines and
               self.start + next_line < self.total):
             self.curline += 1  # scroll cursor
+
+    def top(self):
+        '''
+        Jump to top by resetting start and curline attributes to 0.
+        '''
+        self.start, self.curline = (0,)*2
+
+    def btm(self):
+        '''
+        'Jump to bottom by moving the start to the total - maxlines and current
+        line to maxlines - 1.
+        '''
+        self.start = self.total - self.maxlines
+        self.curline = self.maxlines - 1
 
     def pgdn(self):
         '''
@@ -80,9 +80,13 @@ class Action(Draw):
         if (number <= 1):
             self.top()
             return
-        elif (number >= self.total - 1):
+        elif (number >= self.total):
             self.btm()
             return
+        elif (number > (self.total - self.maxlines)):
+            self.start = self.total - self.maxlines
+        elif (number < self.maxlines):
+            self.start = 0
         elif (number >= (self.start + self.maxlines)):
             self.start = number - self.curline
         elif (number <= self.start):
