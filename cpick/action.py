@@ -77,6 +77,24 @@ class Action(Draw):
     def recenter(self):
         pass
 
+    def goto_next(self, items):
+        if items:
+            for i in items:
+                if self.start + self.curline < i:
+                    self.goto_number(i)
+                    return
+            self.top()
+            self.goto_next(items)
+
+    def goto_prev(self, items):
+        if items:
+            for i in reversed(items):
+                if self.start + self.curline > i:
+                    self.goto_number(i)
+                    return
+            self.btm()
+            self.goto_prev(items)
+
     def goto_number(self, number):
         if (number <= 0):
             self.top()
@@ -113,36 +131,19 @@ class Action(Draw):
                     if fnmatch(option, pattern) or pattern in option:
                         self.matches.append(index)
         if self.matches:
-            self.findnext()
-
-    def findnext(self):
-        for m in self.matches:
-            if self.start + self.curline < m:
-                self.goto_number(m)
-                return
-        self.top()
-        self.findnext()
-
-    def findprev(self):
-        if self.matches:
-            for m in reversed(self.matches):
-                if self.start + self.curline > m:
-                    self.goto_number(m)
-                    return
-            self.btm()
-            self.findprev()
+            self.goto_next(self.matches)
 
     def toggle(self, option):
-        if option in self.picked:
-            self.picked.remove(option)
+        if self.options.index(option) in self.picked:
+            self.picked.remove(self.options.index(option))
         else:
-            self.picked.append(option)
+            self.picked.append(self.options.index(option))
 
     def toggle_all(self):
-        if self.picked == self.options:
+        if len(self.picked) == len(self.options):
             self.picked = []
         else:
-            self.picked = self.options
+            self.picked = [i for i, o in enumerate(self.options)]
 
     def toggle_pattern(self):
         search = self.draw_textbox("Pick: ").strip().split()
@@ -154,22 +155,24 @@ class Action(Draw):
                 except error:
                     if fnmatch(option, pattern) or pattern in option:
                         self.toggle(option)
+        self.goto_number(self.options.index(self.picked[0]))
 
     def toggle_range(self):
         ranges = self.draw_textbox("Range: ").strip().split()
         for r in ranges:
-            if match('^[0-9]+..[0-9]+$', r):
+            if match('^[0-9]+\.\.[0-9]+$', r):
                 start, stop = r.split('..')
-            elif match('^[0-9]+-[0-9]+$', r):
+            elif match('^[0-9]+\-[0-9]+$', r):
                 start, stop = r.split('-')
             elif match('^[0-9]+$', r):
-                if 0 < int(r) < self.total:
-                    self.picked.append(self.options[int(r)])
-                    return
+                start, stop = (r,)*2
             else:
                 return
             for index in range(int(start), int(stop) + 1):
-                self.picked.append(self.options[index - 1])
+                self.toggle(self.options[index - 1])
+        if (self.picked[0] > self.start + self.maxlines or
+                0 < self.picked[0] > self.start):
+            self.goto_next(self.picked)
 
     def quit(self):
         '''

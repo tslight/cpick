@@ -31,8 +31,10 @@ class Event(Action):
             'toggle_pattern': [ord(':'), ord(';'), ],
             'toggle_range': [ord('r'), ord('R'), ],
             'find': [ord('/'), curses.KEY_F2, ],
-            'findnext': [ord('n'), ord('N'), ],
-            'findprev': [ord('p'), ord('P'), ],
+            'next_find': [ord('n'), ],
+            'prev_find': [ord('N'), ],
+            'next_pick': [ord('p'), ],
+            'prev_pick': [ord('P'), ],
             'draw_help': [ord('?'), curses.KEY_F1, ],
             'quit': [ord('q'), ord('\n'), curses.ascii.ESC, ],
         }
@@ -57,8 +59,14 @@ class Event(Action):
             **dict.fromkeys(self.keys['toggle_pattern'], self.toggle_pattern),
             **dict.fromkeys(self.keys['toggle_range'], self.toggle_range),
             **dict.fromkeys(self.keys['find'], self.find),
-            **dict.fromkeys(self.keys['findnext'], self.findnext),
-            **dict.fromkeys(self.keys['findprev'], self.findprev),
+            **dict.fromkeys(self.keys['next_find'],
+                            lambda: self.goto_next(self.matches)),
+            **dict.fromkeys(self.keys['prev_find'],
+                            lambda: self.goto_prev(self.matches)),
+            **dict.fromkeys(self.keys['next_pick'],
+                            lambda: self.goto_next(self.picked)),
+            **dict.fromkeys(self.keys['prev_pick'],
+                            lambda: self.goto_prev(self.picked)),
             **dict.fromkeys(self.keys['draw_help'], self.draw_help),
             **dict.fromkeys(self.keys['quit'], self.quit),
         }
@@ -76,6 +84,6 @@ class Event(Action):
             key = self.win.getch()
             try:
                 if self.actions[key]():
-                    return self.picked
+                    return [self.options[pick] for pick in self.picked]
             except KeyError:
                 pass

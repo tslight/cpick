@@ -38,9 +38,9 @@ class Draw(Screen):
         self.win.erase()  # clear causes flickering in some terminals
         stop = self.start + self.maxlines
         for index, option in enumerate(self.options[self.start:stop]):
-            if index == self.curline and option in self.picked:
+            if index == self.curline and index in self.picked:
                 pad, color = self.indicator, self.black_yellow()
-            elif option in self.picked:
+            elif index in self.picked:
                 pad, color = self.checked, self.yellow_black()
             elif index == self.curline:
                 pad, color = self.indicator, self.black_blue()
