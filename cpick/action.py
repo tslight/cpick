@@ -114,13 +114,17 @@ class Action(Draw):
         for m in self.matches:
             if self.start + self.curline < m:
                 self.goto_number(m)
-                break
+                return
+        self.top()
+        self.findnext()
 
     def findprev(self):
         for m in reversed(self.matches):
             if self.start + self.curline > m:
                 self.goto_number(m)
-                break
+                return
+        self.btm()
+        self.findprev()
 
     def toggle(self):
         if self.options[self.curline] in self.picked:
