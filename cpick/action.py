@@ -173,8 +173,8 @@ class Action(Draw):
                 start, stop = (r,)*2
             else:
                 return
-            for index in range(int(start), int(stop) + 1):
-                self.toggle(self.items[index - 1])
+            for index in range(int(start) - 1, int(stop)):
+                self.toggle(index)
         if self.picked:
             self.goto_next(self.picked)
 
