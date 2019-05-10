@@ -74,6 +74,10 @@ class Action(Draw):
         else:
             self.top()
 
+    def reset(self):
+        self.picked = []
+        self.matches = []
+
     def recenter(self):
         pass
 

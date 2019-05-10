@@ -11,7 +11,7 @@ class Draw(Screen):
         self.checkbox = '[ ]'
         self.checked = '[x]'
         self.scroll = 2  # when to start scrolling
-        self.start, self.curline = (0,)*2
+        self.start, self.curline, self.curidx = (0,)*3
         self.total = len(self.items)
         self.maxlines = self.win_y - self.footer_y
         self.pages = self.total / self.maxlines  # total pages
@@ -37,16 +37,17 @@ class Draw(Screen):
     def draw_body(self):
         self.win.erase()  # clear causes flickering in some terminals
         stop = self.start + self.maxlines
+        self.curidx = self.start + self.curline
         for linum, item in enumerate(self.items[self.start:stop]):
             index = self.start + linum
             if linum == self.curline and index in self.picked:
                 pad, color = self.indicator, self.black_yellow()
-            if linum == self.curline and index in self.matches:
+            elif linum == self.curline and index in self.matches:
                 pad, color = self.indicator, self.black_green()
             elif index in self.picked:
                 pad, color = self.checked, self.yellow_black()
             elif index in self.matches:
-                pad, color = self.checked, self.green_black()
+                pad, color = self.checkbox, self.green_black()
             elif linum == self.curline:
                 pad, color = self.indicator, self.black_blue()
             else:
