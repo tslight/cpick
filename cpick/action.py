@@ -157,7 +157,6 @@ class Action(Draw):
 
     def toggle_range(self):
         ranges = self.draw_textbox("Range: ").strip().split()
-
         for r in ranges:
             if match('^[0-9]+..[0-9]+$', r):
                 start, stop = r.split('..')
@@ -169,7 +168,6 @@ class Action(Draw):
                     return
             else:
                 return
-
             for index in range(int(start), int(stop) + 1):
                 self.picked.append(self.options[index - 1])
 
