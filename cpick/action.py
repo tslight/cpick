@@ -124,12 +124,13 @@ class Action(Draw):
         self.findnext()
 
     def findprev(self):
-        for m in reversed(self.matches):
-            if self.start + self.curline > m:
-                self.goto_number(m)
-                return
-        self.btm()
-        self.findprev()
+        if self.matches:
+            for m in reversed(self.matches):
+                if self.start + self.curline > m:
+                    self.goto_number(m)
+                    return
+            self.btm()
+            self.findprev()
 
     def toggle(self, option):
         if option in self.picked:
@@ -153,6 +154,24 @@ class Action(Draw):
                 except error:
                     if fnmatch(option, pattern) or pattern in option:
                         self.toggle(option)
+
+    def toggle_range(self):
+        ranges = self.draw_textbox("Range: ").strip().split()
+
+        for r in ranges:
+            if match('^[0-9]+..[0-9]+$', r):
+                start, stop = r.split('..')
+            elif match('^[0-9]+-[0-9]+$', r):
+                start, stop = r.split('-')
+            elif match('^[0-9]+$', r):
+                if 0 < int(r) < self.total:
+                    self.picked.append(self.options[int(r)])
+                    return
+            else:
+                return
+
+            for index in range(int(start), int(stop) + 1):
+                self.picked.append(self.options[index - 1])
 
     def quit(self):
         '''
