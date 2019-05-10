@@ -77,7 +77,7 @@ class Action(Draw):
         pass
 
     def goto_number(self, number):
-        if (number <= 1):
+        if (number <= 0):
             self.top()
             return
         elif (number >= self.total):
