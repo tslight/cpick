@@ -73,4 +73,4 @@ However, be aware, that if two patterns are entered together that match the same
 items they will cancel each other out, due to the toggling nature of the
 resulting action.
 
-This behavior is also due of when selecting by `Range:`.
+This behavior is true when selecting by `Range:`.
