@@ -154,33 +154,19 @@ class Action(Draw):
         except ValueError:
             self.goto("Invalid input! Enter a number: ")
 
-    def find(self):
-        self.matches = []
-        search = self.draw_textbox("Find: ").strip().split()
-        for index, item in enumerate(self.items):
-            for pattern in search:
-                try:
-                    if match(pattern, item):
-                        self.matches.append(index)
-                except error:
-                    if fnmatch(item, pattern) or pattern in item:
-                        self.matches.append(index)
-        if self.matches:
-            self.goto_next(self.matches)
-
-    def pick(self, index):
-        if index not in self.picked:
-            self.picked.append(index)
-
-    def toggle(self, index):
-        if index in self.picked:
-            self.picked.remove(index)
-        else:
-            self.picked.append(index)
+    def pick(self, index, matches):
+        if index not in matches:
+            matches.append(index)
 
     def undo(self):
         if self.picked:
             del self.picked[-1]
+
+    def toggle(self, index, matches):
+        if index in matches:
+            matches.remove(index)
+        else:
+            matches.append(index)
 
     def toggle_all(self):
         if len(self.picked) == len(self.items):
@@ -188,21 +174,21 @@ class Action(Draw):
         else:
             self.picked = [i for i, o in enumerate(self.items)]
 
-    def toggle_pattern(self):
-        search = self.draw_textbox("Pick: ").strip().split()
+    def match(self, msg, matches, method):
+        search = self.draw_textbox(msg).strip().split()
         for index, item in enumerate(self.items):
             for pattern in search:
                 try:
                     if match(pattern, item):
-                        self.toggle(index)
+                        method(index, matches)
                 except error:
                     if fnmatch(item, pattern) or pattern == item:
-                        self.toggle(index)
-        self.toggle_range(search)
-        if self.picked:
-            self.goto_next(self.picked)
+                        method(index, matches)
+        self.range(search, matches, method)
+        if matches:
+            self.goto_next(matches)
 
-    def toggle_range(self, ranges):
+    def range(self, ranges, matches, method):
         start, stop = (0,) * 2
         for numbers in ranges:
             if match('^\\d+\\.\\.\\d+$', numbers):
@@ -221,7 +207,7 @@ class Action(Draw):
                 start, stop = (numbers,) * 2
             if start and stop:
                 for index in range(int(start) - 1, int(stop)):
-                    self.toggle(index)
+                    method(index, matches)
 
     def quit(self):
         '''

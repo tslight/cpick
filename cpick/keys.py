@@ -90,6 +90,9 @@ def get_keys():
         'pick': [
             ord('\n'),
         ],
+        'pick_pattern': [
+            ord(';'),
+        ],
         'undo': [
             ord('u'),
         ],
@@ -109,8 +112,8 @@ def get_keys():
             ord('a'),
         ],
         'toggle_pattern': [
-            ord(';'),
-            curses.KEY_F3, ],
+            ord(':'),
+        ],
         'help': [
             ord('?'),
             curses.KEY_F1,
