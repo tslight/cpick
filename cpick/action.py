@@ -27,6 +27,10 @@ class Action(Draw):
         elif self.start > 0 or self.curline > 0:
             self.curline -= 1  # scroll cursor
 
+    def pad_up(self):
+        if self.pos > 0:
+            self.pos -= 1
+
     def dn(self):
         '''
         If the next line would hit the limit and we're not at the end of the
@@ -41,11 +45,15 @@ class Action(Draw):
               self.start + next_line < self.total):
             self.curline += 1  # scroll cursor
 
+    def pad_dn(self):
+        if self.pos < self.lc - self.y + 1:
+            self.pos += 1
+
     def top(self):
         '''
         Jump to top by resetting start and curline attributes to 0.
         '''
-        self.start, self.curline = (0,)*2
+        self.start, self.curline = (0,) * 2
 
     def btm(self):
         '''
@@ -54,6 +62,11 @@ class Action(Draw):
         '''
         self.start = self.total - self.maxlines
         self.curline = self.maxlines - 1
+
+    def pad_pgdn(self):
+        self.pos += self.y - 1
+        if self.pos >= self.lc - self.y + 1:
+            self.pos = self.lc - self.y + 1
 
     def pgdn(self):
         '''
@@ -67,6 +80,11 @@ class Action(Draw):
                              self.start + self.maxlines)
         else:
             self.btm()
+
+    def pad_pgup(self):
+        self.pos -= self.y - 1
+        if self.pos < 0:
+            self.pos = 0
 
     def pgup(self):
         '''
@@ -177,6 +195,7 @@ class Action(Draw):
             self.goto_next(self.picked)
 
     def toggle_range(self, ranges):
+        start, stop = (0,) * 2
         for numbers in ranges:
             if match('^\\d+\\.\\.\\d+$', numbers):
                 start, stop = numbers.split('..')
@@ -191,32 +210,10 @@ class Action(Draw):
             elif match('^\\-\\d+$', numbers):
                 start, stop = 1, numbers.split('-')[1]
             elif match('^\\d+$', numbers):
-                start, stop = (numbers,)*2
+                start, stop = (numbers,) * 2
             if start and stop:
                 for index in range(int(start) - 1, int(stop)):
                     self.toggle(index)
-
-    ###########################################################################
-    #                           PAD MOVEMENT METHODS                          #
-    ###########################################################################
-
-    def pad_dn(self):
-        if self.pos < self.lc - self.y + 1:
-            self.pos += 1
-
-    def pad_up(self):
-        if self.pos > 0:
-            self.pos -= 1
-
-    def pad_pgdn(self):
-        self.pos += self.y - 1
-        if self.pos >= self.lc - self.y + 1:
-            self.pos = self.lc - self.y + 1
-
-    def pad_pgup(self):
-        self.pos -= self.y - 1
-        if self.pos < 0:
-            self.pos = 0
 
     def quit(self):
         '''
