@@ -45,8 +45,6 @@ class Event(Action):
             '[:][!]        : Toggle via index number or range of indices.',
             '[?][F1]       : View this help page.',
             '[q][ESC][RET] : Quit and display all marked paths.',
-            '',
-            'Press any key to return.'
         ]
 
         self.keys = {
@@ -108,6 +106,7 @@ class Event(Action):
         }
 
         self.pad_actions = {
+            curses.KEY_RESIZE: self.resize,
             **dict.fromkeys(self.keys['dn'], self.pad_dn),
             **dict.fromkeys(self.keys['up'], self.pad_up),
             **dict.fromkeys(self.keys['pgdn'], self.pad_pgdn),
