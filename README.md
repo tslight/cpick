@@ -32,9 +32,14 @@ optional arguments:
 import curses
 from cpick import pick
 
-item = ['a', 'list', 'of', 'items']
-
-picked = pick(items)
+item   = ['a', 'list', 'of', 'items']
+# only allow five items to be picked, defaults to sys.maxsize
+limit  = 5
+# defaults to 'Pick some items from this list'
+header = 'Pick some items from this list:'
+# defaults to 'Press [?] to view keybindings'
+footer = 'Press [?] to view keybindings'
+picked = pick(items, limit, header, footer)
 
 print(picked)
 ```
