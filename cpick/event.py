@@ -120,7 +120,7 @@ class Event(Action):
         self.screen.refresh()
         self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
         self.draw_footer("Press [q] or [ESC] to return to picker.")
-        self.pad.refresh(self.pos, 0, 0, 0, self.y - 2, self.x - 2)
+        self.pad.refresh(self.pos, 0, 1, 0, self.y - 2, self.x - 2)
         while True:
             key = self.screen.getch()
             try:
@@ -128,7 +128,7 @@ class Event(Action):
                     break
             except KeyError:
                 pass
-            self.pad.refresh(self.pos, 0, 0, 0, self.y - 2, self.x - 2)
+            self.pad.refresh(self.pos, 0, 1, 0, self.y - 2, self.x - 2)
         self.screen.erase()
         self.screen.refresh()
 

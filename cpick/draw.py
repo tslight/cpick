@@ -69,7 +69,7 @@ class Draw(Screen):
         self.pad.resize(self.lc + 2, self.x)
         try:
             for index, line in enumerate(msg):
-                self.pad.addstr(index + 1, 2, line)
+                self.pad.addstr(index, 0, line)
             self.pad.scrollok(1)
             self.pad.idlok(1)
         except curses.error:
