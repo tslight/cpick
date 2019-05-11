@@ -24,6 +24,15 @@ class Event(Action):
         self.limit, self.header, self.footer = limit, header, footer
         self.desc, self.keys = get_keys()
 
+        self.pad_actions = {
+            **dict.fromkeys(self.keys['resize'], self.resize),
+            **dict.fromkeys(self.keys['dn'], self.pad_dn),
+            **dict.fromkeys(self.keys['up'], self.pad_up),
+            **dict.fromkeys(self.keys['pgdn'], self.pad_pgdn),
+            **dict.fromkeys(self.keys['pgup'], self.pad_pgup),
+            **dict.fromkeys(self.keys['quit'], self.quit),
+        }
+
         self.actions = {  # https://stackoverflow.com/a/45928598
             **dict.fromkeys(self.keys['resize'],
                             self.resize),
@@ -69,15 +78,6 @@ class Event(Action):
                             self.help),
             **dict.fromkeys(self.keys['quit'],
                             self.quit),
-        }
-
-        self.pad_actions = {
-            **dict.fromkeys(self.keys['resize'], self.resize),
-            **dict.fromkeys(self.keys['dn'], self.pad_dn),
-            **dict.fromkeys(self.keys['up'], self.pad_up),
-            **dict.fromkeys(self.keys['pgdn'], self.pad_pgdn),
-            **dict.fromkeys(self.keys['pgup'], self.pad_pgup),
-            **dict.fromkeys(self.keys['quit'], self.quit),
         }
 
     def help(self):
