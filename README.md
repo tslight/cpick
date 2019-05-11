@@ -50,7 +50,7 @@ picked = cpick.get_picks(items, limit, header, footer)
 print(picked)
 ```
 
-## INTERFACE
+## KEYBINDINGS
 
 ``` text
 [k][UP]       : Move up one line.
@@ -85,8 +85,8 @@ Picking`[;]` and searching`[/]` is supported via the following methods:
 
 - [Unix Style Wildcards](https://docs.python.org/3/library/fnmatch.html).
 - [Regular Expressions](https://docs.python.org/3/howto/regex.html).
-- Specifying an index (line number) of an item.
-- Specifying a range of indexes (line numbers) in the following forms:
+- Specifying the line number of an item.
+- Specifying a range of line numbers in the following forms:
   - *x..y* : Match numbers between *x* and *y*.
   - *x-y*  : Match numbers between *x* and *y*.
   - *x..*  : Match number from item at index *x* until the end of the list.
