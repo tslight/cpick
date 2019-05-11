@@ -17,13 +17,16 @@ def get_keys():
         '[CTRL-p]      : Jump to previous pick.',
         '[r][F5]       : Reset search results and picks.',
         '[z][CTRL-l]   : Recenter current line on screen.',
+        '[RET]         : Pick an item.'
+        '[u]           : Undo the last pick.',
+        '[U]           : Undo the last pick and move to it\'s line.',
         '[t]           : Toggle item pick status.',
         '[SPC]         : Toggle item and go down a line.',
-        '[u][CTRL-SPC] : Toggle item and go up a line.',
+        '[CTRL-SPC]    : Toggle item and go up a line.',
         '[a]           : Toggle picking of all items.',
         '[;][F3]       : Toggle via globbing, regex or range.',
         '[?][F1]       : View this help page.',
-        '[q][ESC][RET] : Quit and display all marked paths.',
+        '[q][ESC]      : Quit and display all marked paths.',
     ]
 
     keys = {
@@ -84,6 +87,15 @@ def get_keys():
             ord('z'),
             curses.ascii.ctrl(ord('l')),
         ],
+        'pick': [
+            ord('\n'),
+        ],
+        'undo': [
+            ord('u'),
+        ],
+        'undo_up': [
+            ord('U'),
+        ],
         'toggle': [
             ord('t'),
         ],
@@ -91,7 +103,6 @@ def get_keys():
             ord(' '),
         ],
         'toggle_up': [
-            ord('u'),
             curses.ascii.ctrl(ord(' ')),
         ],
         'toggle_all': [
@@ -106,7 +117,6 @@ def get_keys():
         ],
         'quit': [
             ord('q'),
-            ord('\n'),
             curses.ascii.ESC,
         ],
     }

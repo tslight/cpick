@@ -22,7 +22,7 @@ def get_args():
 
 def event(screen, items, limit, header, footer):
     picker = Event(screen, items, limit, header, footer)
-    return picker.pick()
+    return picker.get_picks()
 
 
 def pick(items, limit, header, footer):

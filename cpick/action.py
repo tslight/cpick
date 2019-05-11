@@ -168,11 +168,19 @@ class Action(Draw):
         if self.matches:
             self.goto_next(self.matches)
 
+    def pick(self, index):
+        if index not in self.picked:
+            self.picked.append(index)
+
     def toggle(self, index):
         if index in self.picked:
             self.picked.remove(index)
         else:
             self.picked.append(index)
+
+    def undo(self):
+        if self.picked:
+            del self.picked[-1]
 
     def toggle_all(self):
         if len(self.picked) == len(self.items):

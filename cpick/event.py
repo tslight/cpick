@@ -54,6 +54,12 @@ class Event(Action):
                             self.recenter),
             **dict.fromkeys(self.keys['goto'],
                             self.goto),
+            **dict.fromkeys(self.keys['pick'],
+                            lambda: self.pick(self.curidx) or self.dn()),
+            **dict.fromkeys(self.keys['undo'],
+                            self.undo),
+            **dict.fromkeys(self.keys['undo_up'],
+                            lambda: self.undo() or self.goto_prev(self.picked)),
             **dict.fromkeys(self.keys['toggle'],
                             lambda: self.toggle(self.curidx)),
             **dict.fromkeys(self.keys['toggle_dn'],
@@ -75,12 +81,12 @@ class Event(Action):
             **dict.fromkeys(self.keys['prev_pick'],
                             lambda: self.goto_prev(self.picked)),
             **dict.fromkeys(self.keys['help'],
-                            self.help),
+                            self.get_help),
             **dict.fromkeys(self.keys['quit'],
                             self.quit),
         }
 
-    def help(self):
+    def get_help(self):
         self.draw_pad(self.desc)
         self.screen.refresh()
         self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
@@ -97,7 +103,7 @@ class Event(Action):
         self.screen.erase()
         self.screen.refresh()
 
-    def pick(self):
+    def get_picks(self):
         '''
         Main event loop that draws the screen, waits for input, and executes an
         action based on that input. If the method executed returns true, we

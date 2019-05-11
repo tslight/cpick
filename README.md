@@ -2,7 +2,7 @@
 
 ![img](./cpick.gif "Curses List Picker")
 
-*Pick items from a list with a nice TUI.*
+*Pick items from a list with a nice TUI, & comfy Vi keybindings.*
 
 ## INSTALLATION
 
@@ -32,11 +32,11 @@ optional arguments:
 ## PYTHON USAGE
 
 ``` python
-import curses
-from cpick import pick
+import cpick
 
 # list to feed into the picker
 item   = ['a', 'list', 'of', 'items']
+
 # only allow five items to be picked, defaults to sys.maxsize
 limit  = 5
 # defaults to 'Pick some items from this list'
@@ -44,51 +44,64 @@ header = 'Pick some items from this list:'
 # defaults to 'Press [?] to view keybindings'
 footer = 'Press [?] to view keybindings'
 # get picks!
-picked = pick(items, limit, header, footer)
+picked = cpick.get_picks(items, limit, header, footer)
+
 # print picked list
 print(picked)
 ```
 
 ## INTERFACE
 
-| **KEYS**          | **ACTION**                                   |
-|:------------------|:---------------------------------------------|
-| `k`, `UP`         | Move up one line.                            |
-| `j`, `DOWN`       | Move down one line.                          |
-| `f`, `PGDN`       | Jump down a page of lines.                   |
-| `b`, `PGUP`       | Jump up a page of lines.                     |
-| `g`, `HOME`       | Jump to first line.                          |
-| `G`, `END`        | Jump to last line.                           |
-| `#`               | Jump to an item index number                 |
-| `/`               | Find items via globbing, regex or substring. |
-| `n`               | Jump to next search result.                  |
-| `N`               | Jump to previous search result.              |
-| `p`               | Jump to next pick.                           |
-| `P`               | Jump to previous pick.                       |
-| `z`, `Z`          | Recenter current line on screen.             |
-| `s`, `SPC`        | Pick an item and go down a line.             |
-| `u`, `U`          | Unpick an item and go up a line.             |
-| `t`, `T`          | Toggle item pick status.                     |
-| `a`, `A`          | Toggle picking of all items.                 |
-| `;`, `*`          | Toggle via globbing,  regex or substring.    |
-| `:`, `!`          | Toggle via index number or range of indices. |
-| `?`, `F1`         | View this help page.                         |
-| `R`, `F5`         | Reset search results and picks.              |
-| `q`, `ESC`, `RET` | Quit and display all marked paths.           |
+``` text
+[k][UP]       : Move up one line.
+[j][DOWN]     : Move down one line.
+[g][HOME]     : Jump to first line.
+[G][END]      : Jump to last line.
+[f][PGDN]     : Jump down a page of lines.
+[b][PGUP]     : Jump up a page of lines.
+[#]           : Jump to line number.
+[/]           : Find items via globbing, regex or range.
+[n]           : Jump to next search result.
+[p]           : Jump to previous search result.
+[CTRL-n]      : Jump to next pick.
+[CTRL-p]      : Jump to previous pick.
+[r][F5]       : Reset search results and picks.
+[z][CTRL-l]   : Recenter current line on screen.
+[RET]         : Pick an item.[u]           : Undo the last pick.
+[U]           : Undo the last pick and move to it's line.
+[t]           : Toggle item pick status.
+[SPC]         : Toggle item and go down a line.
+[CTRL-SPC]    : Toggle item and go up a line.
+[a]           : Toggle picking of all items.
+[;][F3]       : Toggle via globbing, regex or range.
+[?][F1]       : View this help page.
+[q][ESC]      : Quit and display all marked paths.
+```
 
 ## NOTES
 
-Picking and searching can be done with globbing or regular expression pattern
-matching or simply by searching for strings or substrings.
+Picking`[;]` and searching`[/]` is supported via the following methods:
 
-These can also be combined. You can enter multiple patterns at one `Find:` or
-`Pick:` prompt.
+- Globbing & Wildcards.
+- Regular Expressions.
+- Specifying an index (line number) of an item.
+- Specifying a range of indexes (line numbers) in the following forms:
+  - *x..y* : Match numbers between *x* and *y*.
+  - *x-y*  : Match numbers between *x* and *y*.
+  - *x..*  : Match number from item at index *x* until the end of the list.
+  - *..y*  : Match from beginning of list until item at index *y*.
+  - *x-*   : Match number from item at index *x* until the end of the list.
+  - *-y*   : Match from beginning of list until item at index *y*.
+- Searching for literal strings.
 
-However, be aware, that if two patterns are entered together that match the same
-items they will cancel each other out, due to the toggling nature of the
-resulting action.
+These can also be combined. You can enter multiple patterns, ranges and strings
+at one `Find:` or `Pick:` prompt.
 
-This behavior is also true when selecting by `Range:`.
+However, be aware, that if patterns, ranges or strings are entered together that
+match the same items they will cancel each other out. This is due to the
+toggling nature of the resulting action.
+
+I am open to changing this behaviour if requested...
 
 ## EXAMPLES
 
