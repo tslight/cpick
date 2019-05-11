@@ -10,14 +10,18 @@ def get_args():
     return parser.parse_args()
 
 
-def pick(screen, items):
+def event(screen, items):
     picker = Event(screen, items)
     return picker.pick()
 
 
+def pick(items):
+    return wrapper(event, items)
+
+
 def main():
     args = get_args()
-    picked = wrapper(pick, args.items)
+    picked = pick(args.items)
     if picked:
         prtcols(picked, 6)
 
