@@ -45,7 +45,7 @@ print(picked)
 | `b`, `PGUP`       | Jump up a page of lines.                     |
 | `g`, `HOME`       | Jump to first line.                          |
 | `G`, `END`        | Jump to last line.                           |
-| '#'               | Jump to an item index number                 |
+| `#`               | Jump to an item index number                 |
 | `/`               | Find items via globbing, regex or substring. |
 | `n`               | Jump to next search result.                  |
 | `N`               | Jump to previous search result.              |
@@ -74,4 +74,18 @@ However, be aware, that if two patterns are entered together that match the same
 items they will cancel each other out, due to the toggling nature of the
 resulting action.
 
-This behavior is true when selecting by `Range:`.
+This behavior is also true when selecting by `Range:`.
+
+## EXAMPLES
+
+Pick a number from 1 to 100.
+
+`cpick {1..100}`
+
+Pick a random word from the dictionary.
+
+`cpick $(shuf -n 100 /usr/share/dict/words)`
+
+Pick a path in the current directory.
+
+`cpick $(ls)`
