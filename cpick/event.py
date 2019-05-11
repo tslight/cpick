@@ -125,7 +125,10 @@ class Event(Action):
             except KeyError:
                 pass
             if len(self.picked) > self.limit:
-                del self.picked[self.limit:]
+                if self.limit == 1:
+                    del self.picked[:self.limit]
+                else:
+                    del self.picked[self.limit:]
                 header, footer = ("MAXIMUM PICK LIMIT REACHED!",)*2
             else:
                 header, footer = self.header, self.footer
