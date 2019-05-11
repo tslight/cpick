@@ -1,27 +1,41 @@
 from argparse import ArgumentParser
 from curses import wrapper
+from sys import maxsize
 from columns import prtcols
 from .event import Event
 
 
 def get_args():
     parser = ArgumentParser(description='Curses list picker.')
-    parser.add_argument("items", nargs='+', help="Items for the picker.")
+    parser.add_argument('items', nargs='+', help='Items for the picker.')
+    parser.add_argument('--limit', '-l', type=int,
+                        default=maxsize,
+                        help='Limit number of picks.')
+    parser.add_argument('--header', '-H', type=str,
+                        default='PICK ITEMS FROM THIS LIST:',
+                        help='A string to use as a header.')
+    parser.add_argument('--footer', '-F', type=str,
+                        default='Press [?] to view keybindings',
+                        help='A string to use as a footer.')
     return parser.parse_args()
 
 
-def event(screen, items):
-    picker = Event(screen, items)
+def event(screen, items, limit, header, footer):
+    picker = Event(screen, items, limit, header, footer)
     return picker.pick()
 
 
-def pick(items):
-    return wrapper(event, items)
+def pick(items, limit, header, footer):
+    return wrapper(event, items, limit, header, footer)
 
 
 def main():
     args = get_args()
-    picked = pick(args.items)
+    items = args.items
+    limit = args.limit
+    header = args.header
+    footer = args.footer
+    picked = pick(items, limit, header, footer)
     if picked:
         prtcols(picked, 6)
 

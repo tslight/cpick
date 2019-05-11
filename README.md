@@ -11,15 +11,19 @@
 ## CLI USAGE
 
 ``` text
-usage: cpick [-h] items [items ...]
+usage: cpick [-h] [--header HEADER] [--footer FOOTER] items [items ...]
 
 Curses list picker.
 
 positional arguments:
-  items       Items for the picker.
+  items                 Items for the picker.
 
 optional arguments:
-  -h, --help  show this help message and exit
+  -h, --help            show this help message and exit
+  --header HEADER, -H HEADER
+						A string to use as a header.
+  --footer FOOTER, -F FOOTER
+						A string to use as a footer.
 ```
 
 ## PYTHON USAGE

@@ -1,9 +1,16 @@
+'''
+Curses List Picker
+'''
 from fnmatch import fnmatch
 from re import match, error
 from .draw import Draw
 
 
 class Action(Draw):
+    '''
+    What to draw on the screen.
+    '''
+
     def __init__(self, screen, items):
         Draw.__init__(self, screen, items)
         self.picked = []

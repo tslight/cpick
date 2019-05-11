@@ -2,8 +2,9 @@
 Curses List Picker
 '''
 import curses
-from .action import Action
 from os import environ
+from sys import maxsize
+from .action import Action
 environ.setdefault('ESCDELAY', '12')  # otherwise it takes an age!
 
 
@@ -13,8 +14,41 @@ class Event(Action):
     main getter method that instigates the main event loop.
     '''
 
-    def __init__(self, screen, items):
+    def __init__(self,
+                 screen,
+                 items,
+                 limit=maxsize,
+                 header='PICK ITEMS FROM THIS LIST:',
+                 footer='Press [?] to view keybindings'):
         Action.__init__(self, screen, items)
+        self.limit, self.header, self.footer = limit, header, footer
+        self.help = [
+            '[k][UP]       : Move up one line.',
+            '[j][DOWN]     : Move down one line.',
+            '[f][PGDN]     : Jump down a page of lines.',
+            '[b][PGUP]     : Jump up a page of lines.',
+            '[g][HOME]     : Jump to first line.',
+            '[G][END]      : Jump to last line.',
+            '[#]           : Jump to line number.',
+            '[/]           : Find items via glob pattern matching.',
+            '[n]           : Jump to next search result.',
+            '[N]           : Jump to previous search result.',
+            '[p]           : Jump to next pick.',
+            '[P]           : Jump to previous pick.',
+            '[R][F5]       : Reset search results and picks.',
+            '[z][Z]        : Recenter current line on screen.',
+            '[s][SPC]      : Pick an item and go down a line.',
+            '[u][U]        : Unpick an item and go up a line.',
+            '[t][T]        : Toggle item pick status.',
+            '[a][A]        : Toggle picking of all items.',
+            '[;][*]        : Toggle via globbing, regex or substring.',
+            '[:][!]        : Toggle via index number or range of indices.',
+            '[?][F1]       : View this help page.',
+            '[q][ESC][RET] : Quit and display all marked paths.',
+            '',
+            'Press any key to return.'
+        ]
+
         self.keys = {
             'dn': [ord('j'), curses.KEY_DOWN, ],
             'up': [ord('k'), curses.KEY_UP, ],
@@ -36,7 +70,7 @@ class Event(Action):
             'prev_find': [ord('N'), ],
             'next_pick': [ord('p'), ],
             'prev_pick': [ord('P'), ],
-            'draw_help': [ord('?'), curses.KEY_F1, ],
+            'help': [ord('?'), curses.KEY_F1, ],
             'quit': [ord('q'), ord('\n'), curses.ascii.ESC, ],
         }
 
@@ -69,7 +103,7 @@ class Event(Action):
                             lambda: self.goto_next(self.picked)),
             **dict.fromkeys(self.keys['prev_pick'],
                             lambda: self.goto_prev(self.picked)),
-            **dict.fromkeys(self.keys['draw_help'], self.draw_help),
+            **dict.fromkeys(self.keys['help'], lambda: self.draw_pad(self.help)),
             **dict.fromkeys(self.keys['quit'], self.quit),
         }
 
@@ -79,13 +113,19 @@ class Event(Action):
         action based on that input. If the method executed returns true, we
         return our objects' picked attribute.
         '''
+        header, footer = self.header, self.footer
         while True:
-            self.draw_header()
+            self.draw_header(header)
             self.draw_body()
-            self.draw_footer()
+            self.draw_footer(footer)
             key = self.win.getch()
             try:
                 if self.actions[key]():
                     return [self.items[pick] for pick in self.picked]
             except KeyError:
                 pass
+            if len(self.picked) > self.limit:
+                del self.picked[self.limit:]
+                header, footer = ("MAXIMUM PICK LIMIT REACHED!",)*2
+            else:
+                header, footer = self.header, self.footer

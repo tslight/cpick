@@ -1,9 +1,16 @@
+'''
+Curses List Picker
+'''
 import curses
 from curses.textpad import Textbox
 from .screen import Screen
 
 
 class Draw(Screen):
+    '''
+    How to draw on the screen.
+    '''
+
     def __init__(self, screen, items):
         Screen.__init__(self, screen)
         self.items = items
@@ -13,26 +20,24 @@ class Draw(Screen):
         self.scroll = 2  # when to start scrolling
         self.start, self.curline, self.curidx = (0,)*3
         self.total = len(self.items)
-        self.maxlines = self.win_y - self.footer_y
+        self.maxlines = self.win_y - self.foot_y
         self.pages = self.total / self.maxlines  # total pages
 
-    def draw_header(self):
-        msg = ('PICK ITEMS FROM THIS LIST:')
+    def draw_header(self, msg):
         try:
-            self.header.addstr(0, 0, msg, self.magenta_black())
-            self.header.clrtoeol()  # more frugal than erase. no flicker.
+            self.head.addstr(0, 0, msg, self.magenta_black())
+            self.head.clrtoeol()  # more frugal than erase. no flicker.
         except curses.error:
             pass
-        self.header.refresh()
+        self.head.refresh()
 
-    def draw_footer(self):
-        msg = ('Press [?] to view keybindings')
+    def draw_footer(self, msg):
         try:
-            self.footer.addstr(0, 0, msg, self.magenta_black())
-            self.footer.clrtoeol()  # more frugal than erase. no flicker.
+            self.foot.addstr(0, 0, msg, self.magenta_black())
+            self.foot.clrtoeol()  # more frugal than erase. no flicker.
         except curses.error:
             pass
-        self.footer.refresh()
+        self.foot.refresh()
 
     def draw_body(self):
         self.win.erase()  # clear causes flickering in some terminals
@@ -57,32 +62,7 @@ class Draw(Screen):
             self.win.addstr(linum, 0, line, color)
         self.win.refresh()
 
-    def draw_help(self):
-        msg = [
-            '[k][UP]       : Move up one line.',
-            '[j][DOWN]     : Move down one line.',
-            '[f][PGDN]     : Jump down a page of lines.',
-            '[b][PGUP]     : Jump up a page of lines.',
-            '[g][HOME]     : Jump to first line.',
-            '[G][END]      : Jump to last line.',
-            '[R][F5]       : Reset search results and picks.',
-            '[z][Z]        : Recenter current line on screen.',
-            '[s][SPC]      : Pick an item and go down a line.',
-            '[u][U]        : Unpick an item and go up a line.',
-            '[t][T]        : Toggle item pick status.',
-            '[a][A]        : Toggle picking of all items.',
-            '[;][*]        : Toggle via globbing, regex or substring.',
-            '[:][!]        : Toggle via index number or range of indices.',
-            '[/]           : Find items via glob pattern matching.',
-            '[n]           : Jump to next search result.',
-            '[N]           : Jump to previous search result.',
-            '[p]           : Jump to next pick.',
-            '[P]           : Jump to previous pick.',
-            '[?][F1]       : View this help page.',
-            '[q][ESC][RET] : Quit and display all marked paths.',
-            '',
-            'Press any key to return.'
-        ]
+    def draw_pad(self, msg):
         self.lc = len(msg)
         self.screen.erase()
         self.pad.erase()
@@ -101,14 +81,14 @@ class Draw(Screen):
         self.screen.refresh()
 
     def draw_textbox(self, prompt):
-        self.footer.erase()
-        self.footer.addstr(0, 0, prompt, self.magenta_black())
+        self.foot.erase()
+        self.foot.addstr(0, 0, prompt, self.magenta_black())
         curses.curs_set(1)
-        self.footer.refresh()
-        tb = self.footer.subwin(self.y - 1, len(prompt))
+        self.foot.refresh()
+        tb = self.foot.subwin(self.y - 1, len(prompt))
         box = Textbox(tb)
         box.edit()
         curses.curs_set(0)
         result = box.gather()
-        self.footer.erase()
+        self.foot.erase()
         return result
