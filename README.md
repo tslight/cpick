@@ -67,7 +67,8 @@ print(picked)
 [CTRL-p]      : Jump to previous pick.
 [r][F5]       : Reset search results and picks.
 [z][CTRL-l]   : Recenter current line on screen.
-[RET]         : Pick an item.[u]           : Undo the last pick.
+[RET]         : Pick an item.
+[u]           : Undo the last pick.
 [U]           : Undo the last pick and move to it's line.
 [t]           : Toggle item pick status.
 [SPC]         : Toggle item and go down a line.
