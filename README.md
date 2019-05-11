@@ -11,7 +11,8 @@
 ## CLI USAGE
 
 ``` text
-usage: cpick [-h] [--header HEADER] [--footer FOOTER] items [items ...]
+usage: cpick [-h] [--limit LIMIT] [--header HEADER] [--footer FOOTER]
+			 items [items ...]
 
 Curses list picker.
 
@@ -20,6 +21,8 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  --limit LIMIT, -l LIMIT
+						Limit number of picks.
   --header HEADER, -H HEADER
 						A string to use as a header.
   --footer FOOTER, -F FOOTER
@@ -87,14 +90,14 @@ This behavior is also true when selecting by `Range:`.
 
 ## EXAMPLES
 
-Pick a number from 1 to 100.
+Pick a number from 1 to 100, using custom header/footer and limiting picks to 5.
 
-`cpick {1..100}`
+`cpick --header "My header" --footer "My footer" --limit 5 {1..100}`
 
-Pick a random word from the dictionary.
+Pick 5 random words from the dictionary, using the default header/footer.
 
-`cpick $(shuf -n 100 /usr/share/dict/words)`
+`cpick --limit 5 $(shuf -n 100 /usr/share/dict/words)`
 
-Pick a path in the current directory.
+Pick an unlimited number of paths from the current directory.
 
 `cpick $(ls)`
