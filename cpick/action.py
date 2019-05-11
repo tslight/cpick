@@ -170,34 +170,31 @@ class Action(Draw):
                     if match(pattern, item):
                         self.toggle(index)
                 except error:
-                    if fnmatch(item, pattern) or pattern in item:
+                    if fnmatch(item, pattern) or pattern == item:
                         self.toggle(index)
+        self.toggle_range(search)
         if self.picked:
             self.goto_next(self.picked)
 
-    def toggle_range(self):
-        ranges = self.draw_textbox("Range: ").strip().split()
-        for r in ranges:
-            if match('^\d+\.\.\d+$', r):
-                start, stop = r.split('..')
-            elif match('^\d+\-\d+$', r):
-                start, stop = r.split('-')
-            elif match('^\d+\.\.$', r):
-                start, stop = r.split('..')[0], self.total
-            elif match('^\d+\-$', r):
-                start, stop = r.split('-')[0], self.total
-            elif match('^\.\.\d+$', r):
-                start, stop = 1, r.split('..')[1]
-            elif match('^\-\d+$', r):
-                start, stop = 1, r.split('-')[1]
-            elif match('^\d+$', r):
-                start, stop = (r,)*2
-            else:
-                return
-            for index in range(int(start) - 1, int(stop)):
-                self.toggle(index)
-        if self.picked:
-            self.goto_next(self.picked)
+    def toggle_range(self, ranges):
+        for numbers in ranges:
+            if match('^\\d+\\.\\.\\d+$', numbers):
+                start, stop = numbers.split('..')
+            elif match('^\\d+\\-\\d+$', numbers):
+                start, stop = numbers.split('-')
+            elif match('^\\d+\\.\\.$', numbers):
+                start, stop = numbers.split('..')[0], self.total
+            elif match('^\\d+\\-$', numbers):
+                start, stop = numbers.split('-')[0], self.total
+            elif match('^\\.\\.\\d+$', numbers):
+                start, stop = 1, numbers.split('..')[1]
+            elif match('^\\-\\d+$', numbers):
+                start, stop = 1, numbers.split('-')[1]
+            elif match('^\\d+$', numbers):
+                start, stop = (numbers,)*2
+            if start and stop:
+                for index in range(int(start) - 1, int(stop)):
+                    self.toggle(index)
 
     ###########################################################################
     #                           PAD MOVEMENT METHODS                          #
