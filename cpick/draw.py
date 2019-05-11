@@ -74,11 +74,6 @@ class Draw(Screen):
             self.pad.idlok(1)
         except curses.error:
             pass
-        self.screen.refresh()
-        self.pad.refresh(self.pos, 0, 0, 0, self.y - 2, self.x - 2)
-        self.screen.getch()
-        self.screen.erase()
-        self.screen.refresh()
 
     def draw_textbox(self, prompt):
         self.foot.erase()

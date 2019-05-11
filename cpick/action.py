@@ -199,6 +199,28 @@ class Action(Draw):
         if self.picked:
             self.goto_next(self.picked)
 
+    ###########################################################################
+    #                           PAD MOVEMENT METHODS                          #
+    ###########################################################################
+
+    def pad_dn(self):
+        if self.pos < self.lc - self.y + 1:
+            self.pos += 1
+
+    def pad_up(self):
+        if self.pos > 0:
+            self.pos -= 1
+
+    def pad_pgdn(self):
+        self.pos += self.y - 1
+        if self.pos >= self.lc - self.y + 1:
+            self.pos = self.lc - self.y + 1
+
+    def pad_pgup(self):
+        self.pos -= self.y - 1
+        if self.pos < 0:
+            self.pos = 0
+
     def quit(self):
         '''
         Signal to pick() that it's time to return the state of self.picked.

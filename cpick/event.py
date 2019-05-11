@@ -22,7 +22,7 @@ class Event(Action):
                  footer='Press [?] to view keybindings'):
         Action.__init__(self, screen, items)
         self.limit, self.header, self.footer = limit, header, footer
-        self.help = [
+        self.helptxt = [
             '[k][UP]       : Move up one line.',
             '[j][DOWN]     : Move down one line.',
             '[f][PGDN]     : Jump down a page of lines.',
@@ -103,9 +103,34 @@ class Event(Action):
                             lambda: self.goto_next(self.picked)),
             **dict.fromkeys(self.keys['prev_pick'],
                             lambda: self.goto_prev(self.picked)),
-            **dict.fromkeys(self.keys['help'], lambda: self.draw_pad(self.help)),
+            **dict.fromkeys(self.keys['help'], self.help),
             **dict.fromkeys(self.keys['quit'], self.quit),
         }
+
+        self.pad_actions = {
+            **dict.fromkeys(self.keys['dn'], self.pad_dn),
+            **dict.fromkeys(self.keys['up'], self.pad_up),
+            **dict.fromkeys(self.keys['pgdn'], self.pad_pgdn),
+            **dict.fromkeys(self.keys['pgup'], self.pad_pgup),
+            **dict.fromkeys(self.keys['quit'], self.quit),
+        }
+
+    def help(self):
+        self.draw_pad(self.helptxt)
+        self.screen.refresh()
+        self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
+        self.draw_footer("Press [q] or [ESC] to return to picker.")
+        self.pad.refresh(self.pos, 0, 0, 0, self.y - 2, self.x - 2)
+        while True:
+            key = self.screen.getch()
+            try:
+                if self.pad_actions[key]():
+                    break
+            except KeyError:
+                pass
+            self.pad.refresh(self.pos, 0, 0, 0, self.y - 2, self.x - 2)
+        self.screen.erase()
+        self.screen.refresh()
 
     def pick(self):
         '''
