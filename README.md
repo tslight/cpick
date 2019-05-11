@@ -10,7 +10,7 @@
 
 ## CLI USAGE
 
-``` shell
+``` text
 usage: cpick [-h] items [items ...]
 
 Curses list picker.

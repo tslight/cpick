@@ -79,7 +79,13 @@ class Action(Draw):
         self.matches = []
 
     def recenter(self):
-        pass
+        middle = int(self.maxlines / 2) - 1
+        if self.curline > middle and self.start < self.total - self.maxlines:
+            self.start += self.curline - middle
+            self.curline = middle
+        elif self.curline < middle and self.start > self.maxlines:
+            self.start -= self.curline + middle
+            self.curline = middle
 
     def goto_next(self, items):
         if items:
@@ -165,11 +171,19 @@ class Action(Draw):
     def toggle_range(self):
         ranges = self.draw_textbox("Range: ").strip().split()
         for r in ranges:
-            if match('^[0-9]+\.\.[0-9]+$', r):
+            if match('^\d+\.\.\d+$', r):
                 start, stop = r.split('..')
-            elif match('^[0-9]+\-[0-9]+$', r):
+            elif match('^\d+\-\d+$', r):
                 start, stop = r.split('-')
-            elif match('^[0-9]+$', r):
+            elif match('^\d+\.\.$', r):
+                start, stop = r.split('..')[0], self.total
+            elif match('^\d+\-$', r):
+                start, stop = r.split('-')[0], self.total
+            elif match('^\.\.\d+$', r):
+                start, stop = 1, r.split('..')[1]
+            elif match('^\-\d+$', r):
+                start, stop = 1, r.split('-')[1]
+            elif match('^\d+$', r):
                 start, stop = (r,)*2
             else:
                 return
