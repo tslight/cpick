@@ -6,8 +6,10 @@ import curses
 
 class Screen:
     '''
-    Base class that configures curses & makes setting color attributes less
-    clunky.
+    Base class that configures curses, makes setting color attributes less
+    clunky and sets up the initial window layout with a header window, a footer
+    window and two main body windows - one a pad for statically scrolling and
+    one a normal window for dynamic scrolling.
     '''
 
     def __init__(self, screen):
@@ -23,7 +25,11 @@ class Screen:
 
     def color_init(self):
         '''
-        Initialise curses color pairs.
+        Initialise curses color pairs. Iterate over primary 8 bit colors adding
+        colors in the form foreground_background 3 times once with all 8 colors
+        in the foreground and the default terminal background as the background
+        once with white as the foreground and each color as background and once
+        with black as the foreground and each color as the background.
         '''
         curses.use_default_colors()  # https://stackoverflow.com/a/44015131
         for i in range(1, 8):
