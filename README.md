@@ -35,6 +35,8 @@ Optional Arguments:
 
 ## PYTHON USAGE
 
+**Example using all available arguments**
+
 ``` python
 import cpick
 
@@ -57,7 +59,16 @@ picked = cpick.pick(**kwargs)
 
 # print picked list
 print(*picked, sep=", ")
-# output: a, list, of, items
+# output if all items picked: a, list, of, items
+```
+
+**Example using only a list**
+
+``` python
+# pass in only mandatory arg - a list.
+picked = cpick.pick(items=['just', 'a', 'list'])
+print(*picked, sep=", ")
+# output if all items picked: just, a, list
 ```
 
 ## KEYBINDINGS
