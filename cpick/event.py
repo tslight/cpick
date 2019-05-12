@@ -113,20 +113,17 @@ class Event(Action):
 
     def view(self, contents):
         self.draw_pad(contents)
-        self.screen.refresh()
-        self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
-        self.draw_footer("Press [q] or [ESC] to return to picker.")
-        self.pad.refresh(self.pos, 0, 1, 0, self.y - 2, self.x - 2)
+        self.refresh()
         while True:
+            self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
+            self.draw_footer("Press [q] or [ESC] to return to picker.")
             key = self.screen.getch()
             try:
                 if self.pad_actions[key]():
                     break
             except KeyError:
                 pass
-            self.pad.refresh(self.pos, 0, 1, 0, self.y - 2, self.x - 2)
-        self.screen.erase()
-        self.screen.refresh()
+            self.refresh()
 
     def get_picks(self):
         '''

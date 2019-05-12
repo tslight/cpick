@@ -72,6 +72,7 @@ class Screen:
         '''
         self.screen.refresh()
         self.head.refresh()
+        self.pad.refresh(self.pos, 0, 2, 0, self.y - 3, self.x - 2)
         self.win.refresh()
         self.foot.refresh()
 
@@ -89,10 +90,7 @@ class Screen:
         self.maxlines = self.win_y - self.foot_y
         self.foot.mvwin(self.y - 1, 0)
         self.foot.resize(1, self.x)
-        self.screen.refresh()
-        self.head.refresh()
-        self.win.refresh()
-        self.foot.refresh()
+        self.refresh()
 
     def white_black(self):
         '''
