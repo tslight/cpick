@@ -38,17 +38,21 @@ Optional Arguments:
 ``` python
 import cpick
 
-# list to feed into the picker
-item   = ['a', 'list', 'of', 'items']
+kwargs = {
+	# list to feed into the picker
+	items: ['a', 'list', 'of', 'items']
+	# only allow five items to be picked, defaults to sys.maxsize
+	limit: 5
+	# turn line numbering on
+	numbers: True
+	# defaults to 'PICK ITEMS FROM THIS LIST'
+	header: 'My Awesome Custom Header'
+	# defaults to 'Press [?] to view keybindings'
+	footer: 'My Awesome Custom Footer'
+}
 
-# only allow five items to be picked, defaults to sys.maxsize
-limit  = 5
-# defaults to 'Pick some items from this list'
-header = 'Pick some items from this list:'
-# defaults to 'Press [?] to view keybindings'
-footer = 'Press [?] to view keybindings'
 # get picks!
-picked = cpick.get_picks(items, limit, header, footer)
+picked = cpick.pick(**kwargs)
 
 # print picked list
 print(picked)
