@@ -25,7 +25,7 @@ class Draw(Screen):
 
     def draw_header(self, msg):
         try:
-            self.head.addstr(0, 0, msg, self.magenta_black())
+            self.head.addstr(0, 0, msg, self.magenta_black)
             self.head.clrtoeol()  # more frugal than erase. no flicker.
         except curses.error:
             pass
@@ -33,7 +33,7 @@ class Draw(Screen):
 
     def draw_footer(self, msg):
         try:
-            self.foot.addstr(0, 0, msg, self.magenta_black())
+            self.foot.addstr(0, 0, msg, self.magenta_black)
             self.foot.clrtoeol()  # more frugal than erase. no flicker.
         except curses.error:
             pass
@@ -47,17 +47,17 @@ class Draw(Screen):
         for linum, item in enumerate(self.items[self.start:stop]):
             index = self.start + linum
             if linum == self.curline and index in self.picked:
-                indicator, color = self.indicator, self.black_yellow()
+                indicator, color = self.indicator, self.black_yellow
             elif linum == self.curline and index in self.matches:
-                indicator, color = self.indicator, self.black_green()
+                indicator, color = self.indicator, self.black_green
             elif index in self.picked:
-                indicator, color = self.checked, self.yellow_black()
+                indicator, color = self.checked, self.yellow_black
             elif index in self.matches:
-                indicator, color = self.checkbox, self.green_black()
+                indicator, color = self.checkbox, self.green_black
             elif linum == self.curline:
-                indicator, color = self.indicator, self.black_blue()
+                indicator, color = self.indicator, self.black_blue
             else:
-                indicator, color = self.checkbox, self.white_black()
+                indicator, color = self.checkbox, self.white_black
             if show_numbers:
                 maxlen = len(str(self.total + 1))
                 length = len(str(index + 1))
@@ -84,7 +84,7 @@ class Draw(Screen):
 
     def draw_textbox(self, prompt):
         self.foot.erase()
-        self.foot.addstr(0, 0, prompt, self.magenta_black())
+        self.foot.addstr(0, 0, prompt, self.magenta_black)
         curses.curs_set(1)
         self.foot.refresh()
         tb = self.foot.subwin(self.y - 1, len(prompt))

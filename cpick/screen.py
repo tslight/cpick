@@ -13,29 +13,44 @@ class Screen:
     def __init__(self, screen):
         self.screen = screen
         self.y, self.x = self.screen.getmaxyx()
-        self.curses_init()
+        self.color_init()
         self.head_init()
         self.win_init()
         self.foot_init()
         self.pad_init()
         self.refresh()
+        curses.curs_set(0)  # hide the cursor
 
-    def curses_init(self):
+    def color_init(self):
         '''
-        Initialise colors and curses settings.
+        Initialise curses color pairs.
         '''
         curses.use_default_colors()  # https://stackoverflow.com/a/44015131
-        curses.init_pair(1, curses.COLOR_WHITE, -1)
-        curses.init_pair(2, curses.COLOR_YELLOW, -1)
-        curses.init_pair(3, curses.COLOR_MAGENTA, -1)
-        curses.init_pair(4, curses.COLOR_GREEN, -1)
-        curses.init_pair(5, curses.COLOR_CYAN, -1)
-        curses.init_pair(6, 1, curses.COLOR_BLUE)
-        curses.init_pair(7, 1, curses.COLOR_YELLOW)
-        curses.init_pair(8, 1, curses.COLOR_MAGENTA)
-        curses.init_pair(9, 1, curses.COLOR_GREEN)
-        curses.init_pair(10, 1, curses.COLOR_CYAN)
-        curses.curs_set(0)  # hide the cursor
+        for i in range(1, 8):
+            curses.init_pair(i, i, -1)
+            curses.init_pair(i + 7, curses.COLOR_WHITE, i)
+            curses.init_pair(i + 14, curses.COLOR_BLACK, i)
+        self.red_black = curses.color_pair(1)
+        self.green_black = curses.color_pair(2)
+        self.yellow_black = curses.color_pair(3)
+        self.blue_black = curses.color_pair(4)
+        self.magenta_black = curses.color_pair(5)
+        self.cyan_black = curses.color_pair(6)
+        self.white_black = curses.color_pair(7)
+        self.white_red = curses.color_pair(8)
+        self.white_green = curses.color_pair(9)
+        self.white_yellow = curses.color_pair(10)
+        self.white_blue = curses.color_pair(11)
+        self.white_magenta = curses.color_pair(12)
+        self.white_cyan = curses.color_pair(13)
+        self.white_white = curses.color_pair(14)
+        self.black_red = curses.color_pair(15)
+        self.black_green = curses.color_pair(16)
+        self.black_yellow = curses.color_pair(17)
+        self.black_blue = curses.color_pair(18)
+        self.black_magenta = curses.color_pair(19)
+        self.black_cyan = curses.color_pair(20)
+        self.black_white = curses.color_pair(21)
 
     def head_init(self):
         '''
@@ -91,63 +106,3 @@ class Screen:
         self.foot.mvwin(self.y - 1, 0)
         self.foot.resize(1, self.x)
         self.refresh()
-
-    def white_black(self):
-        '''
-        White foreground, black background.
-        '''
-        return curses.color_pair(1)
-
-    def yellow_black(self):
-        '''
-        Yellow foreground, black background.
-        '''
-        return curses.color_pair(2)
-
-    def magenta_black(self):
-        '''
-        Magenta foreground, black background.
-        '''
-        return curses.color_pair(3)
-
-    def green_black(self):
-        '''
-        Green foreground, black background.
-        '''
-        return curses.color_pair(4)
-
-    def cyan_black(self):
-        '''
-        Cyan foreground, black background.
-        '''
-        return curses.color_pair(5)
-
-    def black_blue(self):
-        '''
-        Black foreground, blue background.
-        '''
-        return curses.color_pair(6)
-
-    def black_yellow(self):
-        '''
-        Black foreground, yellow background.
-        '''
-        return curses.color_pair(7)
-
-    def black_magenta(self):
-        '''
-        Black foreground, magenta background.
-        '''
-        return curses.color_pair(8)
-
-    def black_green(self):
-        '''
-        Black foreground, green background.
-        '''
-        return curses.color_pair(9)
-
-    def black_cyan(self):
-        '''
-        Black foreground, cyan background.
-        '''
-        return curses.color_pair(10)
