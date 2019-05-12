@@ -11,6 +11,10 @@ def get_args():
     parser.add_argument('--limit', '-l', type=int,
                         default=maxsize,
                         help='Limit number of picks.')
+    parser.add_argument('--numbers', '-n',
+                        default=False,
+                        action='store_true',
+                        help='Show line numbers.')
     parser.add_argument('--header', '-H', type=str,
                         default='PICK ITEMS FROM THIS LIST:',
                         help='A string to use as a header.')
@@ -20,22 +24,25 @@ def get_args():
     return parser.parse_args()
 
 
-def event(screen, items, limit, header, footer):
-    picker = Event(screen, items, limit, header, footer)
+def event(screen, **kwargs):
+    picker = Event(screen, **kwargs)
     return picker.get_picks()
 
 
-def pick(items, limit, header, footer):
-    return wrapper(event, items, limit, header, footer)
+def pick(**kwargs):
+    return wrapper(event, **kwargs)
 
 
 def main():
     args = get_args()
-    items = args.items
-    limit = args.limit
-    header = args.header
-    footer = args.footer
-    picked = pick(items, limit, header, footer)
+    kwargs = {
+        'items': args.items,
+        'limit': args.limit,
+        'numbers': args.numbers,
+        'header': args.header,
+        'footer': args.footer,
+    }
+    picked = pick(**kwargs)
     if picked:
         prtcols(picked, 6)
 

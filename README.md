@@ -107,7 +107,7 @@ at one `Pick:`, `Toggle:` or `Find:` prompt.
 However, be aware, that when toggling - if patterns, ranges or strings are
 entered together that match the same items, they will cancel each other out.
 
-For example if you entered `1..10 ^[A-Z][a-z]+$` on a list where the first 10
+For example, if you entered `1..10 ^[A-Z][a-z]+$` on a list where the first 10
 items were capitalised words, nothing would be picked.
 
 The `1..10` would pick the first ten items, and then the `^[A-Z][a-z]+$` would

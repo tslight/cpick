@@ -18,10 +18,12 @@ class Event(Action):
                  screen,
                  items,
                  limit=maxsize,
+                 numbers=False,
                  header='PICK ITEMS FROM THIS LIST:',
                  footer='Press [?] to view keybindings'):
         Action.__init__(self, screen, items)
-        self.limit, self.header, self.footer = limit, header, footer
+        self.limit, self.numbers = limit, numbers
+        self.header, self.footer = header, footer
         self.desc, self.keys = get_keys()
 
         self.pad_actions = {
@@ -120,7 +122,7 @@ class Event(Action):
         header, footer = self.header, self.footer
         while True:
             self.draw_header(header)
-            self.draw_body()
+            self.draw_body(self.numbers)
             self.draw_footer(footer)
             key = self.win.getch()
             try:
