@@ -104,7 +104,7 @@ class Screen:
         self.screen.erase()
         self.y, self.x = self.screen.getmaxyx()
         self.head.resize(1, self.x)
-        self.win.resize(self.y - 3, self.x)
+        self.win.resize(self.y - 1, self.x)
         self.win_y, self.win_x = self.win.getmaxyx()
         if self.lc:
             self.pad.resize(self.lc + 2, self.x)
