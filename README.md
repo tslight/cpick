@@ -82,7 +82,7 @@ print(*picked, sep=", ")
 | `f`,`PGDN`   | Jump down a page of lines                 |
 | `b`,`PGUP`   | Jump up a page of lines                   |
 | `#`          | Jump to line number                       |
-| `/`          | Find items via wilcards, regex or range   |
+| `/`          | Find items via wildcards, regex or range  |
 | `n`          | Jump to next search result                |
 | `p`          | Jump to previous search result            |
 | `CTRL-n`     | Jump to next pick                         |
@@ -100,6 +100,7 @@ print(*picked, sep=", ")
 | `:`          | Toggle via wildcards, regex or range      |
 | `v`          | View picked items                         |
 | `?`,`F1`     | View this help page                       |
+| `w`,`CTRL-s` | Save picks to a file                      |
 | `q`,`ESC`    | Quit and display all marked paths         |
 
 ## NOTES

@@ -2,6 +2,7 @@
 Curses List Picker
 '''
 from fnmatch import fnmatch
+from pathlib import Path
 from re import match, error
 from .draw import Draw
 
@@ -46,7 +47,7 @@ class Action(Draw):
             self.curline += 1  # scroll cursor
 
     def pad_dn(self):
-        if self.pos < self.lc - self.y + 1:
+        if self.pos < self.lc - self.y + 2:
             self.pos += 1
 
     def top(self):
@@ -65,8 +66,8 @@ class Action(Draw):
 
     def pad_pgdn(self):
         self.pos += self.y - 1
-        if self.pos >= self.lc - self.y + 1:
-            self.pos = self.lc - self.y + 1
+        if self.pos >= self.lc - self.y + 2:
+            self.pos = self.lc - self.y + 2
 
     def pgdn(self):
         '''
@@ -209,8 +210,31 @@ class Action(Draw):
                 for index in range(int(start) - 1, int(stop)):
                     method(index, matches)
 
+    def save(self):
+        path = self.draw_textbox("Save to: ").strip()
+        home = str(Path.home())
+        path = home + "/" + path
+        out = None
+        try:
+            # removes need to use f.close
+            with open(path, 'a+') as f:
+                for pick in self.picked:
+                    f.write(self.items[pick] + '\n')
+        except FileNotFoundError:
+            out = "Can't find " + path
+        except IsADirectoryError:
+            out = path + " is a directory."
+        except UnboundLocalError:  # bit of a hack but fuck it
+            out = "Not saving fortune."
+        except Exception:
+            out = "Something went wrong..."
+        else:
+            out = "Saved fortune to " + path
+        finally:
+            return out
+
     def quit(self):
         '''
         Signal to pick() that it's time to return the state of self.picked.
         '''
-        return True
+        return 'quit'

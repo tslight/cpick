@@ -28,6 +28,7 @@ def get_keys():
         '[:]           : Toggle via wildcards, regex or range.',
         '[v]           : View all picks.',
         '[?][F1]       : View this help page.',
+        '[w][CTRL-s]   : Save picks to file.',
         '[q][ESC]      : Quit and display all marked paths.',
     ]
 
@@ -121,6 +122,10 @@ def get_keys():
         'view_help': [
             ord('?'),
             curses.KEY_F1,
+        ],
+        'save': [
+            ord('w'),
+            curses.ascii.ctrl(ord('s')),
         ],
         'quit': [
             ord('q'),

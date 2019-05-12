@@ -107,6 +107,8 @@ class Event(Action):
             **dict.fromkeys(self.keys['view_help'],
                             lambda:
                             self.view(self.desc)),
+            **dict.fromkeys(self.keys['save'],
+                            self.save),
             **dict.fromkeys(self.keys['quit'],
                             self.quit),
         }
@@ -138,7 +140,8 @@ class Event(Action):
             self.draw_footer(footer)
             key = self.win.getch()
             try:
-                if self.actions[key]():
+                out = self.actions[key]()
+                if out == 'quit':
                     return [self.items[pick] for pick in self.picked]
             except KeyError:
                 pass
@@ -148,5 +151,7 @@ class Event(Action):
                 else:
                     del self.picked[self.limit:]
                 header, footer = ("MAXIMUM PICK LIMIT REACHED!",) * 2
+            elif out:
+                footer = out
             else:
                 header, footer = self.header, self.footer

@@ -76,7 +76,7 @@ class Screen:
         '''
         Initialise main window that takes up the rest of the screen.
         '''
-        self.win = curses.newwin(self.y - 3, self.x, 2, 0)
+        self.win = curses.newwin(self.y - 1, self.x, 1, 0)
         self.win_y, self.win_x = self.win.getmaxyx()
         self.win.keypad(True)
 
@@ -84,7 +84,7 @@ class Screen:
         '''
         Initialise pad window for help page.
         '''
-        self.pad = curses.newpad(self.y - 3, self.x)
+        self.pad = curses.newpad(self.y - 1, self.x)
         self.lc, self.pos = (0,)*2
 
     def refresh(self):
@@ -93,7 +93,7 @@ class Screen:
         '''
         self.screen.refresh()
         self.head.refresh()
-        self.pad.refresh(self.pos, 0, 2, 0, self.y - 3, self.x - 2)
+        self.pad.refresh(self.pos, 0, 1, 0, self.y - 1, self.x - 2)
         self.win.refresh()
         self.foot.refresh()
 
