@@ -11,22 +11,24 @@
 ## CLI USAGE
 
 ``` text
-usage: cpick [-h] [--limit LIMIT] [--header HEADER] [--footer FOOTER]
-			 items [items ...]
+USAGE: cpick [-h]       [--help]
+			 [-l LIMIT] [--limit LIMIT]
+			 [-n]       [--numbers]
+			 [-H HEADER][--header HEADER]
+			 [-F FOOTER][--footer FOOTER]
+			 items      [items ...]
 
-Curses list picker.
+Curses List Picker.
 
-positional arguments:
-  items                 Items for the picker.
+Positional Arguments:
+  [ITEMS]                : Items for the picker.
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --limit LIMIT, -l LIMIT
-						Limit number of picks.
-  --header HEADER, -H HEADER
-						A string to use as a header.
-  --footer FOOTER, -F FOOTER
-						A string to use as a footer.
+Optional Arguments:
+  -h, --help             : Show this help message and exit.
+  -l, --limit [LIMIT]    : Limit number of picks.
+  -n, --numbers          : Show line numbers.
+  -H, --header [HEADER]  : A string to use as a header.
+  -F, --footer [FOOTER]  : A string to use as a footer.
 ```
 
 ## PYTHON USAGE
