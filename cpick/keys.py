@@ -26,7 +26,7 @@ def get_keys():
         '[CTRL-SPC]    : Toggle item and go up a line.',
         '[a]           : Toggle all items.',
         '[:]           : Toggle via wildcards, regex or range.',
-        '[v]           : View all picks.'
+        '[v]           : View all picks.',
         '[?][F1]       : View this help page.',
         '[q][ESC]      : Quit and display all marked paths.',
     ]
