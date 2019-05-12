@@ -11,12 +11,12 @@
 ## CLI USAGE
 
 ``` text
-USAGE: cpick [-h]       [--help]
-			 [-l LIMIT] [--limit LIMIT]
-			 [-n]       [--numbers]
-			 [-H HEADER][--header HEADER]
-			 [-F FOOTER][--footer FOOTER]
-			 items      [items ...]
+USAGE: cpick [-h]        [--help]
+			 [-l LIMIT]  [--limit LIMIT]
+			 [-n]        [--numbers]
+			 [-H HEADER] [--header HEADER]
+			 [-F FOOTER] [--footer FOOTER]
+			 [ITEMS]     [items ...]
 
 Curses List Picker.
 
