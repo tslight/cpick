@@ -87,10 +87,12 @@ class Event(Action):
                             self.toggle(self.curidx, self.picked)),
             **dict.fromkeys(self.keys['toggle_dn'],
                             lambda:
-                            self.toggle(self.curidx, self.picked) or self.dn()),
+                            self.toggle(self.curidx,
+                                        self.picked) or self.dn()),
             **dict.fromkeys(self.keys['toggle_up'],
                             lambda:
-                            self.toggle(self.curidx, self.picked) or self.up()),
+                            self.toggle(self.curidx,
+                                        self.picked) or self.up()),
             **dict.fromkeys(self.keys['toggle_all'],
                             self.toggle_all),
             **dict.fromkeys(self.keys['toggle_pattern'],
