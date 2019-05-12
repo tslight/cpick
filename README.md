@@ -109,6 +109,7 @@ methods:
 
 - [Unix Style Wildcards](https://docs.python.org/3/library/fnmatch.html).
 - [Regular Expressions](https://docs.python.org/3/howto/regex.html).
+- Matching a complete string (ie. not substrings - use wildcards for this.)
 - Specifying the line number of an item.
 - Specifying a range of line numbers in the following forms:
 
@@ -121,13 +122,11 @@ methods:
   | `x-`       | Match line numbers from *x* until the end of the list |
   | `-y`       | Match line numbers from beginning of list until *y*   |
 
-- Searching for complete strings (ie. not substrings - use wildcards for this)
-
 These can also be combined. You can enter multiple patterns, ranges and strings
 at one `Pick:`, `Toggle:` or `Find:` prompt.
 
 However, be aware, that when toggling - if patterns, ranges or strings are
-entered together that match the same items, they will cancel each other out.
+entered that match the same items, they will cancel each other out.
 
 For example, if you entered `1..10 ^[A-Z][a-z]+$` on a list where the first 10
 items were capitalised words, nothing would be picked.
