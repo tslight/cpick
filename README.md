@@ -38,24 +38,26 @@ Optional Arguments:
 ``` python
 import cpick
 
+# keyword argument dictionary
 kwargs = {
 	# list to feed into the picker
-	items: ['a', 'list', 'of', 'items']
+	'items': ['a', 'list', 'of', 'items'],
 	# only allow five items to be picked, defaults to sys.maxsize
-	limit: 5
+	'limit': 5,
 	# turn line numbering on
-	numbers: True
+	'numbers': True,
 	# defaults to 'PICK ITEMS FROM THIS LIST'
-	header: 'My Awesome Custom Header'
+	'header': 'My Awesome Custom Header',
 	# defaults to 'Press [?] to view keybindings'
-	footer: 'My Awesome Custom Footer'
+	'footer': 'My Awesome Custom Footer',
 }
 
-# get picks!
+# splat args using ** to unpack kwargs dictionary
 picked = cpick.pick(**kwargs)
 
 # print picked list
-print(picked)
+print(*picked, sep=", ")
+# output: a, list, of, items
 ```
 
 ## KEYBINDINGS
