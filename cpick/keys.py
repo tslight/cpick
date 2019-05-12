@@ -10,7 +10,7 @@ def get_keys():
         '[f][PGDN]     : Jump down a page of lines.',
         '[b][PGUP]     : Jump up a page of lines.',
         '[#]           : Jump to line number.',
-        '[/]           : Find items via globbing, regex or range.',
+        '[/]           : Find items via wilcards, regex or range.',
         '[n]           : Jump to next search result.',
         '[p]           : Jump to previous search result.',
         '[CTRL-n]      : Jump to next pick.',
@@ -18,13 +18,14 @@ def get_keys():
         '[r][F5]       : Reset search results and picks.',
         '[z][CTRL-l]   : Recenter current line on screen.',
         '[RET]         : Pick an item.'
+        '[;]           : Pick via wildcards, regex or range.',
         '[u]           : Undo the last pick.',
         '[U]           : Undo the last pick and move to it\'s line.',
-        '[t]           : Toggle item pick status.',
+        '[t]           : Toggle an item.',
         '[SPC]         : Toggle item and go down a line.',
         '[CTRL-SPC]    : Toggle item and go up a line.',
-        '[a]           : Toggle picking of all items.',
-        '[;][F3]       : Toggle via globbing, regex or range.',
+        '[a]           : Toggle all items.',
+        '[:]           : Toggle via wildcards, regex or range.',
         '[?][F1]       : View this help page.',
         '[q][ESC]      : Quit and display all marked paths.',
     ]
@@ -63,7 +64,6 @@ def get_keys():
         ],
         'find': [
             ord('/'),
-            curses.KEY_F2,
         ],
         'next_find': [
             ord('n'),
