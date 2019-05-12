@@ -53,43 +53,49 @@ class Event(Action):
             **dict.fromkeys(self.keys['goto'],
                             self.goto),
             **dict.fromkeys(self.keys['find'],
-                            lambda: self.match("Find: ",
-                                               self.matches,
-                                               self.pick)),
+                            lambda:
+                            self.match("Find: ", self.matches, self.pick)),
             **dict.fromkeys(self.keys['next_find'],
-                            lambda: self.goto_next(self.matches)),
+                            lambda:
+                            self.goto_next(self.matches)),
             **dict.fromkeys(self.keys['prev_find'],
-                            lambda: self.goto_prev(self.matches)),
+                            lambda:
+                            self.goto_prev(self.matches)),
             **dict.fromkeys(self.keys['next_pick'],
-                            lambda: self.goto_next(self.picked)),
+                            lambda:
+                            self.goto_next(self.picked)),
             **dict.fromkeys(self.keys['prev_pick'],
-                            lambda: self.goto_prev(self.picked)),
+                            lambda:
+                            self.goto_prev(self.picked)),
             **dict.fromkeys(self.keys['reset'],
                             self.reset),
             **dict.fromkeys(self.keys['recenter'],
                             self.recenter),
             **dict.fromkeys(self.keys['pick'],
-                            lambda: self.pick(self.curidx) or self.dn()),
+                            lambda:
+                            self.pick(self.curidx, self.picked) or self.dn()),
             **dict.fromkeys(self.keys['pick_pattern'],
-                            lambda: self.match("Pick: ",
-                                               self.picked,
-                                               self.pick)),
+                            lambda:
+                            self.match("Pick: ", self.picked, self.pick)),
             **dict.fromkeys(self.keys['undo'],
                             self.undo),
             **dict.fromkeys(self.keys['undo_up'],
-                            lambda: self.undo() or self.goto_prev(self.picked)),
+                            lambda:
+                            self.undo() or self.goto_prev(self.picked)),
             **dict.fromkeys(self.keys['toggle'],
-                            lambda: self.toggle(self.curidx)),
+                            lambda:
+                            self.toggle(self.curidx, self.picked)),
             **dict.fromkeys(self.keys['toggle_dn'],
-                            lambda: self.toggle(self.curidx) or self.dn()),
+                            lambda:
+                            self.toggle(self.curidx, self.picked) or self.dn()),
             **dict.fromkeys(self.keys['toggle_up'],
-                            lambda: self.toggle(self.curidx) or self.up()),
+                            lambda:
+                            self.toggle(self.curidx, self.picked) or self.up()),
             **dict.fromkeys(self.keys['toggle_all'],
                             self.toggle_all),
             **dict.fromkeys(self.keys['toggle_pattern'],
-                            lambda: self.match("Toggle: ",
-                                               self.picked,
-                                               self.toggle)),
+                            lambda:
+                            self.match("Toggle: ", self.picked, self.toggle)),
             **dict.fromkeys(self.keys['help'],
                             self.get_help),
             **dict.fromkeys(self.keys['quit'],
