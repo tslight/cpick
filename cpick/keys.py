@@ -17,7 +17,7 @@ def get_keys():
         '[CTRL-p]      : Jump to previous pick.',
         '[r][F5]       : Reset search results and picks.',
         '[z][CTRL-l]   : Recenter current line on screen.',
-        '[RET]         : Pick an item.'
+        '[RET]         : Pick an item.',
         '[;]           : Pick via wildcards, regex or range.',
         '[u]           : Undo the last pick.',
         '[U]           : Undo the last pick and move to it\'s line.',

@@ -52,33 +52,33 @@ print(picked)
 
 ## KEYBINDINGS
 
-``` text
-'[k][UP]       : Move up one line.',
-'[j][DOWN]     : Move down one line.',
-'[g][HOME]     : Jump to first line.',
-'[G][END]      : Jump to last line.',
-'[f][PGDN]     : Jump down a page of lines.',
-'[b][PGUP]     : Jump up a page of lines.',
-'[#]           : Jump to line number.',
-'[/]           : Find items via wilcards, regex or range.',
-'[n]           : Jump to next search result.',
-'[p]           : Jump to previous search result.',
-'[CTRL-n]      : Jump to next pick.',
-'[CTRL-p]      : Jump to previous pick.',
-'[r][F5]       : Reset search results and picks.',
-'[z][CTRL-l]   : Recenter current line on screen.',
-'[RET]         : Pick an item.'
-'[;]           : Pick via wildcards, regex or range.',
-'[u]           : Undo the last pick.',
-'[U]           : Undo the last pick and move to it\'s line.',
-'[t]           : Toggle an item.',
-'[SPC]         : Toggle item and go down a line.',
-'[CTRL-SPC]    : Toggle item and go up a line.',
-'[a]           : Toggle all items.',
-'[:]           : Toggle via wildcards, regex or range.',
-'[?][F1]       : View this help page.',
-'[q][ESC]      : Quit and display all marked paths.',
-```
+| **KEY**      | **ACTION**                                |
+|:-------------|:------------------------------------------|
+| `k`,`UP`     | Move up one line                          |
+| `j`,`DOWN`   | Move down one line                        |
+| `g`,`HOME`   | Jump to first line                        |
+| `G`,`END`    | Jump to last line                         |
+| `f`,`PGDN`   | Jump down a page of lines                 |
+| `b`,`PGUP`   | Jump up a page of lines                   |
+| `#`          | Jump to line number                       |
+| `/`          | Find items via wilcards, regex or range   |
+| `n`          | Jump to next search result                |
+| `p`          | Jump to previous search result            |
+| `CTRL-n`     | Jump to next pick                         |
+| `CTRL-p`     | Jump to previous pick                     |
+| `r`,`F5`     | Reset search results and picks            |
+| `z`,`CTRL-l` | Recenter current line on screen           |
+| `RET`        | Pick an item                              |
+| `;`          | Pick via wildcards, regex or range        |
+| `u`          | Undo the last pick                        |
+| `U`          | Undo the last pick and move to it\'s line |
+| `t`          | Toggle an item                            |
+| `SPC`        | Toggle item and go down a line            |
+| `CTRL-SPC`   | Toggle item and go up a line              |
+| `a`          | Toggle all items                          |
+| `:`          | Toggle via wildcards, regex or range      |
+| `?`,`F1`     | View this help page                       |
+| `q`,`ESC`    | Quit and display all marked paths         |
 
 ## NOTES
 
@@ -89,13 +89,17 @@ methods:
 - [Regular Expressions](https://docs.python.org/3/howto/regex.html).
 - Specifying the line number of an item.
 - Specifying a range of line numbers in the following forms:
-  - *x..y* : Match line numbers between *x* and *y*.
-  - *x-y*  : Match line numbers between *x* and *y*.
-  - *x..*  : Match line numbers from *x* until the end of the list.
-  - *..y*  : Match line numbers from beginning of list until *y*.
-  - *x-*   : Match line numbers from *x* until the end of the list.
-  - *-y*   : Match line numbers from beginning of list until *y*.
-- Searching for complete strings (ie. not substrings - use wildcards for this).
+
+  | **PROMPT** | **ACTION**                                            |
+  |:-----------|:------------------------------------------------------|
+  | `x..y`     | Match line numbers between *x* and *y*                |
+  | `x-y`      | Match line numbers between *x* and *y*                |
+  | `x..`      | Match line numbers from *x* until the end of the list |
+  | `..y`      | Match line numbers from beginning of list until *y*   |
+  | `x-`       | Match line numbers from *x* until the end of the list |
+  | `-y`       | Match line numbers from beginning of list until *y*   |
+
+- Searching for complete strings (ie. not substrings - use wildcards for this)
 
 These can also be combined. You can enter multiple patterns, ranges and strings
 at one `Pick:`, `Toggle:` or `Find:` prompt.
@@ -110,7 +114,7 @@ The `1..10` would pick the first ten items, and then the `^[A-Z][a-z]+$` would
 unpick them, since they call the toggle method consecutively.
 
 If you do not want this *(you probably don't..)* - use the `Pick:` prompt
-instead .
+instead.
 
 ## EXAMPLES
 
