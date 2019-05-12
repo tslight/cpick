@@ -98,14 +98,21 @@ class Event(Action):
             **dict.fromkeys(self.keys['toggle_pattern'],
                             lambda:
                             self.match("Toggle: ", self.picked, self.toggle)),
-            **dict.fromkeys(self.keys['help'],
-                            self.get_help),
+            **dict.fromkeys(self.keys['view_picks'],
+                            lambda:
+                            self.view(
+                                contents=[
+                                    self.items[pick] for pick in self.picked
+                                ])),
+            **dict.fromkeys(self.keys['view_help'],
+                            lambda:
+                            self.view(self.desc)),
             **dict.fromkeys(self.keys['quit'],
                             self.quit),
         }
 
-    def get_help(self):
-        self.draw_pad(self.desc)
+    def view(self, contents):
+        self.draw_pad(contents)
         self.screen.refresh()
         self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
         self.draw_footer("Press [q] or [ESC] to return to picker.")

@@ -81,6 +81,7 @@ print(picked)
 | `CTRL-SPC`   | Toggle item and go up a line              |
 | `a`          | Toggle all items                          |
 | `:`          | Toggle via wildcards, regex or range      |
+| `v`          | View picked items                         |
 | `?`,`F1`     | View this help page                       |
 | `q`,`ESC`    | Quit and display all marked paths         |
 
