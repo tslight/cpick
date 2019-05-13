@@ -37,15 +37,18 @@ class Draw(Screen):
         self.foot.refresh()
 
     def draw_body(self, show_numbers=False):
+        slice_size = max(int(self.total / self.columns), self.maxlines)
+        start = 0
+        stop = slice_size
         for win in self.windows:
             win_y, win_x = win.getmaxyx()
             start_y, start_x = win.getbegyx()
             win.keypad(True)
             win.erase()  # clear causes flickering in some terminals
-            stop = self.start + self.maxlines
+            # stop = self.start + self.maxlines
             number = ''
             self.curidx = self.start + self.curline
-            for linum, item in enumerate(self.items[self.start:stop]):
+            for linum, item in enumerate(self.items[start:stop]):
                 index = self.start + linum
                 if linum == self.curline and index in self.picked:
                     indicator, color = self.indicator, self.black_yellow
@@ -69,6 +72,8 @@ class Draw(Screen):
                 line = line + ' ' * (win_x - len(line))
                 win.addstr(linum, 0, line, color)
             win.refresh()
+            start = stop
+            stop += slice_size
 
     def draw_pad(self, msg):
         self.lc = len(msg)

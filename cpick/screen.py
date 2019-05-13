@@ -85,13 +85,13 @@ class Screen:
         Initialise main window that takes up the rest of the screen.
         '''
         self.windows = []
-        columns = 1
+        self.columns = 1
         total = self.total
         for n in range(self.maxcolumns):
             if total > self.maxlines:
                 total = total - self.maxlines
-                columns += 1
-        for col in range(columns):
+                self.columns += 1
+        for col in range(self.columns):
             win = curses.newwin(
                 self.y - 1, self.maxwidth, 1, col*self.maxwidth
             )
