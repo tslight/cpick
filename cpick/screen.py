@@ -12,15 +12,23 @@ class Screen:
     one a normal window for dynamic scrolling.
     '''
 
-    def __init__(self, screen):
+    def __init__(self, screen, items):
         self.screen = screen
+        self.items = items
         self.y, self.x = self.screen.getmaxyx()
+        self.scroll = 2  # when to start scrolling
+        self.start, self.curline, self.curidx = (0,)*3
+        self.total = len(self.items)
+        self.maxwidth = len(max(self.items, key=len)) + 20
+        self.maxcolumns = int(self.x / self.maxwidth)
         self.color_init()
         self.head_init()
         self.win_init()
         self.foot_init()
         self.pad_init()
         self.refresh()
+        self.maxlines = self.y - self.foot_y - 1
+        self.pages = self.total / self.maxlines  # total pages
         curses.curs_set(0)  # hide the cursor
 
     def color_init(self):
@@ -36,27 +44,27 @@ class Screen:
             curses.init_pair(i, i, -1)
             curses.init_pair(i + 7, curses.COLOR_WHITE, i)
             curses.init_pair(i + 14, curses.COLOR_BLACK, i)
-        self.red_black = curses.color_pair(1)
-        self.green_black = curses.color_pair(2)
-        self.yellow_black = curses.color_pair(3)
-        self.blue_black = curses.color_pair(4)
-        self.magenta_black = curses.color_pair(5)
-        self.cyan_black = curses.color_pair(6)
-        self.white_black = curses.color_pair(7)
-        self.white_red = curses.color_pair(8)
-        self.white_green = curses.color_pair(9)
-        self.white_yellow = curses.color_pair(10)
-        self.white_blue = curses.color_pair(11)
-        self.white_magenta = curses.color_pair(12)
-        self.white_cyan = curses.color_pair(13)
-        self.white_white = curses.color_pair(14)
-        self.black_red = curses.color_pair(15)
-        self.black_green = curses.color_pair(16)
-        self.black_yellow = curses.color_pair(17)
-        self.black_blue = curses.color_pair(18)
-        self.black_magenta = curses.color_pair(19)
-        self.black_cyan = curses.color_pair(20)
-        self.black_white = curses.color_pair(21)
+            self.red_black = curses.color_pair(1)
+            self.green_black = curses.color_pair(2)
+            self.yellow_black = curses.color_pair(3)
+            self.blue_black = curses.color_pair(4)
+            self.magenta_black = curses.color_pair(5)
+            self.cyan_black = curses.color_pair(6)
+            self.white_black = curses.color_pair(7)
+            self.white_red = curses.color_pair(8)
+            self.white_green = curses.color_pair(9)
+            self.white_yellow = curses.color_pair(10)
+            self.white_blue = curses.color_pair(11)
+            self.white_magenta = curses.color_pair(12)
+            self.white_cyan = curses.color_pair(13)
+            self.white_white = curses.color_pair(14)
+            self.black_red = curses.color_pair(15)
+            self.black_green = curses.color_pair(16)
+            self.black_yellow = curses.color_pair(17)
+            self.black_blue = curses.color_pair(18)
+            self.black_magenta = curses.color_pair(19)
+            self.black_cyan = curses.color_pair(20)
+            self.black_white = curses.color_pair(21)
 
     def head_init(self):
         '''
@@ -76,9 +84,12 @@ class Screen:
         '''
         Initialise main window that takes up the rest of the screen.
         '''
-        self.win = curses.newwin(self.y - 1, self.x, 1, 0)
-        self.win_y, self.win_x = self.win.getmaxyx()
-        self.win.keypad(True)
+        self.windows = []
+        for col in range(self.maxcolumns):
+            win = curses.newwin(
+                self.y - 1, self.maxwidth, 1, col*self.maxwidth
+            )
+            self.windows.append(win)
 
     def pad_init(self):
         '''
@@ -94,7 +105,7 @@ class Screen:
         self.screen.refresh()
         self.head.refresh()
         self.pad.refresh(self.pos, 0, 1, 0, self.y - 1, self.x - 2)
-        self.win.refresh()
+        # self.win.refresh()
         self.foot.refresh()
 
     def resize(self):
@@ -108,7 +119,7 @@ class Screen:
         self.win_y, self.win_x = self.win.getmaxyx()
         if self.lc:
             self.pad.resize(self.lc + 2, self.x)
-        self.maxlines = self.win_y - self.foot_y
-        self.foot.mvwin(self.y - 1, 0)
-        self.foot.resize(1, self.x)
-        self.refresh()
+            self.maxlines = self.win_y - self.foot_y
+            self.foot.mvwin(self.y - 1, 0)
+            self.foot.resize(1, self.x)
+            self.refresh()

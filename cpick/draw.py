@@ -2,8 +2,11 @@
 Curses List Picker
 '''
 import curses
+import cgitb
 from curses.textpad import Textbox
 from .screen import Screen
+# Get more detailed traceback reports
+cgitb.enable(format="text")  # https://pymotw.com/2/cgitb/
 
 
 class Draw(Screen):
@@ -12,16 +15,10 @@ class Draw(Screen):
     '''
 
     def __init__(self, screen, items):
-        Screen.__init__(self, screen)
-        self.items = items
+        Screen.__init__(self, screen, items)
         self.indicator = '-->'
         self.checkbox = '[ ]'
         self.checked = '[x]'
-        self.scroll = 2  # when to start scrolling
-        self.start, self.curline, self.curidx = (0,)*3
-        self.total = len(self.items)
-        self.maxlines = self.win_y - self.foot_y
-        self.pages = self.total / self.maxlines  # total pages
 
     def draw_header(self, msg):
         try:
@@ -40,34 +37,38 @@ class Draw(Screen):
         self.foot.refresh()
 
     def draw_body(self, show_numbers=False):
-        self.win.erase()  # clear causes flickering in some terminals
-        stop = self.start + self.maxlines
-        number = ''
-        self.curidx = self.start + self.curline
-        for linum, item in enumerate(self.items[self.start:stop]):
-            index = self.start + linum
-            if linum == self.curline and index in self.picked:
-                indicator, color = self.indicator, self.black_yellow
-            elif linum == self.curline and index in self.matches:
-                indicator, color = self.indicator, self.black_green
-            elif index in self.picked:
-                indicator, color = self.checked, self.yellow_black
-            elif index in self.matches:
-                indicator, color = self.checkbox, self.green_black
-            elif linum == self.curline:
-                indicator, color = self.indicator, self.black_blue
-            else:
-                indicator, color = self.checkbox, self.white_black
-            if show_numbers:
-                maxlen = len(str(self.total + 1))
-                length = len(str(index + 1))
-                if length < maxlen:
-                    pad = ' ' * (maxlen - length)
-                    number = str(index + 1) + ')' + pad
-            line = number + indicator + ' ' + item
-            line = line + ' ' * (self.win_x - len(line))
-            self.win.addstr(linum, 0, line, color)
-        self.win.refresh()
+        for win in self.windows:
+            win_y, win_x = win.getmaxyx()
+            start_y, start_x = win.getbegyx()
+            win.keypad(True)
+            win.erase()  # clear causes flickering in some terminals
+            stop = self.start + self.maxlines
+            number = ''
+            self.curidx = self.start + self.curline
+            for linum, item in enumerate(self.items[self.start:stop]):
+                index = self.start + linum
+                if linum == self.curline and index in self.picked:
+                    indicator, color = self.indicator, self.black_yellow
+                elif linum == self.curline and index in self.matches:
+                    indicator, color = self.indicator, self.black_green
+                elif index in self.picked:
+                    indicator, color = self.checked, self.yellow_black
+                elif index in self.matches:
+                    indicator, color = self.checkbox, self.green_black
+                elif linum == self.curline:
+                    indicator, color = self.indicator, self.black_blue
+                else:
+                    indicator, color = self.checkbox, self.white_black
+                if show_numbers:
+                    maxlen = len(str(self.total + 1))
+                    length = len(str(index + 1))
+                    if length < maxlen:
+                        pad = ' ' * (maxlen - length)
+                        number = str(index + 1) + ')' + pad
+                line = number + indicator + ' ' + item
+                line = line + ' ' * (win_x - len(line))
+                win.addstr(linum, 0, line, color)
+            win.refresh()
 
     def draw_pad(self, msg):
         self.lc = len(msg)
