@@ -138,7 +138,7 @@ class Event(Action):
             self.draw_header(header)
             self.draw_body(self.numbers)
             self.draw_footer(footer)
-            key = self.win.getch()
+            key = self.screen.getch()
             try:
                 out = self.actions[key]()
                 if out == 'quit':

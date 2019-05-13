@@ -12,9 +12,12 @@ class Screen:
     one a normal window for dynamic scrolling.
     '''
 
-    def __init__(self, screen):
+    def __init__(self, screen, items):
         self.screen = screen
+        self.items = items
         self.y, self.x = self.screen.getmaxyx()
+        self.maxwidth = len(max(self.items, key=len)) + 5
+        self.maxcols = int(self.y / self.maxwidth)
         self.color_init()
         self.head_init()
         self.win_init()
@@ -76,9 +79,16 @@ class Screen:
         '''
         Initialise main window that takes up the rest of the screen.
         '''
-        self.win = curses.newwin(self.y - 1, self.x, 1, 0)
-        self.win_y, self.win_x = self.win.getmaxyx()
-        self.win.keypad(True)
+        self.win1 = curses.newwin(self.y - 1, self.maxwidth, 1, 0)
+        self.win1_y, self.win1_x = self.win1.getmaxyx()
+        self.win1_begy, self.win1_begx = self.win1.getbegyx()
+        self.win1.keypad(True)
+
+        self.win2 = curses.newwin(
+            self.y - 1, self.maxwidth, 1, self.maxwidth + 2)
+        self.win2_y, self.win2_x = self.win2.getmaxyx()
+        self.win2_begy, self.win2_begx = self.win2.getbegyx()
+        self.win2.keypad(True)
 
     def pad_init(self):
         '''
@@ -94,7 +104,8 @@ class Screen:
         self.screen.refresh()
         self.head.refresh()
         self.pad.refresh(self.pos, 0, 1, 0, self.y - 1, self.x - 2)
-        self.win.refresh()
+        self.win1.refresh()
+        self.win2.refresh()
         self.foot.refresh()
 
     def resize(self):

@@ -2,8 +2,11 @@
 Curses List Picker
 '''
 import curses
+import cgitb
 from curses.textpad import Textbox
 from .screen import Screen
+# Get more detailed traceback reports
+cgitb.enable(format="text")  # https://pymotw.com/2/cgitb/
 
 
 class Draw(Screen):
@@ -12,15 +15,14 @@ class Draw(Screen):
     '''
 
     def __init__(self, screen, items):
-        Screen.__init__(self, screen)
-        self.items = items
+        Screen.__init__(self, screen, items)
         self.indicator = '-->'
         self.checkbox = '[ ]'
         self.checked = '[x]'
         self.scroll = 2  # when to start scrolling
         self.start, self.curline, self.curidx = (0,)*3
         self.total = len(self.items)
-        self.maxlines = self.win_y - self.foot_y
+        self.maxlines = self.win1_y - self.foot_y
         self.pages = self.total / self.maxlines  # total pages
 
     def draw_header(self, msg):
@@ -40,7 +42,8 @@ class Draw(Screen):
         self.foot.refresh()
 
     def draw_body(self, show_numbers=False):
-        self.win.erase()  # clear causes flickering in some terminals
+        self.win1.erase()  # clear causes flickering in some terminals
+        self.win2.erase()  # clear causes flickering in some terminals
         stop = self.start + self.maxlines
         number = ''
         self.curidx = self.start + self.curline
@@ -65,9 +68,11 @@ class Draw(Screen):
                     pad = ' ' * (maxlen - length)
                     number = str(index + 1) + ')' + pad
             line = number + indicator + ' ' + item
-            line = line + ' ' * (self.win_x - len(line))
-            self.win.addstr(linum, 0, line, color)
-        self.win.refresh()
+            # line = line + ' ' * (self.win_x - len(line))
+            self.win1.addstr(linum, self.win1_begx, line, color)
+            self.win2.addstr(linum, self.win1_begx, line, color)
+        self.win1.refresh()
+        self.win2.refresh()
 
     def draw_pad(self, msg):
         self.lc = len(msg)
