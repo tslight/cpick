@@ -23,12 +23,12 @@ class Screen:
         self.maxcolumns = int(self.x / self.maxwidth)
         self.color_init()
         self.head_init()
-        self.win_init()
         self.foot_init()
         self.pad_init()
         self.refresh()
         self.maxlines = self.y - self.foot_y - 1
         self.pages = self.total / self.maxlines  # total pages
+        self.win_init()
         curses.curs_set(0)  # hide the cursor
 
     def color_init(self):
@@ -85,7 +85,13 @@ class Screen:
         Initialise main window that takes up the rest of the screen.
         '''
         self.windows = []
-        for col in range(self.maxcolumns):
+        columns = 1
+        total = self.total
+        for n in range(self.maxcolumns):
+            if total > self.maxlines:
+                total = total - self.maxlines
+                columns += 1
+        for col in range(columns):
             win = curses.newwin(
                 self.y - 1, self.maxwidth, 1, col*self.maxwidth
             )
