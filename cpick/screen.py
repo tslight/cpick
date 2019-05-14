@@ -92,9 +92,7 @@ class Screen:
                 total = total - self.maxlines
                 self.columns += 1
         for col in range(self.columns):
-            win = curses.newwin(
-                self.y - 1, self.maxwidth, 1, col*self.maxwidth
-            )
+            win = curses.newpad(self.y - 1, self.maxwidth)
             self.windows.append(win)
 
     def pad_init(self):

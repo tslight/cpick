@@ -38,19 +38,23 @@ class Draw(Screen):
 
     def draw_body(self, show_numbers=False):
         slice_size = max(int(self.total / self.columns), self.maxlines)
-        if self.total / self.columns > self.maxlines:
-            overflow = (self.total / self.columns) - self.maxlines
+        # if self.total / self.columns > self.maxlines:
+        #     overflow = (self.total / self.columns) - self.maxlines
         start = self.start
         stop = self.start + slice_size
         for win in self.windows:
             win_y, win_x = win.getmaxyx()
             start_y, start_x = win.getbegyx()
             win.keypad(True)
+            win.scrollok(True)
+            win.idlok(True)
             win.erase()  # clear causes flickering in some terminals
             # stop = self.start + self.maxlines
             number = ''
             self.curidx = self.start + self.curline
             for linum, item in enumerate(self.items[start:stop]):
+                if start + self.maxlines > self.total:
+                    return
                 index = self.start + linum
                 if linum == self.curline and index in self.picked:
                     indicator, color = self.indicator, self.black_yellow
@@ -73,8 +77,8 @@ class Draw(Screen):
                 line = number + indicator + ' ' + item
                 line = line + ' ' * (win_x - len(line))
                 win.addstr(linum, 0, line, color)
-            win.refresh()
-            start += self.start + slice_size
+            win.refresh(self.pos, 0, 1, 0, self.y - 1, self.maxwidth)
+            start = stop + self.start
             stop += self.start + slice_size
 
     def draw_pad(self, msg):
