@@ -38,8 +38,10 @@ class Draw(Screen):
 
     def draw_body(self, show_numbers=False):
         slice_size = max(int(self.total / self.columns), self.maxlines)
-        start = 0
-        stop = slice_size
+        if self.total / self.columns > self.maxlines:
+            overflow = (self.total / self.columns) - self.maxlines
+        start = self.start
+        stop = self.start + slice_size
         for win in self.windows:
             win_y, win_x = win.getmaxyx()
             start_y, start_x = win.getbegyx()
@@ -72,8 +74,8 @@ class Draw(Screen):
                 line = line + ' ' * (win_x - len(line))
                 win.addstr(linum, 0, line, color)
             win.refresh()
-            start = stop
-            stop += slice_size
+            start += self.start + slice_size
+            stop += self.start + slice_size
 
     def draw_pad(self, msg):
         self.lc = len(msg)
