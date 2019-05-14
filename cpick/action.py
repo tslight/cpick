@@ -44,7 +44,7 @@ class Action(Draw):
 
     def pad_dn(self):
         if self.curline >= self.total - 1:
-            self.pos, self.curline = (0,)*2
+            self.top()
         elif self.pos >= self.total - self.maxlines:
             self.curline += 1
         elif self.curline >= self.maxlines - 1:
@@ -54,29 +54,20 @@ class Action(Draw):
             self.curline += 1  # scroll cursor
 
     def pad_up(self):
-        if self.curline == 0:
-            self.pos = self.total - self.maxlines
-            self.curline = self.total
+        if self.curline < 1:
+            self.btm()
         if self.curline <= self.pos:
             self.pos -= 1
-        elif self.curline == 0:
-            pass
+            self.curline -= 1
         else:
             self.curline -= 1
 
     def top(self):
-        '''
-        Jump to top by resetting start and curline attributes to 0.
-        '''
-        self.start, self.curline = (0,) * 2
+        self.pos, self.curline = (0,)*2
 
     def btm(self):
-        '''
-        Jump to bottom by moving the start to the total - maxlines and current
-        line to maxlines - 1.
-        '''
-        self.start = self.total - self.maxlines
-        self.curline = self.maxlines - 1
+        self.pos = self.total - self.maxlines
+        self.curline = self.total
 
     def pad_pgdn(self):
         self.pos += self.y - 1
