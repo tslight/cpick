@@ -17,7 +17,7 @@ class Screen:
         self.y, self.x = self.screen.getmaxyx()
         self.color_init()
         self.head_init()
-        self.win_init()
+        # self.win_init()
         self.foot_init()
         self.pad_init()
         self.refresh()
@@ -72,19 +72,22 @@ class Screen:
         self.foot = curses.newwin(0, self.x, self.y - 1, 0)
         self.foot_y, self.foot_x = self.foot.getmaxyx()
 
-    def win_init(self):
-        '''
-        Initialise main window that takes up the rest of the screen.
-        '''
-        self.win = curses.newwin(self.y - 1, self.x, 1, 0)
-        self.win_y, self.win_x = self.win.getmaxyx()
-        self.win.keypad(True)
+    # def win_init(self):
+    #     '''
+    #     Initialise main window that takes up the rest of the screen.
+    #     '''
+    #     self.win = curses.newpad(self.y - 1, self.x)
+    #     self.win_y, self.win_x = self.win.getmaxyx()
+    #     self.win.keypad(True)
+    #     self.win.scrollok(True)
+    #     self.win.idlok(True)
 
     def pad_init(self):
         '''
         Initialise pad window for help page.
         '''
         self.pad = curses.newpad(self.y - 1, self.x)
+        self.win_y, self.win_x = self.pad.getmaxyx()
         self.lc, self.pos = (0,)*2
 
     def refresh(self):
@@ -94,7 +97,7 @@ class Screen:
         self.screen.refresh()
         self.head.refresh()
         self.pad.refresh(self.pos, 0, 1, 0, self.y - 1, self.x - 2)
-        self.win.refresh()
+        # self.win.refresh()
         self.foot.refresh()
 
     def resize(self):
@@ -104,8 +107,8 @@ class Screen:
         self.screen.erase()
         self.y, self.x = self.screen.getmaxyx()
         self.head.resize(1, self.x)
-        self.win.resize(self.y - 1, self.x)
-        self.win_y, self.win_x = self.win.getmaxyx()
+        # self.win.resize(self.y - 1, self.x)
+        # self.win_y, self.win_x = self.win.getmaxyx()
         if self.lc:
             self.pad.resize(self.lc + 2, self.x)
         self.maxlines = self.win_y - self.foot_y

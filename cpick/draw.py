@@ -1,9 +1,11 @@
 '''
 Curses List Picker
 '''
+import cgitb
 import curses
 from curses.textpad import Textbox
 from .screen import Screen
+cgitb.enable(format='text')
 
 
 class Draw(Screen):
@@ -20,7 +22,7 @@ class Draw(Screen):
         self.scroll = 2  # when to start scrolling
         self.start, self.curline, self.curidx = (0,)*3
         self.total = len(self.items)
-        self.maxlines = self.win_y - self.foot_y
+        self.maxlines = self.win_y - 1
         self.pages = self.total / self.maxlines  # total pages
 
     def draw_header(self, msg):
@@ -41,10 +43,10 @@ class Draw(Screen):
 
     def draw_body(self, show_numbers=False):
         self.win.erase()  # clear causes flickering in some terminals
-        stop = self.start + self.maxlines
+        self.pad.resize(self.total + 2, self.x)
         number = ''
         self.curidx = self.start + self.curline
-        for linum, item in enumerate(self.items[self.start:stop]):
+        for linum, item in enumerate(self.items):
             index = self.start + linum
             if linum == self.curline and index in self.picked:
                 indicator, color = self.indicator, self.black_yellow
@@ -67,20 +69,31 @@ class Draw(Screen):
             line = number + indicator + ' ' + item
             line = line + ' ' * (self.win_x - len(line))
             self.win.addstr(linum, 0, line, color)
-        self.win.refresh()
+        self.win.refresh(self.pos, 0, 1, 0, self.y - 1, self.x - 2)
 
     def draw_pad(self, msg):
         self.lc = len(msg)
         self.screen.erase()
-        self.pad.erase()
+        self.pad.clrtoeol()
         self.pad.resize(self.lc + 2, self.x)
-        try:
-            for index, line in enumerate(msg):
-                self.pad.addstr(index, 0, line)
-            self.pad.scrollok(1)
-            self.pad.idlok(1)
-        except curses.error:
-            pass
+        for index, line in enumerate(msg):
+            if index == self.curline and index in self.picked:
+                indicator, color = self.indicator, self.black_yellow
+            elif index == self.curline and index in self.matches:
+                indicator, color = self.indicator, self.black_green
+            elif index in self.picked:
+                indicator, color = self.checked, self.yellow_black
+            elif index in self.matches:
+                indicator, color = self.checkbox, self.green_black
+            elif index == self.curline:
+                indicator, color = self.indicator, self.black_blue
+            else:
+                indicator, color = self.checkbox, self.white_black
+            line = indicator + ' ' + line
+            self.pad.addstr(index, 0, line, color)
+        self.pad.scrollok(1)
+        self.pad.idlok(1)
+        self.pad.refresh(self.pos, 0, 1, 0, self.y - 1, self.x - 2)
 
     def draw_textbox(self, prompt):
         self.foot.erase()

@@ -134,13 +134,14 @@ class Event(Action):
         return our objects' picked attribute.
         '''
         header, footer = self.header, self.footer
+        self.draw_pad(self.items)
+        self.refresh()
         while True:
             self.draw_header(header)
-            self.draw_body(self.numbers)
             self.draw_footer(footer)
             key = self.screen.getch()
             try:
-                out = self.actions[key]()
+                out = self.pad_actions[key]()
                 if out == 'quit':
                     return [self.items[pick] for pick in self.picked]
             except KeyError:
@@ -155,3 +156,5 @@ class Event(Action):
                 footer = out
             else:
                 header, footer = self.header, self.footer
+            self.draw_pad(self.items)
+            self.refresh()

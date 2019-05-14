@@ -28,10 +28,6 @@ class Action(Draw):
         elif self.start > 0 or self.curline > 0:
             self.curline -= 1  # scroll cursor
 
-    def pad_up(self):
-        if self.pos > 0:
-            self.pos -= 1
-
     def dn(self):
         '''
         If the next line would hit the limit and we're not at the end of the
@@ -47,8 +43,26 @@ class Action(Draw):
             self.curline += 1  # scroll cursor
 
     def pad_dn(self):
-        if self.pos < self.lc - self.y + 2:
-            self.pos += 1
+        if self.curline >= self.total - 1:
+            self.pos, self.curline = (0,)*2
+        elif self.pos >= self.total - self.maxlines:
+            self.curline += 1
+        elif self.curline >= self.maxlines - 1:
+            self.pos += 1  # scroll screen
+            self.curline += 1
+        else:
+            self.curline += 1  # scroll cursor
+
+    def pad_up(self):
+        if self.curline == 0:
+            self.pos = self.total - self.maxlines
+            self.curline = self.total
+        if self.curline <= self.pos:
+            self.pos -= 1
+        elif self.curline == 0:
+            pass
+        else:
+            self.curline -= 1
 
     def top(self):
         '''
