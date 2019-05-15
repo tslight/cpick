@@ -20,18 +20,19 @@ class Action(Draw):
     ###########################################################################
     #                             WINDOW SCROLLING                            #
     ###########################################################################
+
     def up_win(self):
         if self.pminrow > 0:
             self.pminrow -= 1
 
     def down_win(self):
-        if self.pminrow < self.lc - self.maxy + 2:
+        if self.pminrow < self.maxline - self.maxy + 2:
             self.pminrow += 1
 
     def pgdn_win(self):
         self.pminrow += self.maxy - 1
-        if self.pminrow >= self.lc - self.maxy + 2:
-            self.pminrow = self.lc - self.maxy + 2
+        if self.pminrow >= self.maxline - self.maxy + 2:
+            self.pminrow = self.maxline - self.maxy + 2
 
     def pgup_win(self):
         self.pminrow -= self.maxy - 1
@@ -51,7 +52,7 @@ class Action(Draw):
     def down_line(self):
         if self.curline >= self.maxline - 1:
             self.top_line()
-        elif self.curline >= self.pminrow + self.smaxrow:
+        elif self.curline >= self.pminrow + self.smaxrow - 1:
             self.pminrow += 1  # scroll screen
             self.curline += 1
         else:
@@ -60,6 +61,7 @@ class Action(Draw):
     def up_line(self):
         if self.curline < 1:
             self.bottom_line()
+            self.curline += 1
         if self.curline <= self.pminrow:
             self.pminrow -= 1
             self.curline -= 1
@@ -83,7 +85,7 @@ class Action(Draw):
 
     def bottom_line(self):
         self.pminrow = self.maxline - self.smaxrow
-        self.curline = self.maxline
+        self.curline = self.maxline - 1
 
     def recenter_line(self):
         middle = int(self.smaxrow / 2)

@@ -35,7 +35,7 @@ class Draw(Screen):
 
     def draw_body(self, msg, show_numbers=False):
         self.body.clrtoeol()  # more frugal than erase. no flicker.
-        self.body.resize(self.maxline, self.maxx)
+        self.body.resize(self.maxline + self.foot_maxy, self.maxx)
         for index, item in enumerate(msg):
             if index == self.curline and index in self.picked:
                 indicator, color = self.indicator, self.black_yellow

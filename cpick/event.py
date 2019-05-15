@@ -142,7 +142,7 @@ class Event(Action):
             self.draw_header(header)
             self.draw_footer(footer)
             self.refresh()
-            key = self.screen.getch()
+            key = self.body.getch()
             try:
                 out = self.body_actions[key]()
                 if out == 'quit':

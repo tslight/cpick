@@ -111,7 +111,7 @@ class Screen:
         self.screen.erase()
         self.maxy, self.maxx = self.screen.getmaxyx()
         self.head.resize(1, self.maxx)
-        self.body.resize(self.maxlines, self.maxx)
+        self.body.resize(self.maxlines + self.foot_maxy, self.maxx)
         self.smaxrow = self.body_maxy - self.foot_maxy
         self.foot.mvwin(self.maxy - 1, 0)
         self.foot.resize(1, self.maxx)
