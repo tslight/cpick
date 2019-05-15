@@ -42,81 +42,88 @@ class Action(Draw):
               self.start + next_line < self.total):
             self.curline += 1  # scroll cursor
 
-    def pad_dn(self):
+    def up_win(self):
+        if self.pos > 0:
+            self.pos -= 1
+
+    def down_win(self):
+        if self.pos < self.lc - self.y + 2:
+            self.pos += 1
+
+    def pgdn_win(self):
+        self.pos += self.y - 1
+        if self.pos >= self.lc - self.y + 2:
+            self.pos = self.lc - self.y + 2
+
+    def pgup_win(self):
+        self.pos -= self.y - 1
+        if self.pos < 0:
+            self.pos = 0
+
+    def top_win(self):
+        self.pos = 0
+
+    def bottom_win(self):
+        self.pos = self.total - self.maxlines
+
+    ###########################################################################
+    #                              LINE MOVEMENTS                             #
+    ###########################################################################
+
+    def down_line(self):
         if self.curline >= self.total - 1:
-            self.top()
-        elif self.pos >= self.total - self.maxlines:
-            self.curline += 1
-        elif self.curline >= self.maxlines - 1:
+            self.top_line()
+        elif self.curline >= self.pos + self.maxlines:
             self.pos += 1  # scroll screen
             self.curline += 1
         else:
             self.curline += 1  # scroll cursor
 
-    def pad_up(self):
+    def up_line(self):
         if self.curline < 1:
-            self.btm()
+            self.bottom_line()
         if self.curline <= self.pos:
             self.pos -= 1
             self.curline -= 1
         else:
             self.curline -= 1
 
-    def top(self):
+    def pgdn_line(self):
+        self.pos += self.maxlines
+        self.curline += self.maxlines
+        if self.pos >= self.total - self.maxlines:
+            self.bottom_line()
+
+    def pgup_line(self):
+        self.pos -= self.maxlines
+        self.curline -= self.maxlines
+        if self.pos <= 0:
+            self.top_line()
+
+    def top_line(self):
         self.pos, self.curline = (0,)*2
 
-    def btm(self):
+    def bottom_line(self):
         self.pos = self.total - self.maxlines
         self.curline = self.total
 
-    def pad_pgdn(self):
-        self.pos += self.y - 1
-        if self.pos >= self.lc - self.y + 2:
-            self.pos = self.lc - self.y + 2
+    def recenter_line(self):
+        middle = int(self.maxlines / 2)
+        curline = self.curline - self.pos
+        if curline > middle and self.pos < self.total - self.maxlines:
+            self.pos += curline - middle
+            self.curline += curline - middle
+        elif curline < middle and self.pos > self.maxlines:
+            self.pos -= curline - middle
+            self.curline -= curline - middle
 
-    def pgdn(self):
-        '''
-        If current page is less than total pages, increment start line by
-        maximum line amount. Using min with the last possible stop position
-        catches cases where self.start + self.maxlines exceeds self.total.
-        '''
-        page = (self.start + self.curline) / self.maxlines
-        if page < self.pages - 1:
-            self.start = min(self.total - self.maxlines,
-                             self.start + self.maxlines)
-        else:
-            self.btm()
-
-    def pad_pgup(self):
-        self.pos -= self.y - 1
-        if self.pos < 0:
-            self.pos = 0
-
-    def pgup(self):
-        '''
-        If current page is not the first page, start line is the either the
-        first line or the current start line minus the maximum number of lines
-        the page holds. Using max with 0, catches cases where self.start -
-        self.maxlines returns a negative.
-        '''
-        page = (self.start + self.curline) / self.maxlines
-        if page > 1:
-            self.start = max(0, self.start - self.maxlines)
-        else:
-            self.top()
+    ###########################################################################
+    #                                  OTHER                                  #
+    ###########################################################################
 
     def reset(self):
         self.picked = []
         self.matches = []
-
-    def recenter(self):
-        middle = int(self.maxlines / 2) - 1
-        if self.curline > middle and self.start < self.total - self.maxlines:
-            self.start += self.curline - middle
-            self.curline = middle
-        elif self.curline < middle and self.start > self.maxlines:
-            self.start -= self.curline + middle
-            self.curline = middle
 
     def goto_next(self, items):
         if items:

@@ -17,10 +17,11 @@ class Screen:
         self.y, self.x = self.screen.getmaxyx()
         self.color_init()
         self.head_init()
-        # self.win_init()
         self.foot_init()
         self.pad_init()
+        self.header_size = self.head_y - self.win_y
         self.refresh()
+
         curses.curs_set(0)  # hide the cursor
 
     def color_init(self):
@@ -72,16 +73,6 @@ class Screen:
         self.foot = curses.newwin(0, self.x, self.y - 1, 0)
         self.foot_y, self.foot_x = self.foot.getmaxyx()
 
-    # def win_init(self):
-    #     '''
-    #     Initialise main window that takes up the rest of the screen.
-    #     '''
-    #     self.win = curses.newpad(self.y - 1, self.x)
-    #     self.win_y, self.win_x = self.win.getmaxyx()
-    #     self.win.keypad(True)
-    #     self.win.scrollok(True)
-    #     self.win.idlok(True)
-
     def pad_init(self):
         '''
         Initialise pad window for help page.
@@ -92,12 +83,11 @@ class Screen:
 
     def refresh(self):
         '''
-        Call refresh on all curses components.
+        Call refresh on all widgets.
         '''
         self.screen.refresh()
         self.head.refresh()
         self.pad.refresh(self.pos, 0, 1, 0, self.y - 1, self.x - 2)
-        # self.win.refresh()
         self.foot.refresh()
 
     def resize(self):
@@ -107,10 +97,7 @@ class Screen:
         self.screen.erase()
         self.y, self.x = self.screen.getmaxyx()
         self.head.resize(1, self.x)
-        # self.win.resize(self.y - 1, self.x)
-        # self.win_y, self.win_x = self.win.getmaxyx()
-        if self.lc:
-            self.pad.resize(self.lc + 2, self.x)
+        self.pad.resize(self.lc + 2, self.x)
         self.maxlines = self.win_y - self.foot_y
         self.foot.mvwin(self.y - 1, 0)
         self.foot.resize(1, self.x)

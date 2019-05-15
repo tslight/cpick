@@ -22,7 +22,7 @@ class Draw(Screen):
         self.scroll = 2  # when to start scrolling
         self.start, self.curline, self.curidx = (0,)*3
         self.total = len(self.items)
-        self.maxlines = self.win_y - 1
+        self.maxlines = self.win_y - self.foot_y
         self.pages = self.total / self.maxlines  # total pages
 
     def draw_header(self, msg):
@@ -31,7 +31,6 @@ class Draw(Screen):
             self.head.clrtoeol()  # more frugal than erase. no flicker.
         except curses.error:
             pass
-        self.head.refresh()
 
     def draw_footer(self, msg):
         try:
@@ -39,7 +38,6 @@ class Draw(Screen):
             self.foot.clrtoeol()  # more frugal than erase. no flicker.
         except curses.error:
             pass
-        self.foot.refresh()
 
     def draw_body(self, show_numbers=False):
         self.win.erase()  # clear causes flickering in some terminals
@@ -93,7 +91,6 @@ class Draw(Screen):
             self.pad.addstr(index, 0, line, color)
         self.pad.scrollok(1)
         self.pad.idlok(1)
-        self.pad.refresh(self.pos, 0, 1, 0, self.y - 1, self.x - 2)
 
     def draw_textbox(self, prompt):
         self.foot.erase()
