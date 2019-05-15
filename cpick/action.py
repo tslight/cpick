@@ -17,64 +17,42 @@ class Action(Draw):
         self.picked = []
         self.matches = []
 
-    def up(self):
-        '''
-        If start of screen is greater that zero and current line is 0, then
-        scroll screen up. If start of screen is greater than zero or current
-        line is greater than zero, then scroll cursor down.
-        '''
-        if self.start > 0 and self.curline == 0:
-            self.start -= 1  # scroll screen
-        elif self.start > 0 or self.curline > 0:
-            self.curline -= 1  # scroll cursor
-
-    def dn(self):
-        '''
-        If the next line would hit the limit and we're not at the end of the
-        list, scroll the screen. If the next line position is less than the
-        limit and the end of the list is not in sight, scroll the cursor down.
-        '''
-        next_line = self.curline + 1
-        if (next_line == self.maxlines and
-                self.start + self.maxlines < self.total):
-            self.start += 1  # scroll screen
-        elif (next_line < self.maxlines and
-              self.start + next_line < self.total):
-            self.curline += 1  # scroll cursor
-
+    ###########################################################################
+    #                             WINDOW SCROLLING                            #
+    ###########################################################################
     def up_win(self):
-        if self.pos > 0:
-            self.pos -= 1
+        if self.pminrow > 0:
+            self.pminrow -= 1
 
     def down_win(self):
-        if self.pos < self.lc - self.y + 2:
-            self.pos += 1
+        if self.pminrow < self.lc - self.maxy + 2:
+            self.pminrow += 1
 
     def pgdn_win(self):
-        self.pos += self.y - 1
-        if self.pos >= self.lc - self.y + 2:
-            self.pos = self.lc - self.y + 2
+        self.pminrow += self.maxy - 1
+        if self.pminrow >= self.lc - self.maxy + 2:
+            self.pminrow = self.lc - self.maxy + 2
 
     def pgup_win(self):
-        self.pos -= self.y - 1
-        if self.pos < 0:
-            self.pos = 0
+        self.pminrow -= self.maxy - 1
+        if self.pminrow < 0:
+            self.pminrow = 0
 
     def top_win(self):
-        self.pos = 0
+        self.pminrow = 0
 
     def bottom_win(self):
-        self.pos = self.total - self.maxlines
+        self.pminrow = self.maxline - self.smaxrow
 
     ###########################################################################
-    #                              LINE MOVEMENTS                             #
+    #                              LINE SCROLLING                             #
     ###########################################################################
 
     def down_line(self):
-        if self.curline >= self.total - 1:
+        if self.curline >= self.maxline - 1:
             self.top_line()
-        elif self.curline >= self.pos + self.maxlines:
-            self.pos += 1  # scroll screen
+        elif self.curline >= self.pminrow + self.smaxrow:
+            self.pminrow += 1  # scroll screen
             self.curline += 1
         else:
             self.curline += 1  # scroll cursor
@@ -82,39 +60,39 @@ class Action(Draw):
     def up_line(self):
         if self.curline < 1:
             self.bottom_line()
-        if self.curline <= self.pos:
-            self.pos -= 1
+        if self.curline <= self.pminrow:
+            self.pminrow -= 1
             self.curline -= 1
         else:
             self.curline -= 1
 
     def pgdn_line(self):
-        self.pos += self.maxlines
-        self.curline += self.maxlines
-        if self.pos >= self.total - self.maxlines:
+        self.pminrow += self.smaxrow
+        self.curline += self.smaxrow
+        if self.pminrow >= self.maxline - self.smaxrow:
             self.bottom_line()
 
     def pgup_line(self):
-        self.pos -= self.maxlines
-        self.curline -= self.maxlines
-        if self.pos <= 0:
+        self.pminrow -= self.smaxrow
+        self.curline -= self.smaxrow
+        if self.pminrow <= 0:
             self.top_line()
 
     def top_line(self):
-        self.pos, self.curline = (0,)*2
+        self.pminrow, self.curline = (0,)*2
 
     def bottom_line(self):
-        self.pos = self.total - self.maxlines
-        self.curline = self.total
+        self.pminrow = self.maxline - self.smaxrow
+        self.curline = self.maxline
 
     def recenter_line(self):
-        middle = int(self.maxlines / 2)
-        curline = self.curline - self.pos
-        if curline > middle and self.pos < self.total - self.maxlines:
-            self.pos += curline - middle
+        middle = int(self.smaxrow / 2)
+        curline = self.curline - self.pminrow
+        if curline > middle and self.pminrow < self.maxline - self.smaxrow:
+            self.pminrow += curline - middle
             self.curline += curline - middle
-        elif curline < middle and self.pos > self.maxlines:
-            self.pos -= curline - middle
+        elif curline < middle and self.pminrow > self.smaxrow:
+            self.pminrow -= curline - middle
             self.curline -= curline - middle
 
     ###########################################################################
@@ -147,14 +125,14 @@ class Action(Draw):
         if (number <= 0):
             self.top()
             return
-        elif (number >= self.total):
+        elif (number >= self.maxline):
             self.btm()
             return
-        elif (number > (self.total - self.maxlines)):
-            self.start = self.total - self.maxlines
-        elif (number < self.maxlines):
+        elif (number > (self.maxline - self.smaxrow)):
+            self.start = self.maxline - self.smaxrow
+        elif (number < self.smaxrow):
             self.start = 0
-        elif (number >= (self.start + self.maxlines)):
+        elif (number >= (self.start + self.smaxrow)):
             self.start = number - self.curline
         elif (number <= self.start):
             self.start = number - self.curline
@@ -209,9 +187,9 @@ class Action(Draw):
             elif match('^\\d+\\-\\d+$', numbers):
                 start, stop = numbers.split('-')
             elif match('^\\d+\\.\\.$', numbers):
-                start, stop = numbers.split('..')[0], self.total
+                start, stop = numbers.split('..')[0], self.maxline
             elif match('^\\d+\\-$', numbers):
-                start, stop = numbers.split('-')[0], self.total
+                start, stop = numbers.split('-')[0], self.maxline
             elif match('^\\.\\.\\d+$', numbers):
                 start, stop = 1, numbers.split('..')[1]
             elif match('^\\-\\d+$', numbers):

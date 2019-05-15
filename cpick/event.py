@@ -26,7 +26,7 @@ class Event(Action):
         self.header, self.footer = header, footer
         self.desc, self.keys = get_keys()
 
-        self.pad_actions = {
+        self.body_actions = {
             **dict.fromkeys(self.keys['resize'], self.resize),
             **dict.fromkeys(self.keys['dn'], self.down_line),
             **dict.fromkeys(self.keys['up'], self.up_line),
@@ -124,7 +124,7 @@ class Event(Action):
             self.draw_footer("Press [q] or [ESC] to return to picker.")
             key = self.screen.getch()
             try:
-                if self.pad_actions[key]():
+                if self.body_actions[key]():
                     break
             except KeyError:
                 pass
@@ -138,13 +138,13 @@ class Event(Action):
         '''
         header, footer = self.header, self.footer
         while True:
-            self.draw_pad(self.items)
+            self.draw_body(self.items, self.numbers)
             self.draw_header(header)
             self.draw_footer(footer)
             self.refresh()
             key = self.screen.getch()
             try:
-                out = self.pad_actions[key]()
+                out = self.body_actions[key]()
                 if out == 'quit':
                     return [self.items[pick] for pick in self.picked]
             except KeyError:
