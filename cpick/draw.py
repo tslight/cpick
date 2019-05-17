@@ -34,30 +34,34 @@ class Draw(Screen):
             pass
 
     def draw_body(self, msg, show_numbers=False):
-        self.body.clrtoeol()  # more frugal than erase. no flicker.
+        self.maxline = len(msg)
+        self.body.erase()
         self.body.resize(self.maxline + self.foot_maxy, self.maxx)
         for index, item in enumerate(msg):
-            if index == self.curline and index in self.picked:
-                indicator, color = self.indicator, self.black_yellow
-            elif index == self.curline and index in self.matches:
-                indicator, color = self.indicator, self.black_green
-            elif index in self.picked:
-                indicator, color = self.checked, self.yellow_black
-            elif index in self.matches:
-                indicator, color = self.checkbox, self.green_black
-            elif index == self.curline:
-                indicator, color = self.indicator, self.black_blue
+            if item in self.items:
+                if index == self.curline and index in self.picked:
+                    indicator, color = self.indicator, self.black_yellow
+                elif index == self.curline and index in self.matches:
+                    indicator, color = self.indicator, self.black_green
+                elif index in self.picked:
+                    indicator, color = self.checked, self.yellow_black
+                elif index in self.matches:
+                    indicator, color = self.checkbox, self.green_black
+                elif index == self.curline:
+                    indicator, color = self.indicator, self.black_blue
+                else:
+                    indicator, color = self.checkbox, self.white_black
+                if show_numbers:
+                    maxlen = len(str(self.maxline + 1))
+                    length = len(str(index + 1))
+                    if length < maxlen:
+                        pad = ' ' * (maxlen - length)
+                        number = str(index + 1) + ')' + pad
+                    line = number + indicator + ' ' + item
+                else:
+                    line = indicator + ' ' + item
             else:
-                indicator, color = self.checkbox, self.white_black
-            if show_numbers:
-                maxlen = len(str(self.maxline + 1))
-                length = len(str(index + 1))
-                if length < maxlen:
-                    pad = ' ' * (maxlen - length)
-                    number = str(index + 1) + ')' + pad
-                line = number + indicator + ' ' + item
-            else:
-                line = indicator + ' ' + item
+                line, color = item, self.white_black
             line = line + ' ' * (self.body_maxx - len(line))
             self.body.addstr(index, 0, line, color)
 

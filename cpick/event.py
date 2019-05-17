@@ -26,109 +26,109 @@ class Event(Action):
         self.header, self.footer = header, footer
         self.desc, self.keys = get_keys()
 
-        self.body_actions = {
+        self.win_actions = {
             **dict.fromkeys(self.keys['resize'], self.resize),
-            **dict.fromkeys(self.keys['dn'], self.down_line),
-            **dict.fromkeys(self.keys['up'], self.up_line),
-            **dict.fromkeys(self.keys['pgdn'], self.pgdn_line),
-            **dict.fromkeys(self.keys['pgup'], self.pgup_line),
-            **dict.fromkeys(self.keys['top'], self.top_line),
-            **dict.fromkeys(self.keys['btm'], self.bottom_line),
-            **dict.fromkeys(self.keys['recenter'], self.recenter_line),
+            **dict.fromkeys(self.keys['dn'], self.down_win),
+            **dict.fromkeys(self.keys['up'], self.up_win),
+            **dict.fromkeys(self.keys['pgdn'], self.pgdn_win),
+            **dict.fromkeys(self.keys['pgup'], self.pgup_win),
+            **dict.fromkeys(self.keys['top'], self.top_win),
+            **dict.fromkeys(self.keys['btm'], self.bottom_win),
             **dict.fromkeys(self.keys['quit'], self.quit),
         }
 
-        # self.actions = {  # https://stackoverflow.com/a/45928598
-        #     **dict.fromkeys(self.keys['resize'],
-        #                     self.resize),
-        #     **dict.fromkeys(self.keys['dn'],
-        #                     self.dn),
-        #     **dict.fromkeys(self.keys['up'],
-        #                     self.up),
-        #     **dict.fromkeys(self.keys['top'],
-        #                     self.top),
-        #     **dict.fromkeys(self.keys['btm'],
-        #                     self.btm),
-        #     **dict.fromkeys(self.keys['pgdn'],
-        #                     self.pgdn),
-        #     **dict.fromkeys(self.keys['pgup'],
-        #                     self.pgup),
-        #     **dict.fromkeys(self.keys['goto'],
-        #                     self.goto),
-        #     **dict.fromkeys(self.keys['find'],
-        #                     lambda:
-        #                     self.match("Find: ", self.matches, self.pick)),
-        #     **dict.fromkeys(self.keys['next_find'],
-        #                     lambda:
-        #                     self.goto_next(self.matches)),
-        #     **dict.fromkeys(self.keys['prev_find'],
-        #                     lambda:
-        #                     self.goto_prev(self.matches)),
-        #     **dict.fromkeys(self.keys['next_pick'],
-        #                     lambda:
-        #                     self.goto_next(self.picked)),
-        #     **dict.fromkeys(self.keys['prev_pick'],
-        #                     lambda:
-        #                     self.goto_prev(self.picked)),
-        #     **dict.fromkeys(self.keys['reset'],
-        #                     self.reset),
-        #     **dict.fromkeys(self.keys['recenter'],
-        #                     self.recenter),
-        #     **dict.fromkeys(self.keys['pick'],
-        #                     lambda:
-        #                     self.pick(self.curidx, self.picked) or self.dn()),
-        #     **dict.fromkeys(self.keys['pick_pattern'],
-        #                     lambda:
-        #                     self.match("Pick: ", self.picked, self.pick)),
-        #     **dict.fromkeys(self.keys['undo'],
-        #                     self.undo),
-        #     **dict.fromkeys(self.keys['undo_up'],
-        #                     lambda:
-        #                     self.undo() or self.goto_prev(self.picked)),
-        #     **dict.fromkeys(self.keys['toggle'],
-        #                     lambda:
-        #                     self.toggle(self.curidx, self.picked)),
-        #     **dict.fromkeys(self.keys['toggle_dn'],
-        #                     lambda:
-        #                     self.toggle(self.curidx,
-        #                                 self.picked) or self.dn()),
-        #     **dict.fromkeys(self.keys['toggle_up'],
-        #                     lambda:
-        #                     self.toggle(self.curidx,
-        #                                 self.picked) or self.up()),
-        #     **dict.fromkeys(self.keys['toggle_all'],
-        #                     self.toggle_all),
-        #     **dict.fromkeys(self.keys['toggle_pattern'],
-        #                     lambda:
-        #                     self.match("Toggle: ", self.picked, self.toggle)),
-        #     **dict.fromkeys(self.keys['view_picks'],
-        #                     lambda:
-        #                     self.view(
-        #                         contents=[
-        #                             self.items[pick] for pick in self.picked
-        #                         ])),
-        #     **dict.fromkeys(self.keys['view_help'],
-        #                     lambda:
-        #                     self.view(self.desc)),
-        #     **dict.fromkeys(self.keys['save'],
-        #                     self.save),
-        #     **dict.fromkeys(self.keys['quit'],
-        #                     self.quit),
-        # }
+        self.line_actions = {  # https://stackoverflow.com/a/45928598
+            **dict.fromkeys(self.keys['resize'],
+                            self.resize),
+            **dict.fromkeys(self.keys['dn'],
+                            self.down_line),
+            **dict.fromkeys(self.keys['up'],
+                            self.up_line),
+            **dict.fromkeys(self.keys['top'],
+                            self.top_line),
+            **dict.fromkeys(self.keys['btm'],
+                            self.bottom_line),
+            **dict.fromkeys(self.keys['pgdn'],
+                            self.pgdn_line),
+            **dict.fromkeys(self.keys['pgup'],
+                            self.pgup_line),
+            **dict.fromkeys(self.keys['goto'],
+                            self.goto),
+            **dict.fromkeys(self.keys['find'],
+                            lambda:
+                            self.match("Find: ", self.matches, self.pick)),
+            **dict.fromkeys(self.keys['next_find'],
+                            lambda:
+                            self.goto_next(self.matches)),
+            **dict.fromkeys(self.keys['prev_find'],
+                            lambda:
+                            self.goto_prev(self.matches)),
+            **dict.fromkeys(self.keys['next_pick'],
+                            lambda:
+                            self.goto_next(self.picked)),
+            **dict.fromkeys(self.keys['prev_pick'],
+                            lambda:
+                            self.goto_prev(self.picked)),
+            **dict.fromkeys(self.keys['reset'],
+                            self.reset),
+            **dict.fromkeys(self.keys['recenter'],
+                            self.recenter_line),
+            **dict.fromkeys(self.keys['pick'],
+                            lambda:
+                            self.pick(self.curidx, self.picked) or self.dn()),
+            **dict.fromkeys(self.keys['pick_pattern'],
+                            lambda:
+                            self.match("Pick: ", self.picked, self.pick)),
+            **dict.fromkeys(self.keys['undo'],
+                            self.undo),
+            **dict.fromkeys(self.keys['undo_up'],
+                            lambda:
+                            self.undo() or self.goto_prev(self.picked)),
+            **dict.fromkeys(self.keys['toggle'],
+                            lambda:
+                            self.toggle(self.curidx, self.picked)),
+            **dict.fromkeys(self.keys['toggle_dn'],
+                            lambda:
+                            self.toggle(self.curidx,
+                                        self.picked) or self.dn()),
+            **dict.fromkeys(self.keys['toggle_up'],
+                            lambda:
+                            self.toggle(self.curidx,
+                                        self.picked) or self.up()),
+            **dict.fromkeys(self.keys['toggle_all'],
+                            self.toggle_all),
+            **dict.fromkeys(self.keys['toggle_pattern'],
+                            lambda:
+                            self.match("Toggle: ", self.picked, self.toggle)),
+            **dict.fromkeys(self.keys['view_picks'],
+                            lambda:
+                            self.view(
+                                contents=[
+                                    self.items[pick] for pick in self.picked
+                                ])),
+            **dict.fromkeys(self.keys['view_help'],
+                            lambda:
+                            self.view(self.desc)),
+            **dict.fromkeys(self.keys['save'],
+                            self.save),
+            **dict.fromkeys(self.keys['quit'],
+                            self.quit),
+        }
 
     def view(self, contents):
-        self.draw_pad(contents)
-        self.refresh()
+        pminrow, self.pminrow = self.pminrow, 0
+        self.draw_body(contents)
+        self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
+        self.draw_footer("Press [q] or [ESC] to return to picker.")
         while True:
-            self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
-            self.draw_footer("Press [q] or [ESC] to return to picker.")
-            key = self.screen.getch()
+            self.refresh()
+            key = self.body.getch()
             try:
-                if self.body_actions[key]():
+                if self.win_actions[key]() == "quit":
                     break
             except KeyError:
                 pass
-            self.refresh()
+        self.pminrow = pminrow
 
     def get_picks(self):
         '''
@@ -144,7 +144,7 @@ class Event(Action):
             self.refresh()
             key = self.body.getch()
             try:
-                out = self.body_actions[key]()
+                out = self.line_actions[key]()
                 if out == 'quit':
                     return [self.items[pick] for pick in self.picked]
             except KeyError:
