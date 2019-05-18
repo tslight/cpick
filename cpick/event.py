@@ -28,25 +28,25 @@ class Event(Action):
 
         self.win_actions = {
             **dict.fromkeys(self.keys['resize'], self.resize),
-            **dict.fromkeys(self.keys['dn'], self.down_win),
+            **dict.fromkeys(self.keys['down'], self.down_win),
             **dict.fromkeys(self.keys['up'], self.up_win),
             **dict.fromkeys(self.keys['pgdn'], self.pgdn_win),
             **dict.fromkeys(self.keys['pgup'], self.pgup_win),
             **dict.fromkeys(self.keys['top'], self.top_win),
-            **dict.fromkeys(self.keys['btm'], self.bottom_win),
+            **dict.fromkeys(self.keys['bottom'], self.bottom_win),
             **dict.fromkeys(self.keys['quit'], self.quit),
         }
 
         self.line_actions = {  # https://stackoverflow.com/a/45928598
             **dict.fromkeys(self.keys['resize'],
                             self.resize),
-            **dict.fromkeys(self.keys['dn'],
+            **dict.fromkeys(self.keys['down'],
                             self.down_line),
             **dict.fromkeys(self.keys['up'],
                             self.up_line),
             **dict.fromkeys(self.keys['top'],
                             self.top_line),
-            **dict.fromkeys(self.keys['btm'],
+            **dict.fromkeys(self.keys['bottom'],
                             self.bottom_line),
             **dict.fromkeys(self.keys['pgdn'],
                             self.pgdn_line),
@@ -75,7 +75,9 @@ class Event(Action):
                             self.recenter_line),
             **dict.fromkeys(self.keys['pick'],
                             lambda:
-                            self.pick(self.curidx, self.picked) or self.dn()),
+                            self.pick(
+                                self.curidx, self.picked) or self.down_line()
+                            ),
             **dict.fromkeys(self.keys['pick_pattern'],
                             lambda:
                             self.match("Pick: ", self.picked, self.pick)),
@@ -87,14 +89,14 @@ class Event(Action):
             **dict.fromkeys(self.keys['toggle'],
                             lambda:
                             self.toggle(self.curidx, self.picked)),
-            **dict.fromkeys(self.keys['toggle_dn'],
+            **dict.fromkeys(self.keys['toggle_down'],
                             lambda:
                             self.toggle(self.curidx,
-                                        self.picked) or self.dn()),
+                                        self.picked) or self.down_line()),
             **dict.fromkeys(self.keys['toggle_up'],
                             lambda:
                             self.toggle(self.curidx,
-                                        self.picked) or self.up()),
+                                        self.picked) or self.up_line()),
             **dict.fromkeys(self.keys['toggle_all'],
                             self.toggle_all),
             **dict.fromkeys(self.keys['toggle_pattern'],
@@ -136,7 +138,7 @@ class Event(Action):
         action based on that input. If the method executed returns true, we
         return our objects' picked attribute.
         '''
-        header, footer = self.header, self.footer
+        header, footer, out = self.header, self.footer, None
         while True:
             self.draw_body(self.items, self.numbers)
             self.draw_header(header)

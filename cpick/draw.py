@@ -54,7 +54,7 @@ class Draw(Screen):
                 if show_numbers:
                     maxlen = len(str(self.maxline + 1))
                     length = len(str(index + 1))
-                    if length < maxlen:
+                    if length <= maxlen:
                         pad = ' ' * (maxlen - length)
                         number = str(index + 1) + ')' + pad
                     line = number + indicator + ' ' + item

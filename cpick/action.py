@@ -18,7 +18,7 @@ class Action(Draw):
         self.matches = []
 
     ###########################################################################
-    #                             WINDOW SCROLLING                            #
+    #                             WINDOW MOVEMENT                             #
     ###########################################################################
 
     def up_win(self):
@@ -46,7 +46,7 @@ class Action(Draw):
         self.pminrow = self.maxline - self.smaxrow
 
     ###########################################################################
-    #                              LINE SCROLLING                             #
+    #                              LINE MOVEMENT                              #
     ###########################################################################
 
     def down_line(self):
@@ -61,8 +61,7 @@ class Action(Draw):
     def up_line(self):
         if self.curline < 1:
             self.bottom_line()
-            self.curline += 1
-        if self.curline <= self.pminrow:
+        elif self.curline <= self.pminrow:
             self.pminrow -= 1
             self.curline -= 1
         else:
@@ -98,54 +97,50 @@ class Action(Draw):
             self.curline -= curline - middle
 
     ###########################################################################
-    #                                  OTHER                                  #
+    #                               LINE JUMPING                              #
     ###########################################################################
 
-    def reset(self):
-        self.picked = []
-        self.matches = []
+    def goto_number(self, number):
+        if (number >= self.maxline - self.smaxrow):
+            self.bottom_win()
+        elif (number <= self.smaxrow):
+            self.top_win()
+        elif (number >= (self.pminrow + self.smaxrow)):
+            self.pgdn_win()
+        elif (number <= self.pminrow):
+            self.pgup_win()
+        self.curline = number
+
+    def goto(self, prompt="Enter a line number: "):
+        try:
+            number = int(self.draw_textbox(prompt)) - 1
+            if number < 0 or number > self.maxline:
+                raise ValueError
+            self.goto_number(number)
+        except ValueError:
+            return 'INVALID INDEX NUMBER!'
 
     def goto_next(self, items):
         if items:
             for i in items:
-                if self.start + self.curline < i:
+                if self.pminrow + self.curline < i:
                     self.goto_number(i)
                     return
-            self.top()
+            self.top_line()
             self.goto_next(items)
 
     def goto_prev(self, items):
         if items:
             for i in reversed(items):
-                if self.start + self.curline > i:
+                if self.pminrow + self.curline > i:
                     self.goto_number(i)
                     return
-            self.btm()
+            self.bottom_line()
             self.goto_prev(items)
 
-    def goto_number(self, number):
-        if (number <= 0):
-            self.top()
-            return
-        elif (number >= self.maxline):
-            self.btm()
-            return
-        elif (number > (self.maxline - self.smaxrow)):
-            self.start = self.maxline - self.smaxrow
-        elif (number < self.smaxrow):
-            self.start = 0
-        elif (number >= (self.start + self.smaxrow)):
-            self.start = number - self.curline
-        elif (number <= self.start):
-            self.start = number - self.curline
-        self.curline = number - self.start
-
-    def goto(self, prompt="Enter a line number: "):
-        try:
-            number = int(self.draw_textbox(prompt)) - 1
-            self.goto_number(number)
-        except ValueError:
-            self.goto("Invalid input! Enter a number: ")
+    ###########################################################################
+    #                         PICK, TOGGLE AND SEARCH                         #
+    ###########################################################################
 
     def pick(self, index, matches):
         if index not in matches:
@@ -202,6 +197,10 @@ class Action(Draw):
                 for index in range(int(start) - 1, int(stop)):
                     method(index, matches)
 
+    ###########################################################################
+    #                            SAVE, RESET & QUIT                           #
+    ###########################################################################
+
     def save(self):
         path = self.draw_textbox("Save to: ").strip()
         home = str(Path.home())
@@ -224,6 +223,10 @@ class Action(Draw):
             out = "Saved fortune to " + path
         finally:
             return out
+
+    def reset(self):
+        self.picked = []
+        self.matches = []
 
     def quit(self):
         '''
