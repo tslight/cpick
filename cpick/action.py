@@ -26,13 +26,13 @@ class Action(Draw):
             self.pminrow -= 1
 
     def down_win(self):
-        if self.pminrow < self.maxline - self.maxy + 2:
+        if self.pminrow < self.maxline - self.smaxrow:
             self.pminrow += 1
 
     def pgdn_win(self):
-        self.pminrow += self.maxy - 1
-        if self.pminrow >= self.maxline - self.maxy + 2:
-            self.pminrow = self.maxline - self.maxy + 2
+        self.pminrow += self.smaxrow
+        if self.pminrow >= self.maxline - self.smaxrow:
+            self.pminrow = self.maxline - self.smaxrow
 
     def pgup_win(self):
         self.pminrow -= self.maxy - 1
@@ -103,7 +103,7 @@ class Action(Draw):
     def goto_number(self, number):
         if (number >= self.maxline - self.smaxrow):
             self.bottom_win()
-        elif (number <= self.smaxrow):
+        elif (number < self.smaxrow):
             self.top_win()
         elif (number >= (self.pminrow + self.smaxrow)):
             self.pgdn_win()
