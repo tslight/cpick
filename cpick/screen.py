@@ -87,8 +87,8 @@ class Screen:
         self.pmincol = 0  # pad col to start displaying contents at
         self.sminrow = 1  # screen row to start display of pad at
         self.smincol = 0  # screen col to start display of pad at
-        self.smaxrow = self.body_maxy - self.foot_maxy  # screen row stop
-        self.smaxcol = self.maxx  # screen col stop
+        self.smaxrow = self.maxy - 2  # screen row stop
+        self.smaxcol = self.body_maxx  # screen col stop
 
     def refresh(self):
         '''
@@ -110,9 +110,17 @@ class Screen:
         '''
         self.screen.erase()
         self.maxy, self.maxx = self.screen.getmaxyx()
+
         self.head.resize(1, self.maxx)
-        self.body.resize(self.maxlines + self.foot_maxy, self.maxx)
-        self.smaxrow = self.body_maxy - self.foot_maxy
+        self.head_maxy, self.head_maxx = self.head.getmaxyx()
+
         self.foot.mvwin(self.maxy - 1, 0)
         self.foot.resize(1, self.maxx)
+        self.foot_maxy, self.foot_maxx = self.foot.getmaxyx()
+
+        self.body.resize(self.maxline + self.foot_maxy, self.maxx)
+        self.body_maxy, self.body_maxx = self.body.getmaxyx()
+        self.smaxrow = self.maxy - 2
+        self.smaxcol = self.body_maxx  # screen col stop
+
         self.refresh()

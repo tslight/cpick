@@ -119,7 +119,10 @@ class Event(Action):
 
     def view(self, contents):
         pminrow, self.pminrow = self.pminrow, 0
-        self.draw_body(contents)
+        self.screen.erase()
+        if not contents:
+            contents = ['', 'Nothing to see here...']
+        self.draw_body(contents, pick=False)
         self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
         self.draw_footer("Press [q] or [ESC] to return to picker.")
         while True:
@@ -140,7 +143,7 @@ class Event(Action):
         '''
         header, footer, out = self.header, self.footer, None
         while True:
-            self.draw_body(self.items, self.numbers)
+            self.draw_body(self.items, numbers=self.numbers)
             self.draw_header(header)
             self.draw_footer(footer)
             self.refresh()

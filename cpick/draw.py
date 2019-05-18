@@ -33,12 +33,12 @@ class Draw(Screen):
         except curses.error:
             pass
 
-    def draw_body(self, msg, show_numbers=False):
+    def draw_body(self, msg, pick=True, numbers=False):
         self.maxline = len(msg)
         self.body.erase()
         self.body.resize(self.maxline + self.foot_maxy, self.maxx)
         for index, item in enumerate(msg):
-            if item in self.items:
+            if pick:
                 if index == self.curline and index in self.picked:
                     indicator, color = self.indicator, self.black_yellow
                 elif index == self.curline and index in self.matches:
@@ -51,7 +51,7 @@ class Draw(Screen):
                     indicator, color = self.indicator, self.black_blue
                 else:
                     indicator, color = self.checkbox, self.white_black
-                if show_numbers:
+                if numbers:
                     maxlen = len(str(self.maxline + 1))
                     length = len(str(index + 1))
                     if length <= maxlen:
