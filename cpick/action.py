@@ -123,7 +123,7 @@ class Action(Draw):
     def goto_next(self, items):
         if items:
             for i in items:
-                if self.pminrow + self.curline < i:
+                if self.curline < i:
                     self.goto_number(i)
                     return
             self.top_line()
@@ -132,7 +132,7 @@ class Action(Draw):
     def goto_prev(self, items):
         if items:
             for i in reversed(items):
-                if self.pminrow + self.curline > i:
+                if self.curline > i:
                     self.goto_number(i)
                     return
             self.bottom_line()
