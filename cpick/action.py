@@ -17,130 +17,143 @@ class Action(Draw):
         self.picked = []
         self.matches = []
 
-    ###########################################################################
-    #                             WINDOW MOVEMENT                             #
-    ###########################################################################
+    def up(self):
+        '''
+        If start of screen is greater that zero and current line is 0, then
+        scroll screen up. If start of screen is greater than zero or current
+        line is greater than zero, then scroll cursor down.
+        '''
+        if self.start > 0 and self.curline == 0:
+            self.start -= 1  # scroll screen
+        elif self.start > 0 or self.curline > 0:
+            self.curline -= 1  # scroll cursor
 
-    def up_win(self):
-        if self.pminrow > 0:
-            self.pminrow -= 1
+    def pad_up(self):
+        if self.pos > 0:
+            self.pos -= 1
 
-    def down_win(self):
-        if self.pminrow < self.maxline - self.maxy + 2:
-            self.pminrow += 1
-
-    def pgdn_win(self):
-        self.pminrow += self.maxy - 1
-        if self.pminrow >= self.maxline - self.maxy + 2:
-            self.pminrow = self.maxline - self.maxy + 2
-
-    def pgup_win(self):
-        self.pminrow -= self.maxy - 1
-        if self.pminrow < 0:
-            self.pminrow = 0
-
-    def top_win(self):
-        self.pminrow = 0
-
-    def bottom_win(self):
-        self.pminrow = self.maxline - self.smaxrow
-
-    ###########################################################################
-    #                              LINE MOVEMENT                              #
-    ###########################################################################
-
-    def down_line(self):
-        if self.curline >= self.maxline - 1:
-            self.top_line()
-        elif self.curline >= self.pminrow + self.smaxrow - 1:
-            self.pminrow += 1  # scroll screen
-            self.curline += 1
-        else:
+    def dn(self):
+        '''
+        If the next line would hit the limit and we're not at the end of the
+        list, scroll the screen. If the next line position is less than the
+        limit and the end of the list is not in sight, scroll the cursor down.
+        '''
+        next_line = self.curline + 1
+        if (next_line == self.maxlines and
+                self.start + self.maxlines < self.total):
+            self.start += 1  # scroll screen
+        elif (next_line < self.maxlines and
+              self.start + next_line < self.total):
             self.curline += 1  # scroll cursor
 
-    def up_line(self):
-        if self.curline < 1:
-            self.bottom_line()
-        elif self.curline <= self.pminrow:
-            self.pminrow -= 1
-            self.curline -= 1
+    def pad_dn(self):
+        if self.pos < self.lc - self.y + 2:
+            self.pos += 1
+
+    def top(self):
+        '''
+        Jump to top by resetting start and curline attributes to 0.
+        '''
+        self.start, self.curline = (0,) * 2
+
+    def btm(self):
+        '''
+        Jump to bottom by moving the start to the total - maxlines and current
+        line to maxlines - 1.
+        '''
+        self.start = self.total - self.maxlines
+        self.curline = self.maxlines - 1
+
+    def pad_pgdn(self):
+        self.pos += self.y - 1
+        if self.pos >= self.lc - self.y + 2:
+            self.pos = self.lc - self.y + 2
+
+    def pgdn(self):
+        '''
+        If current page is less than total pages, increment start line by
+        maximum line amount. Using min with the last possible stop position
+        catches cases where self.start + self.maxlines exceeds self.total.
+        '''
+        page = (self.start + self.curline) / self.maxlines
+        if page < self.pages - 1:
+            self.start = min(self.total - self.maxlines,
+                             self.start + self.maxlines)
         else:
-            self.curline -= 1
+            self.btm()
 
-    def pgdn_line(self):
-        self.pminrow += self.smaxrow
-        self.curline += self.smaxrow
-        if self.pminrow >= self.maxline - self.smaxrow:
-            self.bottom_line()
+    def pad_pgup(self):
+        self.pos -= self.y - 1
+        if self.pos < 0:
+            self.pos = 0
 
-    def pgup_line(self):
-        self.pminrow -= self.smaxrow
-        self.curline -= self.smaxrow
-        if self.pminrow <= 0:
-            self.top_line()
+    def pgup(self):
+        '''
+        If current page is not the first page, start line is the either the
+        first line or the current start line minus the maximum number of lines
+        the page holds. Using max with 0, catches cases where self.start -
+        self.maxlines returns a negative.
+        '''
+        page = (self.start + self.curline) / self.maxlines
+        if page > 1:
+            self.start = max(0, self.start - self.maxlines)
+        else:
+            self.top()
 
-    def top_line(self):
-        self.pminrow, self.curline = (0,)*2
+    def reset(self):
+        self.picked = []
+        self.matches = []
 
-    def bottom_line(self):
-        self.pminrow = self.maxline - self.smaxrow
-        self.curline = self.maxline - 1
-
-    def recenter_line(self):
-        middle = int(self.smaxrow / 2)
-        curline = self.curline - self.pminrow
-        if curline > middle and self.pminrow < self.maxline - self.smaxrow:
-            self.pminrow += curline - middle
-            self.curline += curline - middle
-        elif curline < middle and self.pminrow > self.smaxrow:
-            self.pminrow -= curline - middle
-            self.curline -= curline - middle
-
-    ###########################################################################
-    #                               LINE JUMPING                              #
-    ###########################################################################
-
-    def goto_number(self, number):
-        if (number >= self.maxline - self.smaxrow):
-            self.bottom_win()
-        elif (number <= self.smaxrow):
-            self.top_win()
-        elif (number >= (self.pminrow + self.smaxrow)):
-            self.pgdn_win()
-        elif (number <= self.pminrow):
-            self.pgup_win()
-        self.curline = number
-
-    def goto(self, prompt="Enter a line number: "):
-        try:
-            number = int(self.draw_textbox(prompt)) - 1
-            if number < 0 or number > self.maxline:
-                raise ValueError
-            self.goto_number(number)
-        except ValueError:
-            return 'INVALID INDEX NUMBER!'
+    def recenter(self):
+        middle = int(self.maxlines / 2) - 1
+        if self.curline > middle and self.start < self.total - self.maxlines:
+            self.start += self.curline - middle
+            self.curline = middle
+        elif self.curline < middle and self.start > self.maxlines:
+            self.start -= self.curline + middle
+            self.curline = middle
 
     def goto_next(self, items):
         if items:
             for i in items:
-                if self.pminrow + self.curline < i:
+                if self.start + self.curline < i:
                     self.goto_number(i)
                     return
-            self.top_line()
+            self.top()
             self.goto_next(items)
 
     def goto_prev(self, items):
         if items:
             for i in reversed(items):
-                if self.pminrow + self.curline > i:
+                if self.start + self.curline > i:
                     self.goto_number(i)
                     return
-            self.bottom_line()
+            self.btm()
             self.goto_prev(items)
 
-    ###########################################################################
-    #                         PICK, TOGGLE AND SEARCH                         #
-    ###########################################################################
+    def goto_number(self, number):
+        if (number <= 0):
+            self.top()
+            return
+        elif (number >= self.total):
+            self.btm()
+            return
+        elif (number > (self.total - self.maxlines)):
+            self.start = self.total - self.maxlines
+        elif (number < self.maxlines):
+            self.start = 0
+        elif (number >= (self.start + self.maxlines)):
+            self.start = number - self.curline
+        elif (number <= self.start):
+            self.start = number - self.curline
+        self.curline = number - self.start
+
+    def goto(self, prompt="Enter a line number: "):
+        try:
+            number = int(self.draw_textbox(prompt)) - 1
+            self.goto_number(number)
+        except ValueError:
+            self.goto("Invalid input! Enter a number: ")
 
     def pick(self, index, matches):
         if index not in matches:
@@ -184,9 +197,9 @@ class Action(Draw):
             elif match('^\\d+\\-\\d+$', numbers):
                 start, stop = numbers.split('-')
             elif match('^\\d+\\.\\.$', numbers):
-                start, stop = numbers.split('..')[0], self.maxline
+                start, stop = numbers.split('..')[0], self.total
             elif match('^\\d+\\-$', numbers):
-                start, stop = numbers.split('-')[0], self.maxline
+                start, stop = numbers.split('-')[0], self.total
             elif match('^\\.\\.\\d+$', numbers):
                 start, stop = 1, numbers.split('..')[1]
             elif match('^\\-\\d+$', numbers):
@@ -196,10 +209,6 @@ class Action(Draw):
             if start and stop:
                 for index in range(int(start) - 1, int(stop)):
                     method(index, matches)
-
-    ###########################################################################
-    #                            SAVE, RESET & QUIT                           #
-    ###########################################################################
 
     def save(self):
         path = self.draw_textbox("Save to: ").strip()
@@ -223,10 +232,6 @@ class Action(Draw):
             out = "Saved fortune to " + path
         finally:
             return out
-
-    def reset(self):
-        self.picked = []
-        self.matches = []
 
     def quit(self):
         '''
