@@ -76,19 +76,31 @@ class Screen:
         '''
         Initialise pad window for help page.
         '''
-        self.body = curses.newpad(self.maxy - 1, self.maxx)
-        self.body.keypad(True)
-        self.body.scrollok(True)
-        self.body.idlok(True)
-        self.body_maxy, self.body_maxx = self.body.getmaxyx()
-        self.curline = 0
-        self.maxline = len(self.items)
         self.pminrow = 0  # pad row to start displaying contents at
         self.pmincol = 0  # pad col to start displaying contents at
         self.sminrow = 1  # screen row to start display of pad at
         self.smincol = 0  # screen col to start display of pad at
         self.smaxrow = self.maxy - 2  # screen row stop
-        self.smaxcol = self.body_maxx  # screen col stop
+        self.smaxcol = len(max(self.items, key=len)) + 10
+
+        self.curline = 0
+        total, self.maxline = (len(self.items),)*2
+        self.maxcolumns = int(self.maxx / self.smaxcol)
+
+        self.windows = []
+        self.columns = 1
+
+        for n in range(self.maxcolumns):
+            if total > self.smaxrow:
+                total -= self.smaxrow
+                self.columns += 1
+
+        for col in range(self.columns):
+            column = curses.newpad(self.maxy - 1, self.smaxcol)
+            column.keypad(True)
+            column.scrollok(True)
+            column.idlok(True)
+            self.windows.append(column)
 
     def refresh(self):
         '''
@@ -96,12 +108,6 @@ class Screen:
         '''
         self.screen.refresh()
         self.head.refresh()
-        self.body.refresh(self.pminrow,
-                          self.pmincol,
-                          self.sminrow,
-                          self.smincol,
-                          self.smaxrow,
-                          self.smaxcol)
         self.foot.refresh()
 
     def resize(self):

@@ -127,7 +127,7 @@ class Event(Action):
         self.draw_footer("Press [q] or [ESC] to return to picker.")
         while True:
             self.refresh()
-            key = self.body.getch()
+            key = self.screen.getch()
             try:
                 if self.win_actions[key]() == "quit":
                     break
@@ -147,7 +147,7 @@ class Event(Action):
             self.draw_header(header)
             self.draw_footer(footer)
             self.refresh()
-            key = self.body.getch()
+            key = self.screen.getch()
             try:
                 out = self.line_actions[key]()
                 if out == 'quit':
