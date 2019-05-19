@@ -87,14 +87,13 @@ class Action(Draw):
         self.curline = self.maxline - 1
 
     def recenter_line(self):
-        middle = int(self.smaxrow / 2)
-        curline = self.curline - self.pminrow
-        if curline > middle and self.pminrow < self.maxline - self.smaxrow:
-            self.pminrow += curline - middle
-            self.curline += curline - middle
-        elif curline < middle and self.pminrow > self.smaxrow:
-            self.pminrow -= curline - middle
-            self.curline -= curline - middle
+        smiddle = int(self.smaxrow / 2)
+        pmiddle = self.pminrow + smiddle
+        if (self.curline > pmiddle and
+                self.pminrow < self.maxline - self.smaxrow):
+            self.pminrow += self.curline - pmiddle
+        elif self.curline < pmiddle and self.pminrow > self.smaxrow:
+            self.pminrow -= pmiddle - self.curline
 
     ###########################################################################
     #                               LINE JUMPING                              #
