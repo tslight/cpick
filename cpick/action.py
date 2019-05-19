@@ -89,10 +89,13 @@ class Action(Draw):
     def recenter_line(self):
         smiddle = int(self.smaxrow / 2)
         pmiddle = self.pminrow + smiddle
-        if (self.curline > pmiddle and
-                self.pminrow < self.maxline - self.smaxrow):
+        if self.curline > self.maxline - smiddle:
+            self.bottom_win()
+        elif self.curline < smiddle:
+            self.top_win()
+        elif self.curline > pmiddle:
             self.pminrow += self.curline - pmiddle
-        elif self.curline < pmiddle and self.pminrow > self.smaxrow:
+        elif self.curline < pmiddle:
             self.pminrow -= pmiddle - self.curline
 
     ###########################################################################
