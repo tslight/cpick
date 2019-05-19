@@ -74,6 +74,9 @@ class Draw(Screen):
                            self.smincol,
                            self.smaxrow,
                            self.smaxcol)
+            self.pmincol += self.smaxcol
+            self.smincol += self.smaxcol
+            self.smaxcol += self.smaxcol
 
     def draw_textbox(self, prompt):
         self.foot.erase()
