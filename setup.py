@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cpick",
-    version="0.0.7",
+    version="0.0.6",
     author="Toby Slight",
     author_email="tslight@pm.me",
     description="Curses List Picker",
