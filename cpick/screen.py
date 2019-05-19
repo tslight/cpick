@@ -12,14 +12,14 @@ class Screen:
     one a normal window for dynamic scrolling.
     '''
 
-    def __init__(self, screen):
+    def __init__(self, screen, items):
         self.screen = screen
-        self.y, self.x = self.screen.getmaxyx()
+        self.items = items
+        self.maxy, self.maxx = self.screen.getmaxyx()
         self.color_init()
         self.head_init()
-        self.win_init()
         self.foot_init()
-        self.pad_init()
+        self.body_init()
         self.refresh()
         curses.curs_set(0)  # hide the cursor
 
@@ -62,39 +62,46 @@ class Screen:
         '''
         Initialise header window to take up top line of screen.
         '''
-        self.head = curses.newwin(0, self.x, 0, 0)
-        self.head_y, self.head_x = self.head.getmaxyx()
+        self.head = curses.newwin(0, self.maxx, 0, 0)
+        self.head_maxy, self.head_maxx = self.head.getmaxyx()
 
     def foot_init(self):
         '''
         Initialise footer window to take up bottom line of screen.
         '''
-        self.foot = curses.newwin(0, self.x, self.y - 1, 0)
-        self.foot_y, self.foot_x = self.foot.getmaxyx()
+        self.foot = curses.newwin(0, self.maxx, self.maxy - 1, 0)
+        self.foot_maxy, self.foot_maxx = self.foot.getmaxyx()
 
-    def win_init(self):
-        '''
-        Initialise main window that takes up the rest of the screen.
-        '''
-        self.win = curses.newwin(self.y - 1, self.x, 1, 0)
-        self.win_y, self.win_x = self.win.getmaxyx()
-        self.win.keypad(True)
-
-    def pad_init(self):
+    def body_init(self):
         '''
         Initialise pad window for help page.
         '''
-        self.pad = curses.newpad(self.y - 1, self.x)
-        self.lc, self.pos = (0,)*2
+        self.body = curses.newpad(self.maxy - 1, self.maxx)
+        self.body.keypad(True)
+        self.body.scrollok(True)
+        self.body.idlok(True)
+        self.body_maxy, self.body_maxx = self.body.getmaxyx()
+        self.curline = 0
+        self.maxline = len(self.items)
+        self.pminrow = 0  # pad row to start displaying contents at
+        self.pmincol = 0  # pad col to start displaying contents at
+        self.sminrow = 1  # screen row to start display of pad at
+        self.smincol = 0  # screen col to start display of pad at
+        self.smaxrow = self.maxy - 2  # screen row stop
+        self.smaxcol = self.body_maxx  # screen col stop
 
     def refresh(self):
         '''
-        Call refresh on all curses components.
+        Call refresh on all widgets.
         '''
         self.screen.refresh()
         self.head.refresh()
-        self.pad.refresh(self.pos, 0, 1, 0, self.y - 1, self.x - 2)
-        self.win.refresh()
+        self.body.refresh(self.pminrow,
+                          self.pmincol,
+                          self.sminrow,
+                          self.smincol,
+                          self.smaxrow,
+                          self.smaxcol)
         self.foot.refresh()
 
     def resize(self):
@@ -102,13 +109,18 @@ class Screen:
         Handle terminal resizing.
         '''
         self.screen.erase()
-        self.y, self.x = self.screen.getmaxyx()
-        self.head.resize(1, self.x)
-        self.win.resize(self.y - 1, self.x)
-        self.win_y, self.win_x = self.win.getmaxyx()
-        if self.lc:
-            self.pad.resize(self.lc + 2, self.x)
-        self.maxlines = self.win_y - self.foot_y
-        self.foot.mvwin(self.y - 1, 0)
-        self.foot.resize(1, self.x)
+        self.maxy, self.maxx = self.screen.getmaxyx()
+
+        self.head.resize(1, self.maxx)
+        self.head_maxy, self.head_maxx = self.head.getmaxyx()
+
+        self.foot.mvwin(self.maxy - 1, 0)
+        self.foot.resize(1, self.maxx)
+        self.foot_maxy, self.foot_maxx = self.foot.getmaxyx()
+
+        self.body.resize(self.maxline + self.foot_maxy, self.maxx)
+        self.body_maxy, self.body_maxx = self.body.getmaxyx()
+        self.smaxrow = self.maxy - 2
+        self.smaxcol = self.body_maxx  # screen col stop
+
         self.refresh()

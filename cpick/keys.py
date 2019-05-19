@@ -36,7 +36,7 @@ def get_keys():
         'resize': [
             curses.KEY_RESIZE,
         ],
-        'dn': [
+        'down': [
             ord('j'),
             curses.KEY_DOWN,
         ],
@@ -48,7 +48,7 @@ def get_keys():
             ord('g'),
             curses.KEY_HOME,
         ],
-        'btm': [
+        'bottom': [
             ord('G'),
             curses.KEY_END,
         ],
@@ -104,7 +104,7 @@ def get_keys():
         'toggle': [
             ord('t'),
         ],
-        'toggle_dn': [
+        'toggle_down': [
             ord(' '),
         ],
         'toggle_up': [
