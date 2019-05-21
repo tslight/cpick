@@ -88,19 +88,12 @@ class Screen:
         self.maxcolumns = int(self.maxx / self.smaxcol)
 
         self.windows = []
-        self.columns = 1
 
-        for n in range(self.maxcolumns):
+        for col in range(self.maxcolumns):
             if total > self.smaxrow:
                 total -= self.smaxrow
-                self.columns += 1
-
-        for col in range(self.columns):
-            column = curses.newpad(self.maxy - 1, self.smaxcol)
-            column.keypad(True)
-            column.scrollok(True)
-            column.idlok(True)
-            self.windows.append(column)
+                column = curses.newpad(self.maxy - 1, self.smaxcol)
+                self.windows.append(column)
 
     def refresh(self):
         '''

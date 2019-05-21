@@ -35,9 +35,10 @@ class Draw(Screen):
 
     def draw_body(self, msg, pick=True, numbers=False):
         self.maxline = len(msg)
+        self.smaxcol = len(max(msg, key=len)) + 5
         for column in self.windows:
             column.erase()
-            column.resize(self.maxline + self.foot_maxy, self.smaxcol)
+            column.resize(self.maxline + self.foot_maxy, self.maxx)
             column.keypad(True)
             column.scrollok(True)
             column.idlok(True)
@@ -67,16 +68,16 @@ class Draw(Screen):
                 else:
                     line, color = item, self.white_black
                 line = line + ' ' * (self.smaxcol - len(line))
-                column.addstr(index, 0, line, color)
+                column.addstr(index, self.pmincol, line, color)
             column.refresh(self.pminrow,
                            self.pmincol,
                            self.sminrow,
                            self.smincol,
                            self.smaxrow,
-                           self.smaxcol)
+                           self.maxx - 2)
             self.pmincol += self.smaxcol
             self.smincol += self.smaxcol
-            self.smaxcol += self.smaxcol
+            # self.smaxcol += self.smaxcol
 
     def draw_textbox(self, prompt):
         self.foot.erase()
