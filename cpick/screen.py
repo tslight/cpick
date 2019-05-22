@@ -84,7 +84,8 @@ class Screen:
         self.smaxcol = self.maxx - 2  # screen col stop (bottom righthand)
         self.maxwidth = len(max(self.items, key=len)) + 10
 
-        self.curline = 0
+        self.currow = 0
+        self.curcol = 1
         self.total, total = (len(self.items),)*2
         columns = int(self.smaxcol / self.maxwidth)
 

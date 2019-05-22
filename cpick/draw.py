@@ -34,30 +34,29 @@ class Draw(Screen):
             pass
 
     def draw_body(self, msg, pick=True, numbers=False):
-        self.start = 0
-        self.stop = self.maxline
-        for index, column in enumerate(self.windows):
-            for index, item in enumerate(msg[self.start:self.stop]):
-                realidx = self.start + index
+        start, stop = 0, self.maxline
+        for column in self.windows:
+            for index, item in enumerate(msg[start:stop]):
+                real_index = start + index
                 if pick:
-                    if realidx == self.curline and index in self.picked:
+                    if real_index == self.currow and index in self.picked:
                         indicator, color = self.indicator, self.black_yellow
-                    elif realidx == self.curline and index in self.matches:
+                    elif real_index == self.currow and index in self.matches:
                         indicator, color = self.indicator, self.black_green
-                    elif realidx in self.picked:
+                    elif real_index in self.picked:
                         indicator, color = self.checked, self.yellow_black
-                    elif realidx in self.matches:
+                    elif real_index in self.matches:
                         indicator, color = self.checkbox, self.green_black
-                    elif realidx == self.curline:
+                    elif real_index == self.currow:
                         indicator, color = self.indicator, self.black_blue
                     else:
                         indicator, color = self.checkbox, self.white_black
                     if numbers:
                         maxlen = len(str(self.maxline + 1))
-                        length = len(str(realidx + 1))
+                        length = len(str(real_index + 1))
                         if length <= maxlen:
                             pad = ' ' * (maxlen - length)
-                            number = str(realidx + 1) + ')' + pad
+                            number = str(real_index + 1) + ')' + pad
                         line = number + indicator + ' ' + item
                     else:
                         line = indicator + ' ' + item
@@ -65,8 +64,8 @@ class Draw(Screen):
                     line, color = item, self.white_black
                 line = line + ' ' * (self.maxwidth - len(line))
                 column.addstr(index, 0, line, color)
-            self.start += self.maxline
-            self.stop += self.maxline
+            start += self.maxline
+            stop += self.maxline
 
     def draw_textbox(self, prompt):
         self.foot.erase()

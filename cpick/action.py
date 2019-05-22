@@ -51,68 +51,72 @@ class Action(Draw):
 
     def left_line(self):
         if self.columns > 0:
-            if self.curline - self.maxline > 0:
-                self.curline -= self.maxline
+            if self.currow - self.maxline > 0:
+                self.curcol -= 1
+                self.currow -= self.maxline
 
     def right_line(self):
         if self.columns > 0:
-            if self.curline + self.maxline < self.total:
-                self.curline += self.maxline
+            if self.currow + self.maxline < self.total:
+                self.curcol += 1
+                self.currow += self.maxline
 
     def down_line(self):
-        if self.curline >= self.total - 1:
+        if self.currow >= self.total - 1:
             self.top_line()
-        elif self.columns > 0 and self.curline >= self.maxline - 1:
+            return
+        elif self.currow >= (self.maxline - 1) * self.curcol:
             self.top_win()
-            self.curline += 1
-        elif self.curline >= self.pminrow + self.smaxrow - 1:
+            self.curcol += 1
+        elif self.currow >= (self.pminrow + self.smaxrow - 1) * self.curcol:
             self.pminrow += 1  # scroll screen
-            self.curline += 1
-        else:
-            self.curline += 1  # scroll cursor
+
+        self.currow += 1  # scroll cursor
 
     def up_line(self):
-        if self.curline < 1:
+        if self.currow < 1:
             self.bottom_line()
-        elif self.columns > 0 and self.curline < self.start:
-            self.bottom_win()
-            self.curline -= 1
-        elif self.curline <= self.pminrow:
+            return
+        elif self.currow <= self.pminrow * self.curcol:
             self.pminrow -= 1
-            self.curline -= 1
-        else:
-            self.curline -= 1
+        elif self.currow <= (self.maxline * self.curcol) - self.maxline:
+            self.bottom_win()
+            self.curcol -= 1
+
+        self.currow -= 1
 
     def pgdn_line(self):
         self.pminrow += self.smaxrow
-        self.curline += self.smaxrow
+        self.currow += self.smaxrow
         if self.pminrow >= self.maxline - self.smaxrow:
             self.bottom_line()
 
     def pgup_line(self):
         self.pminrow -= self.smaxrow
-        self.curline -= self.smaxrow
+        self.currow -= self.smaxrow
         if self.pminrow <= 0:
             self.top_line()
 
     def top_line(self):
-        self.pminrow, self.curline = (0,)*2
+        self.pminrow, self.currow = (0,)*2
+        self.curcol = 1
 
     def bottom_line(self):
         self.pminrow = self.maxline - self.smaxrow
-        self.curline = self.maxline - 1
+        self.currow = self.total - 1
+        self.curcol = self.columns
 
     def recenter_line(self):
         smiddle = int(self.smaxrow / 2)
         pmiddle = self.pminrow + smiddle
-        if self.curline > self.maxline - smiddle:
+        if self.currow > self.maxline - smiddle:
             self.bottom_win()
-        elif self.curline < smiddle:
+        elif self.currow < smiddle:
             self.top_win()
-        elif self.curline > pmiddle:
-            self.pminrow += self.curline - pmiddle
-        elif self.curline < pmiddle:
-            self.pminrow -= pmiddle - self.curline
+        elif self.currow > pmiddle:
+            self.pminrow += self.currow - pmiddle
+        elif self.currow < pmiddle:
+            self.pminrow -= pmiddle - self.currow
 
     ###########################################################################
     #                               LINE JUMPING                              #
@@ -127,7 +131,7 @@ class Action(Draw):
             self.pgdn_win()
         elif (number <= self.pminrow):
             self.pgup_win()
-        self.curline = number
+        self.currow = number
 
     def goto(self, prompt="Enter a line number: "):
         try:
@@ -141,7 +145,7 @@ class Action(Draw):
     def goto_next(self, items):
         if items:
             for i in items:
-                if self.curline < i:
+                if self.currow < i:
                     self.goto_number(i)
                     return
             self.top_line()
@@ -150,7 +154,7 @@ class Action(Draw):
     def goto_prev(self, items):
         if items:
             for i in reversed(items):
-                if self.curline > i:
+                if self.currow > i:
                     self.goto_number(i)
                     return
             self.bottom_line()

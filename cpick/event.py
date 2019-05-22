@@ -80,7 +80,7 @@ class Event(Action):
             **dict.fromkeys(self.keys['pick'],
                             lambda:
                             self.pick(
-                                self.curline, self.picked) or self.down_line()
+                                self.currow, self.picked) or self.down_line()
                             ),
             **dict.fromkeys(self.keys['pick_pattern'],
                             lambda:
@@ -92,14 +92,14 @@ class Event(Action):
                             self.undo() or self.goto_prev(self.picked)),
             **dict.fromkeys(self.keys['toggle'],
                             lambda:
-                            self.toggle(self.curline, self.picked)),
+                            self.toggle(self.currow, self.picked)),
             **dict.fromkeys(self.keys['toggle_down'],
                             lambda:
-                            self.toggle(self.curline,
+                            self.toggle(self.currow,
                                         self.picked) or self.down_line()),
             **dict.fromkeys(self.keys['toggle_up'],
                             lambda:
-                            self.toggle(self.curline,
+                            self.toggle(self.currow,
                                         self.picked) or self.up_line()),
             **dict.fromkeys(self.keys['toggle_all'],
                             self.toggle_all),
