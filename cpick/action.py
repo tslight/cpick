@@ -65,10 +65,12 @@ class Action(Draw):
         if self.currow >= self.total - 1:
             self.top_line()
             return
-        elif self.currow >= (self.maxline - 1) * self.curcol:
+
+        if self.currow >= (self.maxline - 1) * self.curcol:
             self.top_win()
             self.curcol += 1
-        elif self.currow >= (self.pminrow + self.smaxrow - 1) * self.curcol:
+
+        if self.currow >= (self.pminrow + self.smaxrow - 1) * self.curcol:
             self.pminrow += 1  # scroll screen
 
         self.currow += 1  # scroll cursor
@@ -77,9 +79,11 @@ class Action(Draw):
         if self.currow < 1:
             self.bottom_line()
             return
-        elif self.currow <= self.pminrow * self.curcol:
+
+        if self.currow <= (self.smaxrow - self.pminrow) * self.curcol:
             self.pminrow -= 1
-        elif self.currow <= (self.maxline * self.curcol) - self.maxline:
+
+        if self.currow <= (self.maxline * self.curcol) - self.maxline:
             self.bottom_win()
             self.curcol -= 1
 
