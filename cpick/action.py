@@ -68,15 +68,10 @@ class Action(Draw):
             self.top_win()
             self.curcol += 1
 
-        if (self.currow >= self.pminrow + self.smaxrow - 1 or
-                self.currow >= (
-                    self.maxline * (self.curcol - 1)
-                ) + self.smaxrow - 1):
+        if (self.currow >= (
+            self.maxline * (self.curcol - 1)
+        ) + self.pminrow + self.smaxrow - 1):
             self.pminrow += 1
-
-        # if (self.currow * self.curcol >= self.pminrow + self.smaxrow - 1 or
-        #         self.currow >= self.currow + (self.maxline * self.curcol)):
-        #     self.pminrow += 1  # scroll screen
 
         self.currow += 1  # scroll cursor
 
@@ -90,10 +85,6 @@ class Action(Draw):
                     self.maxline * (self.curcol - 1)
                 ) + self.pminrow):
             self.pminrow -= 1
-
-        # if (self.currow * self.curcol <= self.pminrow and
-        #         self.currow <= self.currow + (self.maxline * self.curcol)):
-        #     self.pminrow -= 1
 
         if self.currow <= (self.maxline * self.curcol) - self.maxline:
             self.bottom_win()
