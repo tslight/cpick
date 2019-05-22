@@ -36,27 +36,27 @@ class Screen:
             curses.init_pair(i, i, -1)
             curses.init_pair(i + 7, curses.COLOR_WHITE, i)
             curses.init_pair(i + 14, curses.COLOR_BLACK, i)
-        self.red_black = curses.color_pair(1)
-        self.green_black = curses.color_pair(2)
-        self.yellow_black = curses.color_pair(3)
-        self.blue_black = curses.color_pair(4)
-        self.magenta_black = curses.color_pair(5)
-        self.cyan_black = curses.color_pair(6)
-        self.white_black = curses.color_pair(7)
-        self.white_red = curses.color_pair(8)
-        self.white_green = curses.color_pair(9)
-        self.white_yellow = curses.color_pair(10)
-        self.white_blue = curses.color_pair(11)
-        self.white_magenta = curses.color_pair(12)
-        self.white_cyan = curses.color_pair(13)
-        self.white_white = curses.color_pair(14)
-        self.black_red = curses.color_pair(15)
-        self.black_green = curses.color_pair(16)
-        self.black_yellow = curses.color_pair(17)
-        self.black_blue = curses.color_pair(18)
-        self.black_magenta = curses.color_pair(19)
-        self.black_cyan = curses.color_pair(20)
-        self.black_white = curses.color_pair(21)
+            self.red_black = curses.color_pair(1)
+            self.green_black = curses.color_pair(2)
+            self.yellow_black = curses.color_pair(3)
+            self.blue_black = curses.color_pair(4)
+            self.magenta_black = curses.color_pair(5)
+            self.cyan_black = curses.color_pair(6)
+            self.white_black = curses.color_pair(7)
+            self.white_red = curses.color_pair(8)
+            self.white_green = curses.color_pair(9)
+            self.white_yellow = curses.color_pair(10)
+            self.white_blue = curses.color_pair(11)
+            self.white_magenta = curses.color_pair(12)
+            self.white_cyan = curses.color_pair(13)
+            self.white_white = curses.color_pair(14)
+            self.black_red = curses.color_pair(15)
+            self.black_green = curses.color_pair(16)
+            self.black_yellow = curses.color_pair(17)
+            self.black_blue = curses.color_pair(18)
+            self.black_magenta = curses.color_pair(19)
+            self.black_cyan = curses.color_pair(20)
+            self.black_white = curses.color_pair(21)
 
     def head_init(self):
         '''
@@ -80,20 +80,28 @@ class Screen:
         self.pmincol = 0  # pad col to start displaying contents at
         self.sminrow = 1  # screen row to start display of pad at
         self.smincol = 0  # screen col to start display of pad at
-        self.smaxrow = self.maxy - 2  # screen row stop
-        self.smaxcol = len(max(self.items, key=len)) + 10
+        self.smaxrow = self.maxy - 2  # screen row stop (bottom righthand)
+        self.smaxcol = self.maxx - 2  # screen col stop (bottom righthand)
+        self.maxwidth = len(max(self.items, key=len)) + 10
 
         self.curline = 0
         total, self.maxline = (len(self.items),)*2
-        self.maxcolumns = int(self.maxx / self.smaxcol)
+        self.maxcolumns = int(self.smaxcol / self.maxwidth)
 
         self.windows = []
+        columns = 1
 
-        for col in range(self.maxcolumns):
+        for col in range(self.maxcolumns - 1):
             if total > self.smaxrow:
                 total -= self.smaxrow
-                column = curses.newpad(self.maxy - 1, self.smaxcol)
-                self.windows.append(column)
+                columns += 1
+
+        for col in range(columns):
+            column = curses.newpad(self.maxy - 1, self.maxwidth)
+            column.keypad(True)
+            column.scrollok(True)
+            column.idlok(True)
+            self.windows.append(column)
 
     def refresh(self):
         '''
@@ -101,6 +109,15 @@ class Screen:
         '''
         self.screen.refresh()
         self.head.refresh()
+        for index, column in enumerate(self.windows):
+            self.smincol = index*self.maxwidth
+            column.resize(self.maxline + self.foot_maxy, self.maxx)
+            column.refresh(self.pminrow,
+                           self.pmincol,
+                           self.sminrow,
+                           self.smincol,
+                           self.smaxrow,
+                           self.smaxcol)
         self.foot.refresh()
 
     def resize(self):

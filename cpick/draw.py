@@ -35,12 +35,7 @@ class Draw(Screen):
 
     def draw_body(self, msg, pick=True, numbers=False):
         self.maxline = len(msg)
-        self.smaxcol = len(max(msg, key=len)) + 5
         for column in self.windows:
-            column.resize(self.maxline + self.foot_maxy, self.maxx)
-            column.keypad(True)
-            column.scrollok(True)
-            column.idlok(True)
             for index, item in enumerate(msg):
                 if pick:
                     if index == self.curline and index in self.picked:
@@ -66,16 +61,8 @@ class Draw(Screen):
                         line = indicator + ' ' + item
                 else:
                     line, color = item, self.white_black
-                line = line + ' ' * (self.smaxcol - len(line))
-                column.addstr(index, self.pmincol, line, color)
-            column.refresh(self.pminrow,
-                           self.pmincol,
-                           self.sminrow,
-                           self.smincol,
-                           self.smaxrow,
-                           self.maxx - 2)
-            self.pmincol += self.smaxcol
-            self.smincol += self.smaxcol
+                line = line + ' ' * (self.maxwidth - len(line))
+                column.addstr(index, 0, line, color)
 
     def draw_textbox(self, prompt):
         self.foot.erase()
