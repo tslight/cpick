@@ -36,6 +36,7 @@ class Draw(Screen):
     def draw_body(self, msg, pick=True, numbers=False):
         start, stop = 0, self.maxline
         for column in self.windows:
+            column.erase()
             for idx, item in enumerate(msg[start:stop]):
                 index = start + idx
                 if pick:
