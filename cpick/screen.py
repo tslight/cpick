@@ -111,18 +111,19 @@ class Screen:
         '''
         Call refresh on all widgets.
         '''
-        self.screen.refresh()
-        self.head.refresh()
+        self.screen.noutrefresh()
+        self.head.noutrefresh()
         for index, column in enumerate(self.windows):
             self.smincol = index*self.maxwidth
             column.resize(self.maxline + self.foot_maxy, self.maxx)
-            column.refresh(self.pminrow,
-                           self.pmincol,
-                           self.sminrow,
-                           self.smincol,
-                           self.smaxrow,
-                           self.smaxcol)
-        self.foot.refresh()
+            column.noutrefresh(self.pminrow,
+                               self.pmincol,
+                               self.sminrow,
+                               self.smincol,
+                               self.smaxrow,
+                               self.smaxcol)
+        self.foot.noutrefresh()
+        curses.doupdate()
 
     def resize(self):
         '''
