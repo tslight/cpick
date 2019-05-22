@@ -87,18 +87,18 @@ class Screen:
         self.curline = 0
         self.total, total = (len(self.items),)*2
         columns = int(self.smaxcol / self.maxwidth)
-        self.maxline = self.smaxrow
-        while self.maxline * columns < total:
-            self.maxline += 1
 
-        self.windows = []
         self.columns = 0
-
         for col in range(columns):
             if total > self.smaxrow:
                 total -= self.smaxrow
                 self.columns += 1
 
+        self.maxline = self.smaxrow
+        while self.maxline * self.columns < self.total:
+            self.maxline += 1
+
+        self.windows = []
         for col in range(self.columns):
             column = curses.newpad(self.maxy - 1, self.maxwidth)
             column.keypad(True)
