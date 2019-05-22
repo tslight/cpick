@@ -139,9 +139,5 @@ class Screen:
         self.foot.resize(1, self.maxx)
         self.foot_maxy, self.foot_maxx = self.foot.getmaxyx()
 
-        self.body.resize(self.maxline + self.foot_maxy, self.maxx)
-        self.body_maxy, self.body_maxx = self.body.getmaxyx()
-        self.smaxrow = self.maxy - 2
-        self.smaxcol = self.body_maxx  # screen col stop
-
+        self.body_init()
         self.refresh()
