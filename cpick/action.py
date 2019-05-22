@@ -62,6 +62,9 @@ class Action(Draw):
     def down_line(self):
         if self.curline >= self.total - 1:
             self.top_line()
+        elif self.columns > 0 and self.curline >= self.maxline - 1:
+            self.top_win()
+            self.curline += 1
         elif self.curline >= self.pminrow + self.smaxrow - 1:
             self.pminrow += 1  # scroll screen
             self.curline += 1
@@ -71,6 +74,9 @@ class Action(Draw):
     def up_line(self):
         if self.curline < 1:
             self.bottom_line()
+        elif self.columns > 0 and self.curline < self.start:
+            self.bottom_win()
+            self.curline -= 1
         elif self.curline <= self.pminrow:
             self.pminrow -= 1
             self.curline -= 1
