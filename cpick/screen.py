@@ -12,10 +12,10 @@ class Screen:
     one a normal window for dynamic scrolling.
     '''
 
-    def __init__(self, screen, items):
-        self.screen = screen
+    def __init__(self, stdscr, items):
+        self.stdscr = stdscr
         self.items = items
-        self.maxy, self.maxx = self.screen.getmaxyx()
+        self.maxy, self.maxx = self.stdscr.getmaxyx()
         self.color_init()
         self.head_init()
         self.foot_init()
@@ -60,21 +60,21 @@ class Screen:
 
     def head_init(self):
         '''
-        Initialise header window to take up top line of screen.
+        Initialise header window to take up top row of screen.
         '''
         self.head = curses.newwin(0, self.maxx, 0, 0)
         self.head_maxy, self.head_maxx = self.head.getmaxyx()
 
     def foot_init(self):
         '''
-        Initialise footer window to take up bottom line of screen.
+        Initialise footer window to take up bottom row of screen.
         '''
         self.foot = curses.newwin(0, self.maxx, self.maxy - 1, 0)
         self.foot_maxy, self.foot_maxx = self.foot.getmaxyx()
 
     def body_init(self):
         '''
-        Initialise pad window for help page.
+        Initialise as many columns of pad windows as we need.
         '''
         self.pminrow = 0  # pad row to start displaying contents at
         self.pmincol = 0  # pad col to start displaying contents at
@@ -95,27 +95,27 @@ class Screen:
                 total -= self.smaxrow
                 self.columns += 1
 
-        self.maxline = self.smaxrow
-        while self.maxline * self.columns < self.total:
-            self.maxline += 1
+        self.pmaxrow = self.smaxrow
+        while self.pmaxrow * self.columns < self.total:
+            self.pmaxrow += 1
 
-        self.windows = []
+        self.pads = []
         for col in range(self.columns):
             column = curses.newpad(self.maxy - 1, self.maxwidth)
             column.keypad(True)
             column.scrollok(True)
             column.idlok(True)
-            self.windows.append(column)
+            self.pads.append(column)
 
     def refresh(self):
         '''
         Call refresh on all widgets.
         '''
-        self.screen.noutrefresh()
+        self.stdscr.noutrefresh()
         self.head.noutrefresh()
-        for index, column in enumerate(self.windows):
+        for index, column in enumerate(self.pads):
             self.smincol = index*self.maxwidth
-            column.resize(self.maxline + self.foot_maxy, self.maxx)
+            column.resize(self.pmaxrow + self.foot_maxy, self.maxx)
             column.noutrefresh(self.pminrow,
                                self.pmincol,
                                self.sminrow,
@@ -129,15 +129,12 @@ class Screen:
         '''
         Handle terminal resizing.
         '''
-        self.screen.erase()
-        self.maxy, self.maxx = self.screen.getmaxyx()
-
+        self.stdscr.erase()
+        self.maxy, self.maxx = self.stdscr.getmaxyx()
         self.head.resize(1, self.maxx)
         self.head_maxy, self.head_maxx = self.head.getmaxyx()
-
         self.foot.mvwin(self.maxy - 1, 0)
         self.foot.resize(1, self.maxx)
         self.foot_maxy, self.foot_maxx = self.foot.getmaxyx()
-
         self.body_init()
         self.refresh()

@@ -15,47 +15,47 @@ class Event(Action):
     '''
 
     def __init__(self,
-                 screen,
+                 stdscr,
                  items,
                  limit=maxsize,
                  numbers=False,
                  header='PICK ITEMS FROM THIS LIST:',
                  footer='Press [?] to view keybindings'):
-        Action.__init__(self, screen, items)
+        Action.__init__(self, stdscr, items)
         self.limit, self.numbers = limit, numbers
         self.header, self.footer = header, footer
         self.desc, self.keys = get_keys()
 
-        self.win_actions = {
+        self.pad_actions = {
             **dict.fromkeys(self.keys['resize'], self.resize),
-            **dict.fromkeys(self.keys['down'], self.down_win),
-            **dict.fromkeys(self.keys['up'], self.up_win),
-            **dict.fromkeys(self.keys['pgdn'], self.pgdn_win),
-            **dict.fromkeys(self.keys['pgup'], self.pgup_win),
-            **dict.fromkeys(self.keys['top'], self.top_win),
-            **dict.fromkeys(self.keys['bottom'], self.bottom_win),
+            **dict.fromkeys(self.keys['down'], self.down_pad),
+            **dict.fromkeys(self.keys['up'], self.up_pad),
+            **dict.fromkeys(self.keys['pgdn'], self.pgdn_pad),
+            **dict.fromkeys(self.keys['pgup'], self.pgup_pad),
+            **dict.fromkeys(self.keys['top'], self.top_pad),
+            **dict.fromkeys(self.keys['bottom'], self.bottom_pad),
             **dict.fromkeys(self.keys['quit'], self.quit),
         }
 
-        self.line_actions = {  # https://stackoverflow.com/a/45928598
+        self.row_actions = {  # https://stackoverflow.com/a/45928598
             **dict.fromkeys(self.keys['resize'],
                             self.resize),
             **dict.fromkeys(self.keys['right'],
-                            self.right_line),
+                            self.right_col),
             **dict.fromkeys(self.keys['left'],
-                            self.left_line),
+                            self.left_col),
             **dict.fromkeys(self.keys['down'],
-                            self.down_line),
+                            self.down_row),
             **dict.fromkeys(self.keys['up'],
-                            self.up_line),
+                            self.up_row),
             **dict.fromkeys(self.keys['top'],
-                            self.top_line),
+                            self.first_item),
             **dict.fromkeys(self.keys['bottom'],
-                            self.bottom_line),
+                            self.last_item),
             **dict.fromkeys(self.keys['pgdn'],
-                            self.pgdn_line),
+                            self.pgdn_row),
             **dict.fromkeys(self.keys['pgup'],
-                            self.pgup_line),
+                            self.pgup_row),
             **dict.fromkeys(self.keys['goto'],
                             self.goto),
             **dict.fromkeys(self.keys['find'],
@@ -76,11 +76,11 @@ class Event(Action):
             **dict.fromkeys(self.keys['reset'],
                             self.reset),
             **dict.fromkeys(self.keys['recenter'],
-                            self.recenter_line),
+                            self.recenter_row),
             **dict.fromkeys(self.keys['pick'],
                             lambda:
                             self.pick(
-                                self.currow, self.picked) or self.down_line()
+                                self.currow, self.picked) or self.down_row()
                             ),
             **dict.fromkeys(self.keys['pick_pattern'],
                             lambda:
@@ -96,11 +96,11 @@ class Event(Action):
             **dict.fromkeys(self.keys['toggle_down'],
                             lambda:
                             self.toggle(self.currow,
-                                        self.picked) or self.down_line()),
+                                        self.picked) or self.down_row()),
             **dict.fromkeys(self.keys['toggle_up'],
                             lambda:
                             self.toggle(self.currow,
-                                        self.picked) or self.up_line()),
+                                        self.picked) or self.up_row()),
             **dict.fromkeys(self.keys['toggle_all'],
                             self.toggle_all),
             **dict.fromkeys(self.keys['toggle_pattern'],
@@ -123,7 +123,7 @@ class Event(Action):
 
     def view(self, contents):
         pminrow, self.pminrow = self.pminrow, 0
-        self.screen.erase()
+        self.stdscr.erase()
         if not contents:
             contents = ['', 'Nothing to see here...']
         self.draw_body(contents, pick=False)
@@ -131,9 +131,9 @@ class Event(Action):
         self.draw_footer("Press [q] or [ESC] to return to picker.")
         while True:
             self.refresh()
-            key = self.screen.getch()
+            key = self.stdscr.getch()
             try:
-                if self.win_actions[key]() == "quit":
+                if self.pad_actions[key]() == "quit":
                     break
             except KeyError:
                 pass
@@ -151,9 +151,9 @@ class Event(Action):
             self.draw_header(header)
             self.draw_footer(footer)
             self.refresh()
-            key = self.screen.getch()
+            key = self.stdscr.getch()
             try:
-                out = self.line_actions[key]()
+                out = self.row_actions[key]()
                 if out == 'quit':
                     return [self.items[pick] for pick in self.picked]
             except KeyError:

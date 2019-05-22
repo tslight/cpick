@@ -13,8 +13,8 @@ class Draw(Screen):
     How to draw on the screen.
     '''
 
-    def __init__(self, screen, items):
-        Screen.__init__(self, screen, items)
+    def __init__(self, stdscr, items):
+        Screen.__init__(self, stdscr, items)
         self.indicator = '-->'
         self.checkbox = '[ ]'
         self.checked = '[x]'
@@ -63,19 +63,19 @@ class Draw(Screen):
             return indicator + ' ' + item, color
 
     def draw_body(self, msg, pick=True, numbers=False):
-        start, stop = 0, self.maxline
-        for column in self.windows:
+        start, stop = 0, self.pmaxrow
+        for column in self.pads:
             column.erase()
             for idx, item in enumerate(msg[start:stop]):
                 index = start + idx
                 if pick:
-                    line, color = self.get_item(index, item, numbers)
+                    row, color = self.get_item(index, item, numbers)
                 else:
-                    line, color = item, self.white_black
-                line = line + ' ' * (self.maxwidth - len(line))
-                column.addstr(idx, 0, line, color)
-            start += self.maxline
-            stop += self.maxline
+                    row, color = item, self.white_black
+                row = row + ' ' * (self.maxwidth - len(row))
+                column.addstr(idx, 0, row, color)
+            start += self.pmaxrow
+            stop += self.pmaxrow
 
     def draw_textbox(self, prompt):
         self.foot.erase()
