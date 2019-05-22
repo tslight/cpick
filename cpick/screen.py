@@ -85,8 +85,11 @@ class Screen:
         self.maxwidth = len(max(self.items, key=len)) + 10
 
         self.curline = 0
-        total, self.maxline = (len(self.items),)*2
+        total = len(self.items)
         columns = int(self.smaxcol / self.maxwidth)
+        self.maxline = self.smaxrow
+        while self.maxline * columns < total:
+            self.maxline += 1
 
         self.windows = []
         self.columns = 0

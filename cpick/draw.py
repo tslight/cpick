@@ -34,9 +34,9 @@ class Draw(Screen):
             pass
 
     def draw_body(self, msg, pick=True, numbers=False):
-        self.maxline = len(msg)
+        # self.maxline = len(msg)
         start = 0
-        stop = self.smaxrow
+        stop = self.maxline
         for index, column in enumerate(self.windows):
             for index, item in enumerate(msg[start:stop]):
                 if pick:
@@ -65,8 +65,8 @@ class Draw(Screen):
                     line, color = item, self.white_black
                 line = line + ' ' * (self.maxwidth - len(line))
                 column.addstr(index, 0, line, color)
-            start += self.smaxrow
-            stop += self.smaxrow
+            start += self.maxline
+            stop += self.maxline
 
     def draw_textbox(self, prompt):
         self.foot.erase()
