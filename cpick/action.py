@@ -49,22 +49,24 @@ class Action(Draw):
     #                              LINE MOVEMENT                              #
     ###########################################################################
 
+    def left_line(self):
+        if self.columns > 0:
+            if self.curline - self.maxline > 0:
+                self.curline -= self.maxline
+
+    def right_line(self):
+        if self.columns > 0:
+            if self.curline + self.maxline < self.total:
+                self.curline += self.maxline
+
     def down_line(self):
-        if self.curline >= self.maxline - 1:
+        if self.curline >= self.total - 1:
             self.top_line()
         elif self.curline >= self.pminrow + self.smaxrow - 1:
             self.pminrow += 1  # scroll screen
             self.curline += 1
         else:
             self.curline += 1  # scroll cursor
-
-    def left_line(self):
-        if self.columns > 0:
-            self.curline -= self.maxline
-
-    def right_line(self):
-        if self.columns > 0:
-            self.curline += self.maxline
 
     def up_line(self):
         if self.curline < 1:
