@@ -52,7 +52,7 @@ class Draw(Screen):
                     else:
                         indicator, color = self.checkbox, self.white_black
                     if numbers:
-                        maxlen = len(str(self.maxline + 1))
+                        maxlen = len(str(self.total + 1))
                         length = len(str(real_index + 1))
                         if length <= maxlen:
                             pad = ' ' * (maxlen - length)
