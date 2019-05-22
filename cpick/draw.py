@@ -35,8 +35,10 @@ class Draw(Screen):
 
     def draw_body(self, msg, pick=True, numbers=False):
         self.maxline = len(msg)
-        for column in self.windows:
-            for index, item in enumerate(msg):
+        start = 0
+        stop = self.smaxrow
+        for index, column in enumerate(self.windows):
+            for index, item in enumerate(msg[start:stop]):
                 if pick:
                     if index == self.curline and index in self.picked:
                         indicator, color = self.indicator, self.black_yellow
@@ -52,10 +54,10 @@ class Draw(Screen):
                         indicator, color = self.checkbox, self.white_black
                     if numbers:
                         maxlen = len(str(self.maxline + 1))
-                        length = len(str(index + 1))
+                        length = len(str(start + index + 1))
                         if length <= maxlen:
                             pad = ' ' * (maxlen - length)
-                            number = str(index + 1) + ')' + pad
+                            number = str(start + index + 1) + ')' + pad
                         line = number + indicator + ' ' + item
                     else:
                         line = indicator + ' ' + item
@@ -63,6 +65,8 @@ class Draw(Screen):
                     line, color = item, self.white_black
                 line = line + ' ' * (self.maxwidth - len(line))
                 column.addstr(index, 0, line, color)
+            start += self.smaxrow
+            stop += self.smaxrow
 
     def draw_textbox(self, prompt):
         self.foot.erase()

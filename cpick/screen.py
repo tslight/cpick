@@ -86,17 +86,17 @@ class Screen:
 
         self.curline = 0
         total, self.maxline = (len(self.items),)*2
-        self.maxcolumns = int(self.smaxcol / self.maxwidth)
+        columns = int(self.smaxcol / self.maxwidth)
 
         self.windows = []
-        columns = 1
-
-        for col in range(self.maxcolumns - 1):
-            if total > self.smaxrow:
-                total -= self.smaxrow
-                columns += 1
+        self.columns = 0
 
         for col in range(columns):
+            if total > self.smaxrow:
+                total -= self.smaxrow
+                self.columns += 1
+
+        for col in range(self.columns):
             column = curses.newpad(self.maxy - 1, self.maxwidth)
             column.keypad(True)
             column.scrollok(True)
