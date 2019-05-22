@@ -36,34 +36,34 @@ class Draw(Screen):
     def draw_body(self, msg, pick=True, numbers=False):
         start, stop = 0, self.maxline
         for column in self.windows:
-            for index, item in enumerate(msg[start:stop]):
-                real_index = start + index
+            for idx, item in enumerate(msg[start:stop]):
+                index = start + idx
                 if pick:
-                    if real_index == self.currow and index in self.picked:
+                    if index == self.currow and index in self.picked:
                         indicator, color = self.indicator, self.black_yellow
-                    elif real_index == self.currow and index in self.matches:
+                    elif index == self.currow and index in self.matches:
                         indicator, color = self.indicator, self.black_green
-                    elif real_index in self.picked:
+                    elif index in self.picked:
                         indicator, color = self.checked, self.yellow_black
-                    elif real_index in self.matches:
+                    elif index in self.matches:
                         indicator, color = self.checkbox, self.green_black
-                    elif real_index == self.currow:
+                    elif index == self.currow:
                         indicator, color = self.indicator, self.black_blue
                     else:
                         indicator, color = self.checkbox, self.white_black
                     if numbers:
                         maxlen = len(str(self.total + 1))
-                        length = len(str(real_index + 1))
+                        length = len(str(index + 1))
                         if length <= maxlen:
                             pad = ' ' * (maxlen - length)
-                            number = str(real_index + 1) + ')' + pad
+                            number = str(index + 1) + ')' + pad
                         line = number + indicator + ' ' + item
                     else:
                         line = indicator + ' ' + item
                 else:
                     line, color = item, self.white_black
                 line = line + ' ' * (self.maxwidth - len(line))
-                column.addstr(index, 0, line, color)
+                column.addstr(idx, 0, line, color)
             start += self.maxline
             stop += self.maxline
 
