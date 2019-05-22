@@ -89,8 +89,8 @@ class Screen:
         self.total, total = (len(self.items),)*2
         columns = int(self.smaxcol / self.maxwidth)
 
-        self.columns = 0
-        for col in range(columns):
+        self.columns = 1
+        for col in range(columns - 1):
             if total > self.smaxrow:
                 total -= self.smaxrow
                 self.columns += 1
