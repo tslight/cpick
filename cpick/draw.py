@@ -34,30 +34,30 @@ class Draw(Screen):
             pass
 
     def draw_body(self, msg, pick=True, numbers=False):
-        # self.maxline = len(msg)
         start = 0
         stop = self.maxline
         for index, column in enumerate(self.windows):
             for index, item in enumerate(msg[start:stop]):
+                realidx = start + index
                 if pick:
-                    if index == self.curline and index in self.picked:
+                    if realidx == self.curline and index in self.picked:
                         indicator, color = self.indicator, self.black_yellow
-                    elif index == self.curline and index in self.matches:
+                    elif realidx == self.curline and index in self.matches:
                         indicator, color = self.indicator, self.black_green
-                    elif index in self.picked:
+                    elif realidx in self.picked:
                         indicator, color = self.checked, self.yellow_black
-                    elif index in self.matches:
+                    elif realidx in self.matches:
                         indicator, color = self.checkbox, self.green_black
-                    elif index == self.curline:
+                    elif realidx == self.curline:
                         indicator, color = self.indicator, self.black_blue
                     else:
                         indicator, color = self.checkbox, self.white_black
                     if numbers:
                         maxlen = len(str(self.maxline + 1))
-                        length = len(str(start + index + 1))
+                        length = len(str(realidx + 1))
                         if length <= maxlen:
                             pad = ' ' * (maxlen - length)
-                            number = str(start + index + 1) + ')' + pad
+                            number = str(realidx + 1) + ')' + pad
                         line = number + indicator + ' ' + item
                     else:
                         line = indicator + ' ' + item

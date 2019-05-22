@@ -36,6 +36,14 @@ def get_keys():
         'resize': [
             curses.KEY_RESIZE,
         ],
+        'left': [
+            ord('h'),
+            curses.KEY_LEFT,
+        ],
+        'right': [
+            ord('l'),
+            curses.KEY_RIGHT,
+        ],
         'down': [
             ord('j'),
             curses.KEY_DOWN,

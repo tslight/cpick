@@ -40,6 +40,10 @@ class Event(Action):
         self.line_actions = {  # https://stackoverflow.com/a/45928598
             **dict.fromkeys(self.keys['resize'],
                             self.resize),
+            **dict.fromkeys(self.keys['right'],
+                            self.right_line),
+            **dict.fromkeys(self.keys['left'],
+                            self.left_line),
             **dict.fromkeys(self.keys['down'],
                             self.down_line),
             **dict.fromkeys(self.keys['up'],

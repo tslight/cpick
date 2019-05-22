@@ -58,6 +58,14 @@ class Action(Draw):
         else:
             self.curline += 1  # scroll cursor
 
+    def left_line(self):
+        if self.columns > 0:
+            self.curline -= self.maxline
+
+    def right_line(self):
+        if self.columns > 0:
+            self.curline += self.maxline
+
     def up_line(self):
         if self.curline < 1:
             self.bottom_line()
