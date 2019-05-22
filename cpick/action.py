@@ -46,6 +46,33 @@ class Action(Draw):
         self.pminrow = self.maxline - self.smaxrow
 
     ###########################################################################
+    #                   CHECK ROW IN CONTEXT OF SCREEN & PAD                  #
+    ###########################################################################
+
+    def is_pad_top(self):
+        return (
+            self.currow <= (self.maxline * self.curcol) - self.maxline
+        )
+
+    def is_pad_bottom(self):
+        return (self.currow >= (self.maxline - 1) * self.curcol)
+
+    def is_scr_top(self):
+        return (self.currow <= self.pminrow or
+                self.currow <= (
+                    self.maxline * (self.curcol - 1)
+                ) + self.pminrow)
+
+    def is_scr_bottom(self):
+        return (
+            self.currow >= (self.maxline * (self.curcol - 1)) +
+            self.pminrow + self.smaxrow - 1
+        )
+
+    def is_on_scr(self):
+        pass
+
+    ###########################################################################
     #                              LINE MOVEMENT                              #
     ###########################################################################
 
@@ -64,13 +91,11 @@ class Action(Draw):
             self.top_line()
             return
 
-        if self.currow >= (self.maxline - 1) * self.curcol:
+        if self.is_pad_bottom():
             self.top_win()
             self.curcol += 1
 
-        if (self.currow >= (
-            self.maxline * (self.curcol - 1)
-        ) + self.pminrow + self.smaxrow - 1):
+        if self.is_scr_bottom():
             self.pminrow += 1
 
         self.currow += 1  # scroll cursor
@@ -80,13 +105,10 @@ class Action(Draw):
             self.bottom_line()
             return
 
-        if (self.currow <= self.pminrow or
-                self.currow <= (
-                    self.maxline * (self.curcol - 1)
-                ) + self.pminrow):
+        if self.is_scr_top():
             self.pminrow -= 1
 
-        if self.currow <= (self.maxline * self.curcol) - self.maxline:
+        if self.is_pad_top():
             self.bottom_win()
             self.curcol -= 1
 
@@ -130,20 +152,22 @@ class Action(Draw):
     ###########################################################################
 
     def goto_number(self, number):
-        if (number >= self.maxline - self.smaxrow):
-            self.bottom_win()
-        elif (number < self.smaxrow):
-            self.top_win()
-        elif (number >= (self.pminrow + self.smaxrow)):
-            self.pgdn_win()
-        elif (number <= self.pminrow):
-            self.pgup_win()
         self.currow = number
+        if self.is_pad_top():
+            self.bottom_win()
+            self.curcol -= 1
+        elif self.is_pad_bottom():
+            self.top_win()
+            self.curcol += 1
+        elif self.is_scr_top():
+            self.pgup_win()
+        elif self.is_scr_bottom():
+            self.pgdn_win()
 
     def goto(self, prompt="Enter a line number: "):
         try:
             number = int(self.draw_textbox(prompt)) - 1
-            if number < 0 or number > self.maxline:
+            if number < 0 or number > self.total:
                 raise ValueError
             self.goto_number(number)
         except ValueError:
