@@ -18,7 +18,7 @@ class Action(Draw):
         self.matches = []
 
     ###########################################################################
-    #                             PAD MOVEMENT                             #
+    #                             PAD MOVEMENT                                #
     ###########################################################################
 
     def up_pad(self):
@@ -55,13 +55,17 @@ class Action(Draw):
         )
 
     def is_pad_bottom(self):
-        return (self.currow >= (self.pmaxrow - 1) * self.curcol)
+        return (
+            self.currow >= (self.pmaxrow - 1) * self.curcol
+        )
 
     def is_scr_top(self):
-        return (self.currow <= self.pminrow or
-                self.currow <= (
-                    self.pmaxrow * (self.curcol - 1)
-                ) + self.pminrow)
+        return (
+            self.currow <= self.pminrow or
+            self.currow <= (
+                self.pmaxrow * (self.curcol - 1)
+            ) + self.pminrow
+        )
 
     def is_scr_bottom(self):
         return (
@@ -73,7 +77,7 @@ class Action(Draw):
         pass
 
     ###########################################################################
-    #                              ROW MOVEMENT                              #
+    #                              ROW MOVEMENT                               #
     ###########################################################################
 
     def left_col(self):
@@ -105,12 +109,12 @@ class Action(Draw):
             self.last_item()
             return
 
-        if self.is_scr_top():
-            self.pminrow -= 1
-
         if self.is_pad_top():
             self.bottom_pad()
             self.curcol -= 1
+
+        if self.is_scr_top():
+            self.pminrow -= 1
 
         self.currow -= 1
 
