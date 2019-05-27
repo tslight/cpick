@@ -50,16 +50,30 @@ class Action(Draw):
     ###########################################################################
 
     def is_pad_top(self):
+        '''
+        If the current row is less than the pads maximum number of rows, times
+        the current column, minus the maximum number of rows, we are beyond
+        the top of the current column.
+        '''
         return (
             self.currow <= (self.pmaxrow * self.curcol) - self.pmaxrow
         )
 
     def is_pad_bottom(self):
+        '''
+        If the current row is greater than the pad's maximum number of rows
+        times the current column, then we have gone beyond the bottom of the
+        current column's pad.
+        '''
         return (
             self.currow >= (self.pmaxrow - 1) * self.curcol
         )
 
     def is_scr_top(self):
+        '''
+        If the current row is less than the pads minimum row shown on the
+        screen (a.k.a) the top of the row.
+        '''
         return (
             self.currow <= self.pminrow or
             self.currow <= (
@@ -157,15 +171,19 @@ class Action(Draw):
 
     def goto_number(self, number):
         self.currow = number
-        if self.is_pad_top():
+
+        while self.is_pad_top():
             self.bottom_pad()
             self.curcol -= 1
-        elif self.is_pad_bottom():
+
+        while self.is_pad_bottom():
             self.top_pad()
             self.curcol += 1
-        elif self.is_scr_top():
+
+        while self.is_scr_top():
             self.pgup_pad()
-        elif self.is_scr_bottom():
+
+        while self.is_scr_bottom():
             self.pgdn_pad()
 
     def goto(self, prompt="Enter an item number: "):
