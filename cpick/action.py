@@ -259,9 +259,9 @@ class Action(Draw):
             elif match('^\\d+\\-\\d+$', numbers):
                 start, stop = numbers.split('-')
             elif match('^\\d+\\.\\.$', numbers):
-                start, stop = numbers.split('..')[0], self.pmaxrow
+                start, stop = numbers.split('..')[0], self.total
             elif match('^\\d+\\-$', numbers):
-                start, stop = numbers.split('-')[0], self.pmaxrow
+                start, stop = numbers.split('-')[0], self.total
             elif match('^\\.\\.\\d+$', numbers):
                 start, stop = 1, numbers.split('..')[1]
             elif match('^\\-\\d+$', numbers):
