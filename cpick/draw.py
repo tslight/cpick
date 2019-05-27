@@ -13,8 +13,8 @@ class Draw(Screen):
     How to draw on the screen.
     '''
 
-    def __init__(self, screen, items):
-        Screen.__init__(self, screen, items)
+    def __init__(self, stdscr, items):
+        Screen.__init__(self, stdscr, items)
         self.indicator = '-->'
         self.checkbox = '[ ]'
         self.checked = '[x]'
@@ -33,37 +33,49 @@ class Draw(Screen):
         except curses.error:
             pass
 
+    def get_item_style(self, index):
+        if index == self.currow and index in self.picked:
+            return self.indicator, self.black_yellow
+        elif index == self.currow and index in self.matches:
+            return self.indicator, self.black_green
+        elif index in self.picked:
+            return self.checked, self.yellow_black
+        elif index in self.matches:
+            return self.checkbox, self.green_black
+        elif index == self.currow:
+            return self.indicator, self.black_blue
+        else:
+            return self.checkbox, self.white_black
+
+    def get_item_number(self, index, indicator, item):
+        maxlen = len(str(self.total + 1))
+        length = len(str(index + 1))
+        if length <= maxlen:
+            pad = ' ' * (maxlen - length)
+            number = str(index + 1) + ')' + pad
+        return number + indicator + ' ' + item
+
+    def get_item(self, index, item, numbers):
+        indicator, color = self.get_item_style(index)
+        if numbers:
+            return self.get_item_number(index, indicator, item), color
+        else:
+            return indicator + ' ' + item, color
+
     def draw_body(self, msg, pick=True, numbers=False):
-        self.maxline = len(msg)
-        self.body.erase()
-        self.body.resize(self.maxline + self.foot_maxy, self.maxx)
-        for index, item in enumerate(msg):
-            if pick:
-                if index == self.curline and index in self.picked:
-                    indicator, color = self.indicator, self.black_yellow
-                elif index == self.curline and index in self.matches:
-                    indicator, color = self.indicator, self.black_green
-                elif index in self.picked:
-                    indicator, color = self.checked, self.yellow_black
-                elif index in self.matches:
-                    indicator, color = self.checkbox, self.green_black
-                elif index == self.curline:
-                    indicator, color = self.indicator, self.black_blue
+        start, stop = 0, self.pmaxrow
+        for column in self.pads:
+            column.erase()
+            for idx, item in enumerate(msg[start:stop]):
+                index = start + idx
+                if pick:
+                    row, color = self.get_item(index, item, numbers)
                 else:
-                    indicator, color = self.checkbox, self.white_black
-                if numbers:
-                    maxlen = len(str(self.maxline + 1))
-                    length = len(str(index + 1))
-                    if length <= maxlen:
-                        pad = ' ' * (maxlen - length)
-                        number = str(index + 1) + ')' + pad
-                    line = number + indicator + ' ' + item
-                else:
-                    line = indicator + ' ' + item
-            else:
-                line, color = item, self.white_black
-            line = line + ' ' * (self.body_maxx - len(line))
-            self.body.addstr(index, 0, line, color)
+                    row, color = item, self.white_black
+                row = row + ' ' * (self.maxwidth - len(row))
+                column.addstr(idx, 0, row, color)
+            start += self.pmaxrow
+            stop += self.pmaxrow
 
     def draw_textbox(self, prompt):
         self.foot.erase()

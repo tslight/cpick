@@ -12,132 +12,205 @@ class Action(Draw):
     What to draw on the screen.
     '''
 
-    def __init__(self, screen, items):
-        Draw.__init__(self, screen, items)
+    def __init__(self, stdscr, items):
+        Draw.__init__(self, stdscr, items)
         self.picked = []
         self.matches = []
 
     ###########################################################################
-    #                             WINDOW MOVEMENT                             #
+    #                             PAD MOVEMENT                                #
     ###########################################################################
 
-    def up_win(self):
+    def up_pad(self):
         if self.pminrow > 0:
             self.pminrow -= 1
 
-    def down_win(self):
-        if self.pminrow < self.maxline - self.smaxrow:
+    def down_pad(self):
+        if self.pminrow < self.pmaxrow - self.smaxrow:
             self.pminrow += 1
 
-    def pgdn_win(self):
+    def pgdn_pad(self):
         self.pminrow += self.smaxrow
-        if self.pminrow >= self.maxline - self.smaxrow:
-            self.pminrow = self.maxline - self.smaxrow
+        if self.pminrow >= self.pmaxrow - self.smaxrow:
+            self.pminrow = self.pmaxrow - self.smaxrow
 
-    def pgup_win(self):
+    def pgup_pad(self):
         self.pminrow -= self.maxy - 1
         if self.pminrow < 0:
             self.pminrow = 0
 
-    def top_win(self):
+    def top_pad(self):
         self.pminrow = 0
 
-    def bottom_win(self):
-        self.pminrow = self.maxline - self.smaxrow
+    def bottom_pad(self):
+        self.pminrow = self.pmaxrow - self.smaxrow
 
     ###########################################################################
-    #                              LINE MOVEMENT                              #
+    #                   CHECK ROW IN CONTEXT OF SCREEN & PAD                  #
     ###########################################################################
 
-    def down_line(self):
-        if self.curline >= self.maxline - 1:
-            self.top_line()
-        elif self.curline >= self.pminrow + self.smaxrow - 1:
-            self.pminrow += 1  # scroll screen
-            self.curline += 1
-        else:
-            self.curline += 1  # scroll cursor
+    def is_pad_top(self):
+        '''
+        If the current row is less than the pads maximum number of rows, times
+        the current column, minus the maximum number of rows, we are beyond
+        the top of the current column.
+        '''
+        return (
+            self.currow <= (self.pmaxrow * self.curcol) - self.pmaxrow
+        )
 
-    def up_line(self):
-        if self.curline < 1:
-            self.bottom_line()
-        elif self.curline <= self.pminrow:
+    def is_pad_bottom(self):
+        '''
+        If the current row is greater than the pad's maximum number of rows
+        times the current column, then we have gone beyond the bottom of the
+        current column's pad.
+        '''
+        return (
+            self.currow >= (self.pmaxrow - 1) * self.curcol
+        )
+
+    def is_scr_top(self):
+        '''
+        If the current row is less than the pads minimum row shown on the
+        screen (a.k.a) the top of the row.
+        '''
+        return (
+            self.currow <= self.pminrow or
+            self.currow <= (
+                self.pmaxrow * (self.curcol - 1)
+            ) + self.pminrow
+        )
+
+    def is_scr_bottom(self):
+        return (
+            self.currow >= (self.pmaxrow * (self.curcol - 1)) +
+            self.pminrow + self.smaxrow - 1
+        )
+
+    def is_on_scr(self):
+        pass
+
+    ###########################################################################
+    #                              ROW MOVEMENT                               #
+    ###########################################################################
+
+    def left_col(self):
+        if self.curcol > 1:
+            self.curcol -= 1
+            self.currow -= self.pmaxrow
+
+    def right_col(self):
+        if self.curcol < self.columns:
+            self.curcol += 1
+            self.currow += self.pmaxrow
+
+    def down_row(self):
+        if self.currow >= self.total - 1:
+            self.first_item()
+            return
+
+        if self.is_pad_bottom():
+            self.top_pad()
+            self.curcol += 1
+
+        if self.is_scr_bottom():
+            self.pminrow += 1
+
+        self.currow += 1  # scroll cursor
+
+    def up_row(self):
+        if self.currow < 1:
+            self.last_item()
+            return
+
+        if self.is_pad_top():
+            self.bottom_pad()
+            self.curcol -= 1
+
+        if self.is_scr_top():
             self.pminrow -= 1
-            self.curline -= 1
-        else:
-            self.curline -= 1
 
-    def pgdn_line(self):
+        self.currow -= 1
+
+    def pgdn_row(self):
         self.pminrow += self.smaxrow
-        self.curline += self.smaxrow
-        if self.pminrow >= self.maxline - self.smaxrow:
-            self.bottom_line()
+        self.currow += self.smaxrow
+        if self.pminrow >= self.pmaxrow - self.smaxrow:
+            self.last_item()
 
-    def pgup_line(self):
+    def pgup_row(self):
         self.pminrow -= self.smaxrow
-        self.curline -= self.smaxrow
+        self.currow -= self.smaxrow
         if self.pminrow <= 0:
-            self.top_line()
+            self.first_item()
 
-    def top_line(self):
-        self.pminrow, self.curline = (0,)*2
+    def first_item(self):
+        self.pminrow, self.currow = (0,)*2
+        self.curcol = 1
 
-    def bottom_line(self):
-        self.pminrow = self.maxline - self.smaxrow
-        self.curline = self.maxline - 1
+    def last_item(self):
+        self.pminrow = self.pmaxrow - self.smaxrow
+        self.currow = self.total - 1
+        self.curcol = self.columns
 
-    def recenter_line(self):
+    def recenter_row(self):
         smiddle = int(self.smaxrow / 2)
         pmiddle = self.pminrow + smiddle
-        if self.curline > self.maxline - smiddle:
-            self.bottom_win()
-        elif self.curline < smiddle:
-            self.top_win()
-        elif self.curline > pmiddle:
-            self.pminrow += self.curline - pmiddle
-        elif self.curline < pmiddle:
-            self.pminrow -= pmiddle - self.curline
+        if self.currow > self.pmaxrow - smiddle:
+            self.bottom_pad()
+        elif self.currow < smiddle:
+            self.top_pad()
+        elif self.currow > pmiddle:
+            self.pminrow += self.currow - pmiddle
+        elif self.currow < pmiddle:
+            self.pminrow -= pmiddle - self.currow
 
     ###########################################################################
-    #                               LINE JUMPING                              #
+    #                               ROW JUMPING                              #
     ###########################################################################
 
     def goto_number(self, number):
-        if (number >= self.maxline - self.smaxrow):
-            self.bottom_win()
-        elif (number < self.smaxrow):
-            self.top_win()
-        elif (number >= (self.pminrow + self.smaxrow)):
-            self.pgdn_win()
-        elif (number <= self.pminrow):
-            self.pgup_win()
-        self.curline = number
+        self.currow = number
 
-    def goto(self, prompt="Enter a line number: "):
+        while self.is_pad_top():
+            self.bottom_pad()
+            self.curcol -= 1
+
+        while self.is_pad_bottom():
+            self.top_pad()
+            self.curcol += 1
+
+        while self.is_scr_top():
+            self.pgup_pad()
+
+        while self.is_scr_bottom():
+            self.pgdn_pad()
+
+    def goto(self, prompt="Enter an item number: "):
         try:
             number = int(self.draw_textbox(prompt)) - 1
-            if number < 0 or number > self.maxline:
+            if number < 0 or number > self.total:
                 raise ValueError
             self.goto_number(number)
         except ValueError:
-            return 'INVALID INDEX NUMBER!'
+            return 'INVALID ITEM NUMBER!'
 
     def goto_next(self, items):
         if items:
             for i in items:
-                if self.curline < i:
+                if self.currow < i:
                     self.goto_number(i)
                     return
-            self.top_line()
+            self.first_item()
             self.goto_next(items)
 
     def goto_prev(self, items):
         if items:
             for i in reversed(items):
-                if self.curline > i:
+                if self.currow > i:
                     self.goto_number(i)
                     return
-            self.bottom_line()
+            self.last_item()
             self.goto_prev(items)
 
     ###########################################################################
@@ -186,9 +259,9 @@ class Action(Draw):
             elif match('^\\d+\\-\\d+$', numbers):
                 start, stop = numbers.split('-')
             elif match('^\\d+\\.\\.$', numbers):
-                start, stop = numbers.split('..')[0], self.maxline
+                start, stop = numbers.split('..')[0], self.total
             elif match('^\\d+\\-$', numbers):
-                start, stop = numbers.split('-')[0], self.maxline
+                start, stop = numbers.split('-')[0], self.total
             elif match('^\\.\\.\\d+$', numbers):
                 start, stop = 1, numbers.split('..')[1]
             elif match('^\\-\\d+$', numbers):

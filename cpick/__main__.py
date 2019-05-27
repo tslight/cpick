@@ -14,7 +14,7 @@ def get_args():
     parser.add_argument('--numbers', '-n',
                         default=False,
                         action='store_true',
-                        help='Show line numbers.')
+                        help='Show row numbers.')
     parser.add_argument('--header', '-H', type=str,
                         default='PICK ITEMS FROM THIS LIST:',
                         help='A string to use as a header.')
@@ -24,8 +24,8 @@ def get_args():
     return parser.parse_args()
 
 
-def event(screen, **kwargs):
-    picker = Event(screen, **kwargs)
+def event(stdscr, **kwargs):
+    picker = Event(stdscr, **kwargs)
     return picker.get_picks()
 
 

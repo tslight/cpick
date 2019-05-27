@@ -3,27 +3,29 @@ import curses
 
 def get_keys():
     desc = [
-        '[k][UP]       : Move up one line.',
-        '[j][DOWN]     : Move down one line.',
-        '[g][HOME]     : Jump to first line.',
-        '[G][END]      : Jump to last line.',
-        '[f][PGDN]     : Jump down a page of lines.',
-        '[b][PGUP]     : Jump up a page of lines.',
-        '[#]           : Jump to line number.',
+        '[h][LEFT]     : Move left one column.',
+        '[l][RIGHT]    : Move right one column.',
+        '[k][UP]       : Move up one row.',
+        '[j][DOWN]     : Move down one row.',
+        '[f][PGDN]     : Jump down a page of rows.',
+        '[b][PGUP]     : Jump up a page of rows.',
+        '[g][HOME]     : Jump to first item.',
+        '[G][END]      : Jump to last item.',
+        '[#]           : Jump to an item number.',
         '[/]           : Find items via wilcards, regex or range.',
         '[n]           : Jump to next search result.',
         '[p]           : Jump to previous search result.',
         '[CTRL-n]      : Jump to next pick.',
         '[CTRL-p]      : Jump to previous pick.',
         '[r][F5]       : Reset search results and picks.',
-        '[z][CTRL-l]   : Recenter current line on screen.',
+        '[z][CTRL-l]   : Recenter current row on screen.',
         '[RET]         : Pick an item.',
         '[;]           : Pick via wildcards, regex or range.',
         '[u]           : Undo the last pick.',
-        '[U]           : Undo the last pick and move to it\'s line.',
+        '[U]           : Undo the last pick and move to it\'s row.',
         '[t]           : Toggle an item.',
-        '[SPC]         : Toggle item and go down a line.',
-        '[CTRL-SPC]    : Toggle item and go up a line.',
+        '[SPC]         : Toggle item and go down a row.',
+        '[CTRL-SPC]    : Toggle item and go up a row.',
         '[a]           : Toggle all items.',
         '[:]           : Toggle via wildcards, regex or range.',
         '[v]           : View all picks.',
@@ -36,6 +38,14 @@ def get_keys():
         'resize': [
             curses.KEY_RESIZE,
         ],
+        'left': [
+            ord('h'),
+            curses.KEY_LEFT,
+        ],
+        'right': [
+            ord('l'),
+            curses.KEY_RIGHT,
+        ],
         'down': [
             ord('j'),
             curses.KEY_DOWN,
@@ -44,14 +54,6 @@ def get_keys():
             ord('k'),
             curses.KEY_UP,
         ],
-        'top': [
-            ord('g'),
-            curses.KEY_HOME,
-        ],
-        'bottom': [
-            ord('G'),
-            curses.KEY_END,
-        ],
         'pgdn': [
             ord('f'),
             curses.KEY_NPAGE,
@@ -59,6 +61,14 @@ def get_keys():
         'pgup': [
             ord('b'),
             curses.KEY_PPAGE,
+        ],
+        'top': [
+            ord('g'),
+            curses.KEY_HOME,
+        ],
+        'bottom': [
+            ord('G'),
+            curses.KEY_END,
         ],
         'goto': [
             ord('#'),
