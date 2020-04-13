@@ -1,16 +1,16 @@
-'''
+"""
 Curses List Picker
-'''
+"""
 import curses
 
 
 class Screen:
-    '''
+    """
     Base class that configures curses, makes setting color attributes less
     clunky and sets up the initial window layout with a header window, a footer
     window and two main body windows - one a pad for statically scrolling and
     one a normal window for dynamic scrolling.
-    '''
+    """
 
     def __init__(self, stdscr, items):
         self.stdscr = stdscr
@@ -24,13 +24,13 @@ class Screen:
         curses.curs_set(0)  # hide the cursor
 
     def color_init(self):
-        '''
+        """
         Initialise curses color pairs. Iterate over primary 8 bit colors adding
         colors in the form foreground_background 3 times once with all 8 colors
         in the foreground and the default terminal background as the background
         once with white as the foreground and each color as background and once
         with black as the foreground and each color as the background.
-        '''
+        """
         curses.use_default_colors()  # https://stackoverflow.com/a/44015131
         for i in range(1, 8):
             curses.init_pair(i, i, -1)
@@ -59,23 +59,23 @@ class Screen:
             self.black_white = curses.color_pair(21)
 
     def head_init(self):
-        '''
+        """
         Initialise header window to take up top row of screen.
-        '''
+        """
         self.head = curses.newwin(0, self.maxx, 0, 0)
         self.head_maxy, self.head_maxx = self.head.getmaxyx()
 
     def foot_init(self):
-        '''
+        """
         Initialise footer window to take up bottom row of screen.
-        '''
+        """
         self.foot = curses.newwin(0, self.maxx, self.maxy - 1, 0)
         self.foot_maxy, self.foot_maxx = self.foot.getmaxyx()
 
     def body_init(self):
-        '''
+        """
         Initialise as many columns of pad windows as we need.
-        '''
+        """
         self.pminrow = 0  # pad row to start displaying contents at
         self.pmincol = 0  # pad col to start displaying contents at
         self.sminrow = 1  # screen row to start display of pad at
@@ -86,7 +86,7 @@ class Screen:
 
         self.currow = 0
         self.curcol = 1
-        self.total, total = (len(self.items),)*2
+        self.total, total = (len(self.items),) * 2
         columns = int(self.smaxcol / self.maxwidth)
 
         self.columns = 1
@@ -108,27 +108,29 @@ class Screen:
             self.pads.append(column)
 
     def refresh(self):
-        '''
+        """
         Call refresh on all widgets.
-        '''
+        """
         self.stdscr.noutrefresh()
         self.head.noutrefresh()
         for index, column in enumerate(self.pads):
-            self.smincol = index*self.maxwidth
+            self.smincol = index * self.maxwidth
             column.resize(self.pmaxrow + self.foot_maxy, self.maxx)
-            column.noutrefresh(self.pminrow,
-                               self.pmincol,
-                               self.sminrow,
-                               self.smincol,
-                               self.smaxrow,
-                               self.smaxcol)
+            column.noutrefresh(
+                self.pminrow,
+                self.pmincol,
+                self.sminrow,
+                self.smincol,
+                self.smaxrow,
+                self.smaxcol,
+            )
         self.foot.noutrefresh()
         curses.doupdate()
 
     def resize(self):
-        '''
+        """
         Handle terminal resizing.
-        '''
+        """
         self.stdscr.erase()
         self.maxy, self.maxx = self.stdscr.getmaxyx()
         self.head.resize(1, self.maxx)
