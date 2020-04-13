@@ -1,6 +1,6 @@
-'''
+"""
 Curses List Picker
-'''
+"""
 from fnmatch import fnmatch
 from pathlib import Path
 from re import match, error
@@ -8,9 +8,9 @@ from .draw import Draw
 
 
 class Action(Draw):
-    '''
+    """
     What to draw on the screen.
-    '''
+    """
 
     def __init__(self, stdscr, items):
         Draw.__init__(self, stdscr, items)
@@ -50,41 +50,35 @@ class Action(Draw):
     ###########################################################################
 
     def is_pad_top(self):
-        '''
+        """
         If the current row is less than the pads maximum number of rows, times
         the current column, minus the maximum number of rows, we are beyond
         the top of the current column.
-        '''
-        return (
-            self.currow <= (self.pmaxrow * self.curcol) - self.pmaxrow
-        )
+        """
+        return self.currow <= (self.pmaxrow * self.curcol) - self.pmaxrow
 
     def is_pad_bottom(self):
-        '''
+        """
         If the current row is greater than the pad's maximum number of rows
         times the current column, then we have gone beyond the bottom of the
         current column's pad.
-        '''
-        return (
-            self.currow >= (self.pmaxrow - 1) * self.curcol
-        )
+        """
+        return self.currow >= (self.pmaxrow - 1) * self.curcol
 
     def is_scr_top(self):
-        '''
+        """
         If the current row is less than the pads minimum row shown on the
         screen (a.k.a) the top of the row.
-        '''
+        """
         return (
-            self.currow <= self.pminrow or
-            self.currow <= (
-                self.pmaxrow * (self.curcol - 1)
-            ) + self.pminrow
+            self.currow <= self.pminrow
+            or self.currow <= (self.pmaxrow * (self.curcol - 1)) + self.pminrow
         )
 
     def is_scr_bottom(self):
         return (
-            self.currow >= (self.pmaxrow * (self.curcol - 1)) +
-            self.pminrow + self.smaxrow - 1
+            self.currow
+            >= (self.pmaxrow * (self.curcol - 1)) + self.pminrow + self.smaxrow - 1
         )
 
     def is_on_scr(self):
@@ -145,7 +139,7 @@ class Action(Draw):
             self.first_item()
 
     def first_item(self):
-        self.pminrow, self.currow = (0,)*2
+        self.pminrow, self.currow = (0,) * 2
         self.curcol = 1
 
     def last_item(self):
@@ -193,7 +187,7 @@ class Action(Draw):
                 raise ValueError
             self.goto_number(number)
         except ValueError:
-            return 'INVALID ITEM NUMBER!'
+            return "INVALID ITEM NUMBER!"
 
     def goto_next(self, items):
         if items:
@@ -254,19 +248,19 @@ class Action(Draw):
     def range(self, ranges, matches, method):
         start, stop = (0,) * 2
         for numbers in ranges:
-            if match('^\\d+\\.\\.\\d+$', numbers):
-                start, stop = numbers.split('..')
-            elif match('^\\d+\\-\\d+$', numbers):
-                start, stop = numbers.split('-')
-            elif match('^\\d+\\.\\.$', numbers):
-                start, stop = numbers.split('..')[0], self.total
-            elif match('^\\d+\\-$', numbers):
-                start, stop = numbers.split('-')[0], self.total
-            elif match('^\\.\\.\\d+$', numbers):
-                start, stop = 1, numbers.split('..')[1]
-            elif match('^\\-\\d+$', numbers):
-                start, stop = 1, numbers.split('-')[1]
-            elif match('^\\d+$', numbers):
+            if match("^\\d+\\.\\.\\d+$", numbers):
+                start, stop = numbers.split("..")
+            elif match("^\\d+\\-\\d+$", numbers):
+                start, stop = numbers.split("-")
+            elif match("^\\d+\\.\\.$", numbers):
+                start, stop = numbers.split("..")[0], self.total
+            elif match("^\\d+\\-$", numbers):
+                start, stop = numbers.split("-")[0], self.total
+            elif match("^\\.\\.\\d+$", numbers):
+                start, stop = 1, numbers.split("..")[1]
+            elif match("^\\-\\d+$", numbers):
+                start, stop = 1, numbers.split("-")[1]
+            elif match("^\\d+$", numbers):
                 start, stop = (numbers,) * 2
             if start and stop:
                 for index in range(int(start) - 1, int(stop)):
@@ -283,9 +277,9 @@ class Action(Draw):
         out = None
         try:
             # removes need to use f.close
-            with open(path, 'a+') as f:
+            with open(path, "a+") as f:
                 for pick in self.picked:
-                    f.write(self.items[pick] + '\n')
+                    f.write(self.items[pick] + "\n")
         except FileNotFoundError:
             out = "Can't find " + path
         except IsADirectoryError:
@@ -304,7 +298,7 @@ class Action(Draw):
         self.matches = []
 
     def quit(self):
-        '''
+        """
         Signal to pick() that it's time to return the state of self.picked.
-        '''
-        return 'quit'
+        """
+        return "quit"
