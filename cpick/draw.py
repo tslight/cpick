@@ -1,23 +1,24 @@
-'''
+"""
 Curses List Picker
-'''
+"""
 import cgitb
 import curses
 from curses.textpad import Textbox
 from .screen import Screen
-cgitb.enable(format='text')
+
+cgitb.enable(format="text")
 
 
 class Draw(Screen):
-    '''
+    """
     How to draw on the screen.
-    '''
+    """
 
     def __init__(self, stdscr, items):
         Screen.__init__(self, stdscr, items)
-        self.indicator = '-->'
-        self.checkbox = '[ ]'
-        self.checked = '[x]'
+        self.indicator = "-->"
+        self.checkbox = "[ ]"
+        self.checked = "[x]"
 
     def draw_header(self, msg):
         try:
@@ -43,7 +44,7 @@ class Draw(Screen):
         elif index in self.matches:
             return self.checkbox, self.green_black
         elif index == self.currow:
-            return self.indicator, self.black_blue
+            return self.indicator, self.white_blue
         else:
             return self.checkbox, self.white_black
 
@@ -51,16 +52,16 @@ class Draw(Screen):
         maxlen = len(str(self.total + 1))
         length = len(str(index + 1))
         if length <= maxlen:
-            pad = ' ' * (maxlen - length)
-            number = str(index + 1) + ')' + pad
-        return number + indicator + ' ' + item
+            pad = " " * (maxlen - length)
+            number = str(index + 1) + ")" + pad
+        return number + indicator + " " + item
 
     def get_item(self, index, item, numbers):
         indicator, color = self.get_item_style(index)
         if numbers:
             return self.get_item_number(index, indicator, item), color
         else:
-            return indicator + ' ' + item, color
+            return indicator + " " + item, color
 
     def draw_body(self, msg, pick=True, numbers=False):
         start, stop = 0, self.pmaxrow
@@ -72,7 +73,7 @@ class Draw(Screen):
                     row, color = self.get_item(index, item, numbers)
                 else:
                     row, color = item, self.white_black
-                row = row + ' ' * (self.maxwidth - len(row))
+                row = row + " " * (self.maxwidth - len(row))
                 column.addstr(idx, 0, row, color)
             start += self.pmaxrow
             stop += self.pmaxrow
