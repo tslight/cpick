@@ -169,15 +169,12 @@ class Action(Draw):
         if self.is_pad_top():
             self.bottom_pad()
             self.curcol -= 1
-
-        if self.is_pad_bottom():
+        elif self.is_pad_bottom():
             self.top_pad()
             self.curcol += 1
-
-        if self.is_scr_top():
+        elif self.is_scr_top():
             self.pgup_pad()
-
-        if self.is_scr_bottom():
+        elif self.is_scr_bottom():
             self.pgdn_pad()
 
     def goto(self, prompt="Enter an item number: "):
@@ -218,6 +215,11 @@ class Action(Draw):
     def undo(self):
         if self.picked:
             del self.picked[-1]
+
+    def undo_up(self):
+        if self.picked:
+            self.goto_prev(self.picked)
+            self.undo()
 
     def toggle(self, index, matches):
         if index in matches:
