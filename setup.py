@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cpick",
-    version="0.0.9",
+    version="0.1.0",
     author="Toby Slight",
     author_email="tslight@pm.me",
     description="Curses List Picker",
@@ -22,5 +22,5 @@ setuptools.setup(
         "License :: OSI Approved :: ISC License (ISCL)",
         "Operating System :: OS Independent",
     ),
-    entry_points={"console_scripts": ["cpick = cpick.__main__:main",],},
+    entry_points={"console_scripts": ["cpick = cpick.__main__:main"]},
 )
