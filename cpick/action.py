@@ -61,9 +61,9 @@ class Action(Draw):
         """
         If the current row is greater than the pad's maximum number of rows
         times the current column, then we have gone beyond the bottom of the
-        current column's pad.
+        current column's pad. Minus 2 to account for header and footer.
         """
-        return self.currow >= (self.pmaxrow - 1) * self.curcol
+        return self.currow > (self.pmaxrow * self.curcol) - 2
 
     def is_scr_top(self):
         """
