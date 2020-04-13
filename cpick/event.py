@@ -77,9 +77,7 @@ class Event(Action):
                 lambda: self.match("Pick: ", self.picked, self.pick),
             ),
             **dict.fromkeys(self.keys["undo"], self.undo),
-            **dict.fromkeys(
-                self.keys["undo_up"], lambda: self.undo() or self.goto_prev(self.picked)
-            ),
+            **dict.fromkeys(self.keys["undo_up"], self.undo_up),
             **dict.fromkeys(
                 self.keys["toggle"], lambda: self.toggle(self.currow, self.picked)
             ),
@@ -108,11 +106,14 @@ class Event(Action):
     def view(self, contents):
         pminrow, self.pminrow = self.pminrow, 0
         self.stdscr.erase()
+
         if not contents:
             contents = ["", "Nothing to see here..."]
-        self.draw_body(contents, pick=False)
+
+        self.draw_body(contents, numbers=False, pick=False)
         self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
         self.draw_footer("Press [q] or [ESC] to return to picker.")
+
         while True:
             self.refresh()
             key = self.stdscr.getch()
@@ -121,6 +122,7 @@ class Event(Action):
                     break
             except KeyError:
                 pass
+
         self.pminrow = pminrow
 
     def get_picks(self):
