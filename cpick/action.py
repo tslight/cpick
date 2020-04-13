@@ -166,18 +166,18 @@ class Action(Draw):
     def goto_number(self, number):
         self.currow = number
 
-        while self.is_pad_top():
+        if self.is_pad_top():
             self.bottom_pad()
             self.curcol -= 1
 
-        while self.is_pad_bottom():
+        if self.is_pad_bottom():
             self.top_pad()
             self.curcol += 1
 
-        while self.is_scr_top():
+        if self.is_scr_top():
             self.pgup_pad()
 
-        while self.is_scr_bottom():
+        if self.is_scr_bottom():
             self.pgdn_pad()
 
     def goto(self, prompt="Enter an item number: "):
