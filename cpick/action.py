@@ -2,7 +2,7 @@
 Curses List Picker
 """
 from fnmatch import fnmatch
-from pathlib import Path
+from os.path import abspath, expanduser
 from re import match, error
 from .draw import Draw
 
@@ -127,16 +127,28 @@ class Action(Draw):
         self.currow -= 1
 
     def pgdn_row(self):
-        self.pminrow += self.smaxrow
-        self.currow += self.smaxrow
         if self.pminrow >= self.pmaxrow - self.smaxrow:
-            self.last_item()
+            self.top_pad()
+            self.curcol += 1
+        else:
+            self.pminrow += self.smaxrow
+
+        self.currow += self.smaxrow
+
+        if self.currow >= self.total - 1:
+            self.first_item()
 
     def pgup_row(self):
-        self.pminrow -= self.smaxrow
-        self.currow -= self.smaxrow
         if self.pminrow <= 0:
-            self.first_item()
+            self.bottom_pad()
+            self.curcol -= 1
+        else:
+            self.pminrow -= self.smaxrow
+
+        self.currow -= self.smaxrow
+
+        if self.currow < 0:
+            self.last_item()
 
     def first_item(self):
         self.pminrow, self.currow = (0,) * 2
@@ -274,8 +286,7 @@ class Action(Draw):
 
     def save(self):
         path = self.draw_textbox("Save to: ").strip()
-        home = str(Path.home())
-        path = home + "/" + path
+        path = abspath(expanduser(path))
         out = None
         try:
             # removes need to use f.close
@@ -287,11 +298,11 @@ class Action(Draw):
         except IsADirectoryError:
             out = path + " is a directory."
         except UnboundLocalError:  # bit of a hack but fuck it
-            out = "Not saving fortune."
+            out = "Not saving items."
         except Exception:
             out = "Something went wrong..."
         else:
-            out = "Saved fortune to " + path
+            out = "Saved items to " + path
         finally:
             return out
 
