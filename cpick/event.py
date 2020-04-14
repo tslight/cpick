@@ -104,11 +104,16 @@ class Event(Action):
         }
 
     def view(self, contents):
-        pminrow, self.pminrow = self.pminrow, 0
-        self.stdscr.erase()
-
         if not contents:
             contents = ["", "Nothing to see here..."]
+
+        # save state before reinitialising the body... this is very ugly...
+        items, pminrow = self.items, self.pminrow
+        currow, curcol = self.currow, self.curcol
+        self.items, self.pminrow = contents, 0
+
+        self.body_init()
+        self.refresh()
 
         self.draw_body(contents, numbers=False, pick=False)
         self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
@@ -123,7 +128,12 @@ class Event(Action):
             except KeyError:
                 pass
 
-        self.pminrow = pminrow
+        # restore the content state
+        self.items = items
+        self.body_init()
+        # restore our previous position in the page... yes this is naff!
+        self.pminrow, self.currow, self.curcol = pminrow, currow, curcol
+        self.refresh()
 
     def get_picks(self):
         """
