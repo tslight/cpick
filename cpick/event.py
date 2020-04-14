@@ -115,11 +115,10 @@ class Event(Action):
         self.body_init()
         self.refresh()
 
-        self.draw_body(contents, numbers=False, pick=False)
-        self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
-        self.draw_footer("Press [q] or [ESC] to return to picker.")
-
         while True:
+            self.draw_body(contents, numbers=False, pick=False)
+            self.draw_header("Press [UP] [DOWN] [PGUP] [PGDN] to scroll.")
+            self.draw_footer("Press [q] or [ESC] to return to picker.")
             self.refresh()
             key = self.stdscr.getch()
             try:
