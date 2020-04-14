@@ -23,6 +23,7 @@ class Draw(Screen):
     def draw_header(self, msg):
         try:
             self.head.addstr(0, 0, msg, self.magenta_black)
+            # self.head.bkgdset(self.black_magenta)
             self.head.clrtoeol()  # more frugal than erase. no flicker.
         except curses.error:
             pass
@@ -30,6 +31,7 @@ class Draw(Screen):
     def draw_footer(self, msg):
         try:
             self.foot.addstr(0, 0, msg, self.magenta_black)
+            # self.foot.bkgdset(self.black_magenta)
             self.foot.clrtoeol()  # more frugal than erase. no flicker.
         except curses.error:
             pass
@@ -44,7 +46,7 @@ class Draw(Screen):
         elif index in self.matches:
             return self.checkbox, self.green_black
         elif index == self.currow:
-            return self.indicator, self.white_blue
+            return self.indicator, self.white_blue_bold
         else:
             return self.checkbox, self.white_black
 
