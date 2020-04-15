@@ -118,9 +118,8 @@ class Screen:
                 total -= self.smaxrow
                 self.columns += 1
 
-        self.pmaxrow = self.smaxrow
-        while self.pmaxrow * self.columns < self.total:
-            self.pmaxrow += 1
+        # // always returns an int, not a float
+        self.pmaxrow = self.total // self.columns
 
         self.pads = []
         for col in range(self.columns):
