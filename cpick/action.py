@@ -193,16 +193,22 @@ class Action(Draw):
     def __goto_number(self, number):
         self.currow = number
 
-        if self.__is_pad_top():
+        for _ in range(self.columns):
+            if self.__is_pad_top():
+                self.curcol -= 1
+            elif self.__is_pad_bottom():
+                self.curcol += 1
+
+        if self.__is_pad_top() and self.__is_scr_top():
             self.bottom_pad()
-            self.curcol -= 1
-        elif self.__is_pad_bottom():
+        elif self.__is_pad_bottom() and self.__is_scr_bottom:
             self.top_pad()
-            self.curcol += 1
-        elif self.__is_scr_top():
-            self.pgup_pad()
-        elif self.__is_scr_bottom():
-            self.pgdn_pad()
+
+        for _ in range(self.screens):
+            if self.__is_scr_top():
+                self.pgup_pad()
+            elif self.__is_scr_bottom():
+                self.pgdn_pad()
 
     def goto(self, prompt="Enter an item number: "):
         try:

@@ -121,6 +121,8 @@ class Screen:
         # // always returns an int, not a float
         # self.pmaxrow = self.total // self.columns
 
+        self.screens = self.pmaxrow // self.smaxrow
+
         self.pads = []
         for col in range(self.columns):
             column = curses.newpad(self.maxy - 1, self.maxwidth)
