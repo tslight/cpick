@@ -49,7 +49,7 @@ class Action(Draw):
     #                   CHECK ROW IN CONTEXT OF SCREEN & PAD                  #
     ###########################################################################
 
-    def is_pad_top(self):
+    def __is_pad_top(self):
         """
         If the current row is less than the pads maximum number of rows, times
         the current column, minus the maximum number of rows, we are beyond
@@ -57,7 +57,7 @@ class Action(Draw):
         """
         return self.currow <= (self.pmaxrow * self.curcol) - self.pmaxrow
 
-    def is_pad_bottom(self):
+    def __is_pad_bottom(self):
         """
         If the current row is greater than the pad's maximum number of rows
         times the current column, then we have gone beyond the bottom of the
@@ -65,7 +65,7 @@ class Action(Draw):
         """
         return self.currow > (self.pmaxrow * self.curcol) - 2
 
-    def is_scr_top(self):
+    def __is_scr_top(self):
         """
         If the current row is less than the pads minimum row shown on the
         screen (a.k.a) the top of the row.
@@ -75,14 +75,11 @@ class Action(Draw):
             or self.currow <= (self.pmaxrow * (self.curcol - 1)) + self.pminrow
         )
 
-    def is_scr_bottom(self):
+    def __is_scr_bottom(self):
         return (
             self.currow
             >= (self.pmaxrow * (self.curcol - 1)) + self.pminrow + self.smaxrow - 1
         )
-
-    def is_on_scr(self):
-        pass
 
     ###########################################################################
     #                              ROW MOVEMENT                               #
@@ -103,11 +100,11 @@ class Action(Draw):
             self.first_item()
             return
 
-        if self.is_pad_bottom():
+        if self.__is_pad_bottom():
             self.top_pad()
             self.curcol += 1
 
-        if self.is_scr_bottom():
+        if self.__is_scr_bottom():
             self.pminrow += 1
 
         self.currow += 1  # scroll cursor
@@ -117,11 +114,11 @@ class Action(Draw):
             self.last_item()
             return
 
-        if self.is_pad_top():
+        if self.__is_pad_top():
             self.bottom_pad()
             self.curcol -= 1
 
-        if self.is_scr_top():
+        if self.__is_scr_top():
             self.pminrow -= 1
 
         self.currow -= 1
@@ -175,18 +172,36 @@ class Action(Draw):
     #                               ROW JUMPING                              #
     ###########################################################################
 
-    def goto_number(self, number):
+    def __goto_next(self, items):
+        if items:
+            for i in items:
+                if self.currow < i:
+                    self.__goto_number(i)
+                    return
+            self.first_item()
+            self.__goto_next(items)
+
+    def __goto_prev(self, items):
+        if items:
+            for i in reversed(items):
+                if self.currow > i:
+                    self.__goto_number(i)
+                    return
+            self.last_item()
+            self.__goto_prev(items)
+
+    def __goto_number(self, number):
         self.currow = number
 
-        if self.is_pad_top():
+        if self.__is_pad_top():
             self.bottom_pad()
             self.curcol -= 1
-        elif self.is_pad_bottom():
+        elif self.__is_pad_bottom():
             self.top_pad()
             self.curcol += 1
-        elif self.is_scr_top():
+        elif self.__is_scr_top():
             self.pgup_pad()
-        elif self.is_scr_bottom():
+        elif self.__is_scr_bottom():
             self.pgdn_pad()
 
     def goto(self, prompt="Enter an item number: "):
@@ -194,62 +209,25 @@ class Action(Draw):
             number = int(self.draw_textbox(prompt)) - 1
             if number < 0 or number > self.total:
                 raise ValueError
-            self.goto_number(number)
+            self.__goto_number(number)
         except ValueError:
             return "INVALID ITEM NUMBER!"
-
-    def goto_next(self, items):
-        if items:
-            for i in items:
-                if self.currow < i:
-                    self.goto_number(i)
-                    return
-            self.first_item()
-            self.goto_next(items)
-
-    def goto_prev(self, items):
-        if items:
-            for i in reversed(items):
-                if self.currow > i:
-                    self.goto_number(i)
-                    return
-            self.last_item()
-            self.goto_prev(items)
 
     ###########################################################################
     #                         PICK, TOGGLE AND SEARCH                         #
     ###########################################################################
 
-    def pick(self, index, matches):
+    def __pick(self, index, matches):
         if index not in matches:
             matches.append(index)
 
-    def undo(self):
-        if self.picked:
-            del self.picked[-1]
-
-    def undo_up(self):
-        if self.picked:
-            self.goto_prev(self.picked)
-            self.undo()
-
-    def toggle(self, index, matches):
+    def __toggle(self, index, matches):
         if index in matches:
             matches.remove(index)
         else:
             matches.append(index)
 
-    def toggle_down(self, index, matches):
-        self.toggle(index, matches)
-        self.down_row()
-
-    def toggle_all(self):
-        if len(self.picked) == len(self.items):
-            self.picked = []
-        else:
-            self.picked = [i for i, o in enumerate(self.items)]
-
-    def match(self, msg, matches, method):
+    def __match(self, msg, matches, method):
         search = self.draw_textbox(msg).strip().split()
         for index, item in enumerate(self.items):
             for pattern in search:
@@ -259,11 +237,11 @@ class Action(Draw):
                 except error:
                     if fnmatch(item, pattern) or pattern == item:
                         method(index, matches)
-        self.range(search, matches, method)
+        self.__range(search, matches, method)
         if matches:
-            self.goto_next(matches)
+            self.__goto_next(matches)
 
-    def range(self, ranges, matches, method):
+    def __range(self, ranges, matches, method):
         start, stop = (0,) * 2
         for numbers in ranges:
             if match("^\\d+\\.\\.\\d+$", numbers):
@@ -283,6 +261,57 @@ class Action(Draw):
             if start and stop:
                 for index in range(int(start) - 1, int(stop)):
                     method(index, matches)
+
+    def find(self):
+        self.__match("Find: ", self.matches, self.__pick)
+
+    def next_find(self):
+        self.__goto_next(self.matches)
+
+    def prev_find(self):
+        self.__goto_prev(self.matches)
+
+    def pick(self):
+        self.__pick(self.currow, self.picked)
+        self.down_row()
+
+    def next_pick(self):
+        self.__goto_next(self.picked)
+
+    def prev_pick(self):
+        self.__goto_prev(self.picked)
+
+    def pick_pattern(self):
+        self.__match("Pick: ", self.picked, self.__pick)
+
+    def toggle(self):
+        self.__toggle(self.currow, self.picked)
+
+    def toggle_all(self):
+        if len(self.picked) == len(self.items):
+            self.picked = []
+        else:
+            self.picked = [i for i, o in enumerate(self.items)]
+
+    def toggle_down(self):
+        self.toggle()
+        self.down_row()
+
+    def toggle_up(self):
+        self.toggle()
+        self.up_row()
+
+    def toggle_pattern(self):
+        self.__match("Toggle: ", self.picked, self.__toggle)
+
+    def undo(self):
+        if self.picked:
+            del self.picked[-1]
+
+    def undo_up(self):
+        if self.picked:
+            self.__goto_prev(self.picked)
+            self.undo()
 
     ###########################################################################
     #                            SAVE, RESET & QUIT                           #

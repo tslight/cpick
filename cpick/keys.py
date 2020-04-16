@@ -37,16 +37,16 @@ class Keys(Action):
             "[q][ESC]      : Quit and display all marked paths.",
         ]
 
-        self.keys = {
+        self.rowkeys = {
             "resize": [curses.KEY_RESIZE],
-            "left": [ord("h"), curses.KEY_LEFT],
-            "right": [ord("l"), curses.KEY_RIGHT],
-            "down": [ord("j"), curses.KEY_DOWN],
-            "up": [ord("k"), curses.KEY_UP],
-            "pgdn": [ord("f"), curses.KEY_NPAGE],
-            "pgup": [ord("b"), curses.KEY_PPAGE],
-            "top": [ord("g"), curses.KEY_HOME],
-            "bottom": [ord("G"), curses.KEY_END],
+            "left_col": [ord("h"), curses.KEY_LEFT],
+            "right_col": [ord("l"), curses.KEY_RIGHT],
+            "down_row": [ord("j"), curses.KEY_DOWN],
+            "up_row": [ord("k"), curses.KEY_UP],
+            "pgdn_row": [ord("f"), curses.KEY_NPAGE],
+            "pgup_row": [ord("b"), curses.KEY_PPAGE],
+            "first_item": [ord("g"), curses.KEY_HOME],
+            "last_item": [ord("G"), curses.KEY_END],
             "goto": [ord("#"), curses.ascii.ctrl(ord("g"))],
             "find": [ord("/")],
             "next_find": [ord("n"), curses.ascii.ctrl(ord("s"))],
@@ -54,7 +54,7 @@ class Keys(Action):
             "next_pick": [curses.ascii.ctrl(ord("n"))],
             "prev_pick": [curses.ascii.ctrl(ord("p"))],
             "reset": [ord("r"), curses.KEY_F5],
-            "recenter": [ord("z"), curses.ascii.ctrl(ord("l"))],
+            "recenter_row": [ord("z"), curses.ascii.ctrl(ord("l"))],
             "pick": [ord("\n")],
             "pick_pattern": [ord(";")],
             "undo": [ord("u")],
@@ -70,55 +70,27 @@ class Keys(Action):
             "quit": [ord("q"), curses.ascii.ESC],
         }
 
-        self.pad_actions = {
-            "resize": self.resize,
-            "down": self.down_pad,
-            "up": self.up_pad,
-            "pgdn": self.pgdn_pad,
-            "pgup": self.pgup_pad,
-            "top": self.top_pad,
-            "bottom": self.bottom_pad,
-            "quit": self.quit,
+        self.padkeys = {
+            "resize": [curses.KEY_RESIZE],
+            "down_pad": [ord("j"), curses.KEY_DOWN],
+            "up_pad": [ord("k"), curses.KEY_UP],
+            "pgdn_pad": [ord("f"), curses.KEY_NPAGE],
+            "pgup_pad": [ord("b"), curses.KEY_PPAGE],
+            "top_pad": [ord("g"), curses.KEY_HOME],
+            "bottom_pad": [ord("G"), curses.KEY_END],
+            "quit": [ord("q"), curses.ascii.ESC],
         }
-
-        self.row_actions = {  # https://stackoverflow.com/a/45928598
-            "resize": self.resize,
-            "right": self.right_col,
-            "left": self.left_col,
-            "down": self.down_row,
-            "up": self.up_row,
-            "top": self.first_item,
-            "bottom": self.last_item,
-            "pgdn": self.pgdn_row,
-            "pgup": self.pgup_row,
-            "goto": self.goto,
-            "find": lambda: self.match("Find: ", self.matches, self.pick),
-            "next_find": lambda: self.goto_next(self.matches),
-            "prev_find": lambda: self.goto_prev(self.matches),
-            "next_pick": lambda: self.goto_next(self.picked),
-            "prev_pick": lambda: self.goto_prev(self.picked),
-            "reset": self.reset,
-            "recenter": self.recenter_row,
-            "pick": lambda: self.pick(self.currow, self.picked) or self.down_row(),
-            "pick_pattern": lambda: self.match("Pick: ", self.picked, self.pick),
-            "undo": self.undo,
-            "undo_up": self.undo_up,
-            "toggle": lambda: self.toggle(self.currow, self.picked),
-            "toggle_down": lambda: self.toggle_down(self.currow, self.picked),
-            "toggle_up": lambda: self.toggle(self.currow, self.picked) or self.up_row(),
-            "toggle_all": self.toggle_all,
-            "toggle_pattern": lambda: self.match("Toggle: ", self.picked, self.toggle),
-            "view_picks": lambda: self.view([self.items[p] for p in self.picked]),
-            "view_help": lambda: self.view(self.help),
-            "save": self.save,
-            "quit": self.quit,
-        }
-
-    def get_action(self, key):
-        return [k for (k, v) in self.keys.items() if key in v][0]
 
     def row_action(self, key):
-        return self.row_actions[self.get_action(key)]()
+        try:
+            action = [k for (k, v) in self.rowkeys.items() if key in v][0]
+            return getattr(self, action)()
+        except IndexError:
+            pass
 
     def pad_action(self, key):
-        return self.pad_actions[self.get_action(key)]()
+        try:
+            action = [k for (k, v) in self.padkeys.items() if key in v][0]
+            return getattr(self, action)()
+        except IndexError:
+            pass

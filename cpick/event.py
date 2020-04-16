@@ -25,7 +25,7 @@ class Event(Keys):
         self.limit, self.numbers = limit, numbers
         self.header, self.footer = header, footer
 
-    def view(self, contents):
+    def __view(self, contents):
         if not contents:
             contents = ["", "Nothing to see here..."]
 
@@ -43,11 +43,8 @@ class Event(Keys):
             self.draw_footer("Press [q] or [ESC] to return to picker.")
             self.refresh()
             key = self.stdscr.getch()
-            try:
-                if self.pad_action(key) == "quit":
-                    break
-            except KeyError:
-                pass
+            if self.pad_action(key) == "quit":
+                break
 
         # restore the content state
         self.items = items
@@ -55,6 +52,12 @@ class Event(Keys):
         # restore our previous position in the page... yes this is naff!
         self.pminrow, self.currow, self.curcol = pminrow, currow, curcol
         self.refresh()
+
+    def view_picks(self):
+        self.__view([self.items[p] for p in self.picked])
+
+    def view_help(self):
+        self.__view(self.help)
 
     def get_picks(self):
         """
@@ -69,11 +72,8 @@ class Event(Keys):
             self.draw_footer(footer)
             self.refresh()
             key = self.stdscr.getch()
-            try:
-                if self.row_action(key) == "quit":
-                    return [self.items[pick] for pick in self.picked]
-            except KeyError:
-                pass
+            if self.row_action(key) == "quit":
+                return [self.items[pick] for pick in self.picked]
             if len(self.picked) > self.limit:
                 if self.limit == 1:
                     del self.picked[: self.limit]
