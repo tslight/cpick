@@ -13,7 +13,7 @@ class Action(Draw):
     """
 
     def __init__(self, stdscr, items):
-        Draw.__init__(self, stdscr, items)
+        super().__init__(stdscr, items)
         self.picked = []
         self.matches = []
 

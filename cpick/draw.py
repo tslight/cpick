@@ -15,7 +15,7 @@ class Draw(Screen):
     """
 
     def __init__(self, stdscr, items):
-        Screen.__init__(self, stdscr, items)
+        super().__init__(stdscr, items)
         self.indicator = "-->"
         self.checkbox = "[ ]"
         self.checked = "[x]"
