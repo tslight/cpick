@@ -41,6 +41,7 @@ class Keys(Action):
             "[q][ESC]      : Quit and display all marked paths.",
         ]
 
+        # The keys in this dictionary map onto methods in the Action class.
         self.rowkeys = {
             "resize": [curses.KEY_RESIZE],
             "left_col": [ord("h"), curses.KEY_LEFT],
@@ -74,6 +75,7 @@ class Keys(Action):
             "quit": [ord("q"), curses.ascii.ESC],
         }
 
+        # The keys in this dictionary map onto methods in the Action class.
         self.padkeys = {
             "resize": [curses.KEY_RESIZE],
             "down_pad": [ord("j"), curses.KEY_DOWN],
@@ -86,6 +88,9 @@ class Keys(Action):
         }
 
     def row_action(self, key):
+        """
+        Run a key from the rowkeys dictionary as a method.
+        """
         try:
             action = [k for (k, v) in self.rowkeys.items() if key in v][0]
             return getattr(self, action)()
@@ -93,6 +98,9 @@ class Keys(Action):
             pass
 
     def pad_action(self, key):
+        """
+        Run a key from the padkeys dictionary as a method.
+        """
         try:
             action = [k for (k, v) in self.padkeys.items() if key in v][0]
             return getattr(self, action)()
