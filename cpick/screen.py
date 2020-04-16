@@ -6,10 +6,7 @@ import curses
 
 class Screen:
     """
-    Base class that configures curses, makes setting color attributes less
-    clunky and sets up the initial window layout with a header window, a footer
-    window and two main body windows - one a pad for statically scrolling and
-    one a normal window for dynamic scrolling.
+    Base class for initialising and updating curses.
     """
 
     def __init__(self, stdscr, items):

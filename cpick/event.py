@@ -8,8 +8,7 @@ from .keys import Keys
 
 class Event(Keys):
     """
-    Instantiate mapping of keys to actions, which is used by modules'
-    main getter method that instigates the main event loop.
+    Entry point event loops.
     """
 
     def __init__(

@@ -3,6 +3,10 @@ from .action import Action
 
 
 class Keys(Action):
+    """
+    Translate keys to actions.
+    """
+
     def __init__(self, stdscr, items):
         super().__init__(stdscr, items)
         self.help = [
