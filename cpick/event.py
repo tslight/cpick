@@ -3,13 +3,10 @@ Curses List Picker
 """
 from os import environ
 from sys import maxsize
-from .action import Action
-from .keys import get_keys
-
-environ.setdefault("ESCDELAY", "12")  # otherwise it takes an age!
+from .keys import Keys
 
 
-class Event(Action):
+class Event(Keys):
     """
     Instantiate mapping of keys to actions, which is used by modules'
     main getter method that instigates the main event loop.
@@ -24,84 +21,9 @@ class Event(Action):
         header="PICK ITEMS FROM THIS LIST:",
         footer="Press [?] to view keybindings",
     ):
-        Action.__init__(self, stdscr, items)
+        super().__init__(stdscr, items)
         self.limit, self.numbers = limit, numbers
         self.header, self.footer = header, footer
-        self.desc, self.keys = get_keys()
-
-        self.pad_actions = {
-            **dict.fromkeys(self.keys["resize"], self.resize),
-            **dict.fromkeys(self.keys["down"], self.down_pad),
-            **dict.fromkeys(self.keys["up"], self.up_pad),
-            **dict.fromkeys(self.keys["pgdn"], self.pgdn_pad),
-            **dict.fromkeys(self.keys["pgup"], self.pgup_pad),
-            **dict.fromkeys(self.keys["top"], self.top_pad),
-            **dict.fromkeys(self.keys["bottom"], self.bottom_pad),
-            **dict.fromkeys(self.keys["quit"], self.quit),
-        }
-
-        self.row_actions = {  # https://stackoverflow.com/a/45928598
-            **dict.fromkeys(self.keys["resize"], self.resize),
-            **dict.fromkeys(self.keys["right"], self.right_col),
-            **dict.fromkeys(self.keys["left"], self.left_col),
-            **dict.fromkeys(self.keys["down"], self.down_row),
-            **dict.fromkeys(self.keys["up"], self.up_row),
-            **dict.fromkeys(self.keys["top"], self.first_item),
-            **dict.fromkeys(self.keys["bottom"], self.last_item),
-            **dict.fromkeys(self.keys["pgdn"], self.pgdn_row),
-            **dict.fromkeys(self.keys["pgup"], self.pgup_row),
-            **dict.fromkeys(self.keys["goto"], self.goto),
-            **dict.fromkeys(
-                self.keys["find"], lambda: self.match("Find: ", self.matches, self.pick)
-            ),
-            **dict.fromkeys(
-                self.keys["next_find"], lambda: self.goto_next(self.matches)
-            ),
-            **dict.fromkeys(
-                self.keys["prev_find"], lambda: self.goto_prev(self.matches)
-            ),
-            **dict.fromkeys(
-                self.keys["next_pick"], lambda: self.goto_next(self.picked)
-            ),
-            **dict.fromkeys(
-                self.keys["prev_pick"], lambda: self.goto_prev(self.picked)
-            ),
-            **dict.fromkeys(self.keys["reset"], self.reset),
-            **dict.fromkeys(self.keys["recenter"], self.recenter_row),
-            **dict.fromkeys(
-                self.keys["pick"],
-                lambda: self.pick(self.currow, self.picked) or self.down_row(),
-            ),
-            **dict.fromkeys(
-                self.keys["pick_pattern"],
-                lambda: self.match("Pick: ", self.picked, self.pick),
-            ),
-            **dict.fromkeys(self.keys["undo"], self.undo),
-            **dict.fromkeys(self.keys["undo_up"], self.undo_up),
-            **dict.fromkeys(
-                self.keys["toggle"], lambda: self.toggle(self.currow, self.picked)
-            ),
-            **dict.fromkeys(
-                self.keys["toggle_down"],
-                lambda: self.toggle(self.currow, self.picked) or self.down_row(),
-            ),
-            **dict.fromkeys(
-                self.keys["toggle_up"],
-                lambda: self.toggle(self.currow, self.picked) or self.up_row(),
-            ),
-            **dict.fromkeys(self.keys["toggle_all"], self.toggle_all),
-            **dict.fromkeys(
-                self.keys["toggle_pattern"],
-                lambda: self.match("Toggle: ", self.picked, self.toggle),
-            ),
-            **dict.fromkeys(
-                self.keys["view_picks"],
-                lambda: self.view(contents=[self.items[pick] for pick in self.picked]),
-            ),
-            **dict.fromkeys(self.keys["view_help"], lambda: self.view(self.desc)),
-            **dict.fromkeys(self.keys["save"], self.save),
-            **dict.fromkeys(self.keys["quit"], self.quit),
-        }
 
     def view(self, contents):
         if not contents:
@@ -122,7 +44,7 @@ class Event(Action):
             self.refresh()
             key = self.stdscr.getch()
             try:
-                if self.pad_actions[key]() == "quit":
+                if self.pad_action(key) == "quit":
                     break
             except KeyError:
                 pass
@@ -148,8 +70,7 @@ class Event(Action):
             self.refresh()
             key = self.stdscr.getch()
             try:
-                out = self.row_actions[key]()
-                if out == "quit":
+                if self.row_action(key) == "quit":
                     return [self.items[pick] for pick in self.picked]
             except KeyError:
                 pass

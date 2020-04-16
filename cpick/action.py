@@ -239,6 +239,10 @@ class Action(Draw):
         else:
             matches.append(index)
 
+    def toggle_down(self, index, matches):
+        self.toggle(index, matches)
+        self.down_row()
+
     def toggle_all(self):
         if len(self.picked) == len(self.items):
             self.picked = []
