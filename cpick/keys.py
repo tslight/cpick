@@ -1,5 +1,8 @@
 import curses
 from .action import Action
+from os import environ
+
+environ.setdefault("ESCDELAY", "12")  # otherwise it takes an age!
 
 
 class Keys(Action):
