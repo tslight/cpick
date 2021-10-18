@@ -102,7 +102,7 @@ class Screen:
         self.smincol = 0  # screen col to start display of pad at
         self.smaxrow = self.maxy - 2  # screen row stop (bottom righthand)
         self.smaxcol = self.maxx - 2  # screen col stop (bottom righthand)
-        self.maxwidth = len(max(self.items, key=len)) + 10
+        self.maxwidth = len(max(self.items, key=len)) + 2
 
         self.currow = 0
         self.curcol = 1
